@@ -1,0 +1,444 @@
+﻿<Window x:Class="Program.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModels="clr-namespace:Program.ViewModels"
+        mc:Ignorable="d"
+        Title="Soulslike Builder" Height="850" Width="1300"
+        Background="#080808" Foreground="#E0E0E0" 
+        WindowStartupLocation="CenterScreen">
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <SolidColorBrush x:Key="SoulsGold" Color="#C0A070"/>
+        <SolidColorBrush x:Key="SoulsSlotBg" Color="#121212"/>
+        <SolidColorBrush x:Key="SoulsBorder" Color="#444"/>
+
+        <Style x:Key="SoulsHeaderStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource SoulsGold}"/>
+            <Setter Property="FontFamily" Value="Georgia"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="0,10"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect Color="Black" BlurRadius="2" ShadowDepth="1"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SlotButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="150"/>
+            <Setter Property="Height" Value="150"/>
+            <Setter Property="Margin" Value="0,0,0,25"/>
+            <Setter Property="Background" Value="{StaticResource SoulsSlotBg}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource SoulsBorder}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" CornerRadius="2">
+                            <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource SoulsGold}"/>
+                                <Setter TargetName="border" Property="Background" Value="#252525"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <DataTemplate x:Key="ItemTemplate">
+            <Grid>
+                <Image Source="{Binding IconPath}" Stretch="Fill" RenderOptions.BitmapScalingMode="Fant"/>
+                <Grid VerticalAlignment="Bottom" Background="#AA000000">
+                    <TextBlock Text="{Binding Name}" Foreground="White" FontSize="11" TextAlignment="Center" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Padding="4"/>
+                </Grid>
+                <TextBlock Foreground="{StaticResource SoulsGold}" FontSize="12" FontWeight="Bold" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,4,4,0">
+                    <TextBlock.Effect>
+                        <DropShadowEffect Color="Black" BlurRadius="2" ShadowDepth="1"/>
+                    </TextBlock.Effect>
+                    <Run Text="W: "/><Run Text="{Binding Weight, StringFormat=N1}"/>
+                </TextBlock>
+            </Grid>
+        </DataTemplate>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.Background>
+            <ImageBrush ImageSource="/images/background.jpg" Stretch="Fill" Opacity="10"/>
+        </Grid.Background>
+        <Rectangle Fill="#AA050505"/>
+
+        <Grid Margin="30">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="280"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="400"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0">
+                <TextBlock Text="BUILD NAME" Style="{StaticResource SoulsHeaderStyle}"/>
+                <TextBox Text="{Binding BuildName, UpdateSourceTrigger=PropertyChanged}" Height="30" Margin="0,0,0,20" Padding="5" Background="#222" Foreground="#E0E0E0" BorderBrush="#444" FontFamily="Georgia" FontSize="14" VerticalContentAlignment="Center"/>
+
+                <TextBlock Text="R WEAPON 1" Style="{StaticResource SoulsHeaderStyle}"/>
+                <Button Style="{StaticResource SlotButtonStyle}" Command="{Binding OpenSlotCommand}" CommandParameter="RightHand">
+                    <Grid>
+                        <Image Source="/images/Slots/weapon_slot1.png" Stretch="Fill" Opacity="0.3">
+                            <Image.Style>
+                                <Style TargetType="Image">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SelectedRightHand}" Value="{x:Null}">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
+                        <ContentControl Content="{Binding SelectedRightHand}" ContentTemplate="{StaticResource ItemTemplate}"/>
+                    </Grid>
+                </Button>
+
+                <TextBlock Text="L WEAPON 1" Style="{StaticResource SoulsHeaderStyle}" Margin="0,20,0,10"/>
+                <Button Style="{StaticResource SlotButtonStyle}" Command="{Binding OpenSlotCommand}" CommandParameter="LeftHand">
+                    <Grid>
+                        <Image Source="/images/Slots/weapon_slot2.png" Stretch="Fill" Opacity="0.3">
+                            <Image.Style>
+                                <Style TargetType="Image">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SelectedLeftHand}" Value="{x:Null}">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
+                        <ContentControl Content="{Binding SelectedLeftHand}" ContentTemplate="{StaticResource ItemTemplate}"/>
+                    </Grid>
+                </Button>
+            </StackPanel>
+
+            <Grid Grid.Column="1" Margin="20"/>
+
+            <StackPanel Grid.Column="2" VerticalAlignment="Top" Margin="0,50,0,0">
+                <Button Style="{StaticResource SlotButtonStyle}" Command="{Binding OpenSlotCommand}" CommandParameter="Head">
+                    <Grid>
+                        <Image Source="/images/Slots/helmet_slot.jpg" Stretch="Fill" Opacity="0.3">
+                            <Image.Style>
+                                <Style TargetType="Image">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SelectedHead}" Value="{x:Null}">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
+                        <ContentControl Content="{Binding SelectedHead}" ContentTemplate="{StaticResource ItemTemplate}"/>
+                    </Grid>
+                </Button>
+
+                <Button Style="{StaticResource SlotButtonStyle}" Command="{Binding OpenSlotCommand}" CommandParameter="Chest">
+                    <Grid>
+                        <Image Source="/images/Slots/armor_slot.jpg" Stretch="Fill" Opacity="0.3">
+                            <Image.Style>
+                                <Style TargetType="Image">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SelectedChest}" Value="{x:Null}">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
+                        <ContentControl Content="{Binding SelectedChest}" ContentTemplate="{StaticResource ItemTemplate}"/>
+                    </Grid>
+                </Button>
+
+                <Button Style="{StaticResource SlotButtonStyle}" Command="{Binding OpenSlotCommand}" CommandParameter="Hands">
+                    <Grid>
+                        <Image Source="/images/Slots/gauntlets_slot.jpg" Stretch="Fill" Opacity="0.3">
+                            <Image.Style>
+                                <Style TargetType="Image">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SelectedHands}" Value="{x:Null}">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
+                        <ContentControl Content="{Binding SelectedHands}" ContentTemplate="{StaticResource ItemTemplate}"/>
+                    </Grid>
+                </Button>
+
+                <Button Style="{StaticResource SlotButtonStyle}" Command="{Binding OpenSlotCommand}" CommandParameter="Legs">
+                    <Grid>
+                        <Image Source="/images/Slots/leggings_slot.jpg" Stretch="Fill" Opacity="0.3">
+                            <Image.Style>
+                                <Style TargetType="Image">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SelectedLegs}" Value="{x:Null}">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
+                        <ContentControl Content="{Binding SelectedLegs}" ContentTemplate="{StaticResource ItemTemplate}"/>
+                    </Grid>
+                </Button>
+            </StackPanel>
+
+            <Border Grid.Column="3" Background="#CC121212" BorderBrush="#444" BorderThickness="2" CornerRadius="2" Padding="10">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,10,0">
+                    <StackPanel>
+                        <TextBlock Text="STATUS" FontSize="20" HorizontalAlignment="Left" Style="{StaticResource SoulsHeaderStyle}"/>
+                        <Separator Background="#444" Margin="0,5,0,15"/>
+
+                        <TextBlock Text="{Binding ValidationMessage}" Foreground="#FF5555" TextWrapping="Wrap" Margin="0,0,0,10" FontWeight="Bold" HorizontalAlignment="Center"/>
+
+                        <Grid Margin="0,0,0,20">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="160"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="30"/>
+                                <RowDefinition Height="30"/>
+                                <RowDefinition Height="30"/>
+                                <RowDefinition Height="30"/>
+                                <RowDefinition Height="30"/>
+                                <RowDefinition Height="30"/>
+                                <RowDefinition Height="30"/>
+                            </Grid.RowDefinitions>
+                            <Grid.Resources>
+                                <Style TargetType="TextBox">
+                                    <Setter Property="Background" Value="#AA1A1A1A"/>
+                                    <Setter Property="Foreground" Value="White"/>
+                                    <Setter Property="BorderBrush" Value="#666"/>
+                                    <Setter Property="BorderThickness" Value="1"/>
+                                    <Setter Property="TextAlignment" Value="Center"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                    <Setter Property="FontSize" Value="14"/>
+                                    <Setter Property="Height" Value="24"/>
+                                </Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Foreground" Value="#AAA"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                    <Setter Property="FontFamily" Value="Georgia"/>
+                                    <Setter Property="FontSize" Value="14"/>
+                                    <Setter Property="Effect">
+                                        <Setter.Value>
+                                            <DropShadowEffect Color="Black" BlurRadius="2" ShadowDepth="1"/>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Grid.Resources>
+
+                            <TextBlock Grid.Row="0" Text="Vigor"/>
+                            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Vigor, UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBlock Grid.Row="1" Text="Attunement"/>
+                            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Mind, UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBlock Grid.Row="2" Text="Endurance"/>
+                            <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Endurance, UpdateSourceTrigger=PropertyChanged}"/>
+
+                            <TextBlock Grid.Row="3" Text="Strength" Foreground="{StaticResource SoulsGold}"/>
+                            <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                                <TextBox Text="{Binding Strength, UpdateSourceTrigger=PropertyChanged}" Width="50"/>
+                                <CheckBox IsChecked="{Binding IsTwoHanding}" ToolTip="2H" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                                <TextBlock Text="{Binding EffectiveStrengthText}" Foreground="#55AA55" FontSize="11" Margin="5,0" VerticalAlignment="Center"/>
+                            </StackPanel>
+
+                            <TextBlock Grid.Row="4" Text="Dexterity"/>
+                            <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding Dexterity, UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBlock Grid.Row="5" Text="Intelligence"/>
+                            <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding Intelligence, UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBlock Grid.Row="6" Text="Faith"/>
+                            <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding Faith, UpdateSourceTrigger=PropertyChanged}"/>
+                        </Grid>
+
+                        <Grid Margin="0,0,0,20">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="60"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="50"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="HP" Foreground="#D55" FontWeight="Bold"/>
+                            <ProgressBar Grid.Column="1" Value="{Binding Stats.HP}" Maximum="2000" Height="8" Background="#44220000" Foreground="#AA3333" BorderThickness="0" Margin="5"/>
+                            <TextBlock Grid.Column="2" Text="{Binding Stats.HP}" Foreground="White" FontSize="12" HorizontalAlignment="Right"/>
+                            <TextBlock Grid.Row="1" Text="FP" Foreground="#55D" FontWeight="Bold"/>
+                            <ProgressBar Grid.Row="1" Grid.Column="1" Value="{Binding Stats.FocusPoints}" Maximum="500" Height="8" Background="#44000022" Foreground="#3333AA" BorderThickness="0" Margin="5"/>
+                            <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding Stats.FocusPoints}" Foreground="White" FontSize="12" HorizontalAlignment="Right"/>
+                            <TextBlock Grid.Row="2" Text="Stamina" Foreground="#5D5" FontWeight="Bold"/>
+                            <ProgressBar Grid.Row="2" Grid.Column="1" Value="{Binding Stats.Stamina}" Maximum="200" Height="8" Background="#44002200" Foreground="#33AA33" BorderThickness="0" Margin="5"/>
+                            <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding Stats.Stamina}" Foreground="White" FontSize="12" HorizontalAlignment="Right"/>
+                        </Grid>
+
+                        <Separator Background="#444" Margin="0,10"/>
+
+                        <TextBlock Text="ATTACK POWER" Style="{StaticResource SoulsHeaderStyle}"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="R Weapon 1" Foreground="#AAA" Grid.ColumnSpan="2"/>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                                <TextBlock Text="Phys" Foreground="#AAA" Margin="0,0,5,0" FontSize="10" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding RWeaponPhysicalDmg}" Foreground="White"/>
+                            </StackPanel>
+
+                            <TextBlock Grid.Row="1" Text="Magic" Foreground="#88F"/>
+                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding RWeaponMagicDmg}" Foreground="#88F" HorizontalAlignment="Right"/>
+                            <TextBlock Grid.Row="2" Text="Fire" Foreground="#F88"/>
+                            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding RWeaponFireDmg}" Foreground="#F88" HorizontalAlignment="Right"/>
+                            <TextBlock Grid.Row="3" Text="Lightn." Foreground="#FFD700"/>
+                            <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding RWeaponLightningDmg}" Foreground="#FFD700" HorizontalAlignment="Right"/>
+                            <TextBlock Grid.Row="4" Text="Critical" Foreground="#AAA"/>
+                            <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding RWeaponCriticalDmg}" Foreground="#D88" HorizontalAlignment="Right"/>
+                        </Grid>
+
+                        <Separator Background="#444" Margin="0,15"/>
+
+                        <TextBlock Text="DEFENSE" Style="{StaticResource SoulsHeaderStyle}"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Text="Physical Def" Foreground="#AAA"/>
+                            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Stats.DefensePhysical, StringFormat=N0}" Foreground="White" HorizontalAlignment="Right"/>
+
+                            <TextBlock Grid.Row="1" Text="Magic Def" Foreground="#88F"/>
+                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Stats.DefenseMagic, StringFormat=N0}" Foreground="#88F" HorizontalAlignment="Right"/>
+
+                            <TextBlock Grid.Row="2" Text="Fire Def" Foreground="#F88"/>
+                            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Stats.DefenseFire, StringFormat=N0}" Foreground="#F88" HorizontalAlignment="Right"/>
+
+                            <TextBlock Grid.Row="3" Text="Lightning Def" Foreground="#FFD700"/>
+                            <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Stats.DefenseLightning, StringFormat=N0}" Foreground="#FFD700" HorizontalAlignment="Right"/>
+                        </Grid>
+
+                        <TextBlock Text="POISE" Style="{StaticResource SoulsHeaderStyle}" Margin="0,10,0,5"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Poise" Foreground="#AAA"/>
+                            <TextBlock Grid.Column="1" Text="{Binding Stats.Poise, StringFormat=N1}" Foreground="White" HorizontalAlignment="Right"/>
+                        </Grid>
+
+                        <Separator Background="#444" Margin="0,15"/>
+
+                        <DockPanel>
+                            <TextBlock Text="Equip Load" Foreground="#AAA"/>
+                            <TextBlock Foreground="White" HorizontalAlignment="Right">
+                                <Run Text="{Binding Stats.TotalWeight, StringFormat=N1}"/> <Run Text=" / "/> <Run Text="{Binding Stats.MaxEquipLoad, StringFormat=N1}"/>
+                            </TextBlock>
+                        </DockPanel>
+                        <ProgressBar Value="{Binding Stats.LoadPercentage}" Maximum="100" Height="6" Background="#222" Foreground="{StaticResource SoulsGold}" BorderThickness="0" Margin="0,5"/>
+                        <TextBlock Text="{Binding Stats.RollType}" Foreground="{StaticResource SoulsGold}" FontWeight="Bold" HorizontalAlignment="Right" FontSize="14"/>
+
+                        <Separator Background="#444" Margin="0,20"/>
+
+                        <Button Content="SAVE &amp; EXIT" Command="{Binding SaveAndExitCommand}" Height="40" Background="#224422" Foreground="#8F8" BorderBrush="#484" FontFamily="Georgia" FontWeight="Bold" FontSize="14">
+                            <Button.Resources>
+                                <Style TargetType="Border">
+                                    <Setter Property="CornerRadius" Value="3"/>
+                                </Style>
+                            </Button.Resources>
+                        </Button>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+
+        <Grid Background="#CC000000" Visibility="{Binding IsInventoryOpen, Converter={StaticResource BoolToVis}}">
+            <Border Background="#EE121212" BorderBrush="#777" BorderThickness="1" Width="600" Height="500" CornerRadius="0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Border BorderBrush="#333" BorderThickness="0,0,0,1" Padding="15">
+                        <TextBlock Text="SELECT EQUIPMENT" Foreground="{StaticResource SoulsGold}" FontFamily="Georgia" FontSize="18" HorizontalAlignment="Center"/>
+                    </Border>
+
+                    <ListBox Grid.Row="1" ItemsSource="{Binding InventoryItems}" Background="Transparent" BorderThickness="0" Padding="10" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel HorizontalAlignment="Center"/>
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Button Command="{Binding DataContext.SelectItemCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}" Width="80" Height="80" Margin="5" Background="#181818" BorderBrush="#444">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <Grid>
+                                            <Image Source="{Binding IconPath}" Stretch="Uniform" Margin="2" RenderOptions.BitmapScalingMode="Fant"/>
+                                            <Grid VerticalAlignment="Bottom" Background="#AA000000">
+                                                <TextBlock Text="{Binding Name}" Foreground="White" TextWrapping="Wrap" TextAlignment="Center" FontSize="9" Padding="2" TextTrimming="CharacterEllipsis"/>
+                                            </Grid>
+                                        </Grid>
+                                        <Border Grid.Row="1" BorderBrush="#333" BorderThickness="0,1,0,0" Padding="2">
+                                            <TextBlock Foreground="{StaticResource SoulsGold}" FontSize="9" HorizontalAlignment="Right"><Run Text="W: "/><Run Text="{Binding Weight, StringFormat=N1}"/></TextBlock>
+                                        </Border>
+                                    </Grid>
+                                </Button>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+
+                    <Grid Grid.Row="2" Margin="20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" Content="UNEQUIP ITEM" Command="{Binding UnequipCommand}" Height="40" Background="#300" Foreground="#F55" BorderBrush="#500" Margin="0,0,10,0"/>
+                        <Button Grid.Column="1" Content="CLOSE MENU" Command="{Binding CloseInventoryCommand}" Height="40" Background="#222" Foreground="#AAA" BorderBrush="#444" Margin="10,0,0,0"/>
+                    </Grid>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>
