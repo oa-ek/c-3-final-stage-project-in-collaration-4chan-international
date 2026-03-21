@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.36717.8
+# Visual Studio Version 18
+VisualStudioVersion = 18.5.11612.153 insiders
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Program", "Program\Program.csproj", "{1D7C87B9-E1B4-4615-894B-46DEF4D02273}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repositories", "Repositories\Repositories.csproj", "{BE7043D5-99DB-4AF3-A4EE-0F9008578058}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "Services\Services.csproj", "{D27AA08D-D56D-40DE-8FB1-D846B8E212AA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DarkSoulsEquipmentAssistant.App", "DarkSoulsEquipmentAssistant.App\DarkSoulsEquipmentAssistant.App.csproj", "{7B55E938-5505-4AC9-9DF2-80DE6EAE5007}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{D27AA08D-D56D-40DE-8FB1-D846B8E212AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D27AA08D-D56D-40DE-8FB1-D846B8E212AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D27AA08D-D56D-40DE-8FB1-D846B8E212AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B55E938-5505-4AC9-9DF2-80DE6EAE5007}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B55E938-5505-4AC9-9DF2-80DE6EAE5007}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B55E938-5505-4AC9-9DF2-80DE6EAE5007}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B55E938-5505-4AC9-9DF2-80DE6EAE5007}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
