@@ -20,6 +20,7 @@ using DarkSoulsBuildsAssistant.Repositories;
 using DarkSoulsBuildsAssistant.Repositories.Character;
 using DarkSoulsBuildsAssistant.Repositories.Equipment;
 using DarkSoulsBuildsAssistant.Services;
+using Microsoft.Extensions.FileProviders;
 using OpenApiInfo = Microsoft.OpenApi.Models.OpenApiInfo;
 using OpenApiSecurityRequirement = Microsoft.OpenApi.Models.OpenApiSecurityRequirement;
 using OpenApiSecurityScheme = Microsoft.OpenApi.Models.OpenApiSecurityScheme;
@@ -204,6 +205,9 @@ builder.Services.AddOpenApi("v1", options =>
 });
 
 var app = builder.Build();
+
+// 1. Стандартний виклик (для файлів з wwwroot, залишаємо його)
+app.UseStaticFiles();
 
 // --- 5. PIPELINE ---
 

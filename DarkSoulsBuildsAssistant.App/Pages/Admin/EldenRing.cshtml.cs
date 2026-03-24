@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using DarkSoulsBuildsAssistant.Core.DTOs.Equipment;
 using DarkSoulsBuildsAssistant.Core.Interfaces.Services.Business;
 
@@ -6,23 +7,41 @@ namespace DarkSoulsBuildsAssistant.App.Pages.Admin;
 
 public class EldenRingModel(ICatalogService catalogService) : PageModel
 {
-    // Створюємо властивість, до якої будемо звертатися з HTML
-    public List<EquipmentDTO> Equipments { get; set; } = new();
+    public IEnumerable<EquipmentDTO> Equipments { get; set; } = new List<EquipmentDTO>();
+    public string CurrentCategory { get; set; } = "armor";
 
-    // Інжектуємо наш сервіс
-
-    // Змінюємо OnGet на асинхронний OnGetAsync
-    public async Task OnGetAsync()
+    // Змінили Task на Task<IActionResult> і прибрали дефолтне значення
+    public async Task<IActionResult> OnGetAsync(string category)
     {
-// 1. Завантажуємо зброю
-        var weapons = await catalogService.GetAllWeaponsAsync();
-        
-        // 2. Завантажуємо броню
-        var armors = await catalogService.GetAllArmorAsync();
+        // Якщо параметр порожній (перейшли з бокового меню)
+        if (string.IsNullOrEmpty(category))
+        {
+            // Переспрямовуємо на цю ж сторінку, але з чітким параметром
+            return RedirectToPage(new { category = "armor" });
+        }
 
-        // 3. Об'єднуємо їх в один список і сортуємо за назвою за алфавітом
-        Equipments = weapons.Concat(armors)
-            .OrderBy(e => e.Name)
-            .ToList();
+        CurrentCategory = category.ToLower();
+
+        switch (CurrentCategory)
+        {
+            case "weapons":
+                Equipments = await catalogService.GetAllWeaponsAsync();
+                break;
+            case "armor":
+                Equipments = await catalogService.GetAllArmorAsync();
+                break;
+            case "talismans":
+            case "spells":
+                Equipments = new List<EquipmentDTO>();
+                break;
+            default:
+                // Якщо користувач ввів якусь нісенітницю в URL (наприклад ?category=qwerty)
+                return RedirectToPage(new { category = "armor" });
+        }
+
+        Equipments = Equipments.OrderBy(e => e.Name).ToList();
+
+        // Повертаємо відрендерену сторінку, якщо все добре
+        return Page(); 
     }
 }
