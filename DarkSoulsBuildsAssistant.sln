@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 18
+VisualStudioVersion = 18.5.11612.153 insiders
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DarkSoulsBuildsAssistant.Infrastructure", "DarkSoulsBuildsAssistant.Infrastructure\DarkSoulsBuildsAssistant.Infrastructure.csproj", "{B99E9101-F225-4948-8152-B97F75AD2468}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DarkSoulsBuildsAssistant.Repositories", "DarkSoulsBuildsAssistant.Repositories\DarkSoulsBuildsAssistant.Repositories.csproj", "{BE7043D5-99DB-4AF3-A4EE-0F9008578058}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DarkSoulsBuildsAssistant.Services", "DarkSoulsBuildsAssistant.Services\DarkSoulsBuildsAssistant.Services.csproj", "{D27AA08D-D56D-40DE-8FB1-D846B8E212AA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DarkSoulsBuildsAssistant.Core", "DarkSoulsBuildsAssistant.Core\DarkSoulsBuildsAssistant.Core.csproj", "{2235E4F0-3966-4224-9471-91AB7DEB7930}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DarkSoulsBuildsAssistant.App", "DarkSoulsBuildsAssistant.App\DarkSoulsBuildsAssistant.App.csproj", "{B3A99092-955A-475C-92EA-E3F658B7487F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B99E9101-F225-4948-8152-B97F75AD2468}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B99E9101-F225-4948-8152-B97F75AD2468}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B99E9101-F225-4948-8152-B97F75AD2468}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B99E9101-F225-4948-8152-B97F75AD2468}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE7043D5-99DB-4AF3-A4EE-0F9008578058}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE7043D5-99DB-4AF3-A4EE-0F9008578058}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE7043D5-99DB-4AF3-A4EE-0F9008578058}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE7043D5-99DB-4AF3-A4EE-0F9008578058}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D27AA08D-D56D-40DE-8FB1-D846B8E212AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D27AA08D-D56D-40DE-8FB1-D846B8E212AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D27AA08D-D56D-40DE-8FB1-D846B8E212AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D27AA08D-D56D-40DE-8FB1-D846B8E212AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2235E4F0-3966-4224-9471-91AB7DEB7930}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2235E4F0-3966-4224-9471-91AB7DEB7930}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2235E4F0-3966-4224-9471-91AB7DEB7930}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2235E4F0-3966-4224-9471-91AB7DEB7930}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3A99092-955A-475C-92EA-E3F658B7487F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3A99092-955A-475C-92EA-E3F658B7487F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3A99092-955A-475C-92EA-E3F658B7487F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3A99092-955A-475C-92EA-E3F658B7487F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {12CAA9D5-7847-4FBE-AEE6-CD1665A1AF91}
+	EndGlobalSection
+EndGlobal
