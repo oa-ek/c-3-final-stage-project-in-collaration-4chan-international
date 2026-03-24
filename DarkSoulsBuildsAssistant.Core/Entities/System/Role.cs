@@ -1,8 +1,9 @@
 ﻿using DarkSoulsBuildsAssistant.Core.Entities.Base;
+using Microsoft.AspNetCore.Identity;
 
 namespace DarkSoulsBuildsAssistant.Core.Entities.System;
 
-public class Role : NamedEntity
+public class Role : IdentityRole<int>
 {
     public string? Description { get; set; }
     

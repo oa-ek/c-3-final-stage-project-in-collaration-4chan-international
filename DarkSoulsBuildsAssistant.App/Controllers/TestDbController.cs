@@ -1,14 +1,14 @@
-﻿using Data.Context;
+﻿using DarkSoulsBuildsAssistant.Infrastructure.Context;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Server.Controllers;
+namespace DarkSoulsBuildsAssistant.App.Controllers;
 
 [ApiController]
 [Authorize(Roles = "Admin")]
 [Route("api/[controller]")]
-public class TestDbController(LibrarySystemDbContext context) : ControllerBase
+public class TestDbController(BuildsAssistantDbContext context) : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> CheckDatabase()

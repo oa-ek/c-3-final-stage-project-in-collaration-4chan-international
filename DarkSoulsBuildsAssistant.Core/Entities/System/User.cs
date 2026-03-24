@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace DarkSoulsBuildsAssistant.Core.Entities.System;
 
-public class User : IdentityUser
+public class User : IdentityUser<int>
 {
     public string? FirstName { get; set; }
     

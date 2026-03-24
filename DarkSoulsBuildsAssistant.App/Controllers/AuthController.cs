@@ -1,10 +1,12 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using DarkSoulsBuildsAssistant.Core.DTOs.Auth;
+using DarkSoulsBuildsAssistant.Core.Interfaces.Services.Identity;
+
+using System.IdentityModel.Tokens.Jwt;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Services.Interfaces;
-using Shared.DTO.Auth;
 
-namespace Server.Controllers;
+namespace DarkSoulsBuildsAssistant.App.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -12,7 +14,7 @@ public class AuthController(IAuthService authService, ITokenBlacklistService bla
     : ControllerBase
 {
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginRequestDto model)
+    public async Task<IActionResult> Login([FromBody] LoginRequestDTO model)
     {
         var result = await authService.LoginAsync(model);
         if (!result.IsSuccess) return BadRequest(result.ErrorMessage);
@@ -20,7 +22,7 @@ public class AuthController(IAuthService authService, ITokenBlacklistService bla
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] RegisterRequestDto model)
+    public async Task<IActionResult> Register([FromBody] RegisterRequestDTO model)
     {
         var result = await authService.RegisterAsync(model);
         if (!result.IsSuccess) return BadRequest(result.ErrorMessage);
@@ -44,12 +46,12 @@ public class AuthController(IAuthService authService, ITokenBlacklistService bla
     }
     
     [HttpPost("refresh")]
-    public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequestDto model)
+    public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequestDTO model)
     {
         var result = await authService.RefreshTokenAsync(model);
         
         if (!result.IsSuccess) 
-            return Unauthorized(result); // 401, щоб клієнт знав, що треба повний логаут
+            return Unauthorized(result);
             
         return Ok(result);
     }

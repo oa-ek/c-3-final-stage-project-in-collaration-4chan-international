@@ -1,4 +1,4 @@
-﻿using DarkSoulsBuildsAssistant.Core.Entities.Armor;
+﻿using DarkSoulsBuildsAssistant.Core.Entities.Equipment.Armor;
 
 namespace DarkSoulsBuildsAssistant.Core.Interfaces.Repositories.Equipment;
 

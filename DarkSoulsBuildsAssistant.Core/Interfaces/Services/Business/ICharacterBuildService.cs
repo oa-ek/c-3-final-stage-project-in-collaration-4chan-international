@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-using Models_Context.Models;
+﻿using DarkSoulsBuildsAssistant.Core.Entities.Character;
 
-namespace Services.Interfaces
+namespace DarkSoulsBuildsAssistant.Core.Interfaces.Services.Business
 {
     public interface ICharacterBuildService
     {

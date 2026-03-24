@@ -1,8 +1,8 @@
-﻿namespace DarkSoulsBuildsAssistant.Core.DTOs.System;
+﻿using DarkSoulsBuildsAssistant.Core.DTOs.Base;
 
-public class LogLevelDTO
+namespace DarkSoulsBuildsAssistant.Core.DTOs.System;
+
+public record class LogLevelDTO : NamedDTO
 {
-    public string? Name { get; set; }
-    
-    public string? Description { get; set; }
+    public string? Description { get; init; }
 }

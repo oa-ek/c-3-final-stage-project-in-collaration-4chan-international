@@ -1,12 +1,10 @@
-﻿using Shared.DTO.Auth;
+﻿using DarkSoulsBuildsAssistant.Core.DTOs.Auth;
 
-// Твої DTO
-
-namespace Services.Interfaces;
+namespace DarkSoulsBuildsAssistant.Core.Interfaces.Services.Identity;
 
 public interface IAuthService
 {
-    Task<AuthResponseDto> LoginAsync(LoginRequestDto model);
-    Task<AuthResponseDto> RegisterAsync(RegisterRequestDto model);
-    Task<AuthResponseDto> RefreshTokenAsync(RefreshTokenRequestDto model);
+    Task<AuthResponseDTO> LoginAsync(LoginRequestDTO model);
+    Task<AuthResponseDTO> RegisterAsync(RegisterRequestDTO model);
+    Task<AuthResponseDTO> RefreshTokenAsync(RefreshTokenRequestDTO model);
 }

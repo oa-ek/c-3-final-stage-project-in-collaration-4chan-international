@@ -1,8 +1,8 @@
-﻿using DarkSoulsBuildsAssistant.Core.Entities.Armor;
-using DarkSoulsBuildsAssistant.Core.Entities.Base;
-using DarkSoulsBuildsAssistant.Core.Entities.Weapon;
+﻿using DarkSoulsBuildsAssistant.Core.Entities.Base;
+using DarkSoulsBuildsAssistant.Core.Entities.Equipment.Armor;
+using DarkSoulsBuildsAssistant.Core.Entities.Equipment.Weapon;
 
-namespace DarkSoulsBuildsAssistant.Core.Entities.Etc;
+namespace DarkSoulsBuildsAssistant.Core.Entities.Equipment;
 
 public class InfluenceType : NamedEntity
 {

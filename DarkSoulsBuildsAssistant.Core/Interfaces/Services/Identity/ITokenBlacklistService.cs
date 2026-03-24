@@ -1,4 +1,4 @@
-﻿namespace Services.Interfaces;
+﻿namespace DarkSoulsBuildsAssistant.Core.Interfaces.Services.Identity;
 
 public interface ITokenBlacklistService
 {
