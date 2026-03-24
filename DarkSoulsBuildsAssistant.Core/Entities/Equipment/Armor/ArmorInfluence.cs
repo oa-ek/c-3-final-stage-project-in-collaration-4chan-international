@@ -1,9 +1,8 @@
 ﻿using DarkSoulsBuildsAssistant.Core.Entities.Base;
-using DarkSoulsBuildsAssistant.Core.Entities.Etc;
  
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace DarkSoulsBuildsAssistant.Core.Entities.Armor;
+namespace DarkSoulsBuildsAssistant.Core.Entities.Equipment.Armor;
 
 public class ArmorInfluence : BaseEntity
 {

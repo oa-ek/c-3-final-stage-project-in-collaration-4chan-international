@@ -1,60 +1,48 @@
-﻿using Data.Models;
-using Microsoft.AspNetCore.Identity;
-using Services.Interfaces;
-using Shared.Dtos;
+﻿using DarkSoulsBuildsAssistant.Core.DTOs.System;
+using DarkSoulsBuildsAssistant.Core.Entities.System;
+using DarkSoulsBuildsAssistant.Core.Interfaces.Services.Identity;
+
 using System.Security.Claims;
 
-namespace Services.Contracts;
+using Microsoft.AspNetCore.Identity;
 
-public class UserService : IUserService
+namespace DarkSoulsBuildsAssistant.App.Services;
+
+public class UserService(UserManager<User> userManager) : IUserService
 {
-    private readonly UserManager<User> _userManager;
-
-    public UserService(UserManager<User> userManager)
-    {
-        _userManager = userManager;
-    }
-
-    public async Task<UserDto> GetUserProfileAsync(ClaimsPrincipal userPrincipal)
+    public async Task<UserDTO> GetUserProfileAsync(ClaimsPrincipal userPrincipal)
     {
         // Знаходимо юзера за ID з токена
-        var user = await _userManager.GetUserAsync(userPrincipal);
+        var user = await userManager.GetUserAsync(userPrincipal);
         if (user == null) return null;
 
-        var roles = await _userManager.GetRolesAsync(user);
+        var roles = await userManager.GetRolesAsync(user);
 
-        return new UserDto
+        return new UserDTO
         {
             Id = user.Id.ToString(),
             UserName = user.UserName,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
             Email = user.Email,
-            EmailConfirmed = user.EmailConfirmed,
-            PhoneNumber = user.PhoneNumber,
-            PhoneNumberConfirmed = user.PhoneNumberConfirmed,
-            FullName = user.FullName,
-            Address = user.Address,
-            DateOfBirth = user.BirthDate,
-            ReaderTicketNumber = user.ReaderTicketNumber,
-            Role = roles.FirstOrDefault() ?? "Reader"
+            Roles = roles.ToList()
         };
     }
 
-    public async Task<bool> UpdateUserProfileAsync(ClaimsPrincipal userPrincipal, UserDto model)
+    public async Task<bool> UpdateUserProfileAsync(ClaimsPrincipal userPrincipal, UserDTO model)
     {
-        var user = await _userManager.GetUserAsync(userPrincipal);
+        var user = await userManager.GetUserAsync(userPrincipal);
         if (user == null) return false;
 
         // Оновлюємо поля
-        user.FullName = model.FullName;
-        user.Address = model.Address;
-        user.PhoneNumber = model.PhoneNumber;
-        user.BirthDate = model.DateOfBirth;
+        user.FirstName = model.FirstName;
+        user.LastName = model.LastName;
+        user.Email = model.Email;
+        user.NormalizedEmail = model.Email.ToUpper();
+        user.UserName = model.UserName;
+        user.NormalizedUserName = model.UserName.ToUpper();
 
-        // ReaderTicketNumber зазвичай змінює тільки адмін, але для простоти дозволимо і тут, 
-        // або можна закоментувати, щоб юзер не міг сам собі придумати квиток.
-        // user.ReaderTicketNumber = model.ReaderTicketNumber; 
-
-        var result = await _userManager.UpdateAsync(user);
+        var result = await userManager.UpdateAsync(user);
         return result.Succeeded;
     }
 }

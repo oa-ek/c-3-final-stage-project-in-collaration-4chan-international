@@ -1,24 +1,16 @@
-﻿using System.Net;
-using Services.Interfaces;
+﻿using DarkSoulsBuildsAssistant.Core.Interfaces.Services.Identity;
 
-namespace Server.Middleware;
+using System.Net;
 
-public class JwtBlacklistMiddleware
+namespace DarkSoulsBuildsAssistant.App.Middleware;
+
+public class JWTBlacklistMiddleware(RequestDelegate next)
 {
-    private readonly RequestDelegate _next;
-
-    public JwtBlacklistMiddleware(RequestDelegate next)
-    {
-        _next = next;
-    }
-
-    // Інжектимо сервіс сюди 👇
     public async Task InvokeAsync(HttpContext context, ITokenBlacklistService blacklistService)
     {
         var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
 
         if (token != null)
-            // Тепер виклик асинхронний
             if (await blacklistService.IsTokenBlacklistedAsync(token))
             {
                 context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
@@ -26,6 +18,6 @@ public class JwtBlacklistMiddleware
                 return;
             }
 
-        await _next(context);
+        await next(context);
     }
 }

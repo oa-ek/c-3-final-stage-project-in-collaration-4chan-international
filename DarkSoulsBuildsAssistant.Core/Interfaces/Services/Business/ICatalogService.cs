@@ -1,22 +1,14 @@
-﻿using Models_Context.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DarkSoulsBuildsAssistant.Core.Entities.Equipment.Armor;
+using DarkSoulsBuildsAssistant.Core.Entities.Equipment.Weapon;
 
-namespace Services.Interfaces
+namespace DarkSoulsBuildsAssistant.Core.Interfaces.Services.Business
 {
     public interface ICatalogService
     {
-        // Отримати всі типи зброї для випадаючого списку (Daggers, Greatswords...)
-        // Тобі доведеться додати репозиторій для WeaponType, якщо його немає, 
-        // або використовувати Generic Repository.
+        IEnumerable<WeaponEquipment> GetAllWeapons();
+        IEnumerable<WeaponEquipment> FilterWeaponsByType(int typeId);
 
-        IEnumerable<Weapon> GetAllWeapons();
-        IEnumerable<Weapon> FilterWeaponsByType(int typeId);
-
-        IEnumerable<Armor> GetAllArmor();
-        IEnumerable<Armor> GetArmorBySlot(int slotId); // 1-Head, 2-Chest...
+        IEnumerable<ArmorEquipment> GetAllArmor();
+        IEnumerable<ArmorEquipment> GetArmorBySlot(int slotId);
     }
 }

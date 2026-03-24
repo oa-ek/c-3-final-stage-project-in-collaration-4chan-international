@@ -1,27 +1,20 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using DarkSoulsBuildsAssistant.Core.DTOs.System;
+using DarkSoulsBuildsAssistant.Core.Interfaces.Services.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Services.Interfaces;
-using Shared.Dtos;
 
-namespace Server.Controllers;
+namespace DarkSoulsBuildsAssistant.App.Controllers;
 
 [ApiController]
-[Authorize] // 🔥 Тільки для залогінених!
+[Authorize]
 [Route("api/[controller]")]
-public class AccountController : ControllerBase
+public class AccountController(IUserService userService) : ControllerBase
 {
-    private readonly IUserService _userService;
-
-    public AccountController(IUserService userService)
-    {
-        _userService = userService;
-    }
-
     [HttpGet("profile")]
     public async Task<IActionResult> GetProfile()
     {
         // User (ClaimsPrincipal) доступний у контролері автоматично завдяки Authorize + JWT
-        var profile = await _userService.GetUserProfileAsync(User);
+        var profile = await userService.GetUserProfileAsync(User);
 
         if (profile == null) return NotFound("User not found");
 
@@ -29,11 +22,11 @@ public class AccountController : ControllerBase
     }
 
     [HttpPut("profile")]
-    public async Task<IActionResult> UpdateProfile([FromBody] UserDto model)
+    public async Task<IActionResult> UpdateProfile([FromBody] UserDTO model)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        var success = await _userService.UpdateUserProfileAsync(User, model);
+        var success = await userService.UpdateUserProfileAsync(User, model);
 
         if (!success) return BadRequest("Failed to update profile");
 

@@ -1,8 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using DarkSoulsBuildsAssistant.Core.Entities.Base;
-using DarkSoulsBuildsAssistant.Core.Entities.Etc;
 
-namespace DarkSoulsBuildsAssistant.Core.Entities.Weapon;
+namespace DarkSoulsBuildsAssistant.Core.Entities.Equipment.Weapon;
 
 public class WeaponInfluence : BaseEntity
 {

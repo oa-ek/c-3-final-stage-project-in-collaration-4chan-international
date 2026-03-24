@@ -1,13 +1,15 @@
-﻿using System.Security.Cryptography;
+﻿using DarkSoulsBuildsAssistant.Core.Entities.System;
+using DarkSoulsBuildsAssistant.Core.Interfaces.Services.Identity;
+using DarkSoulsBuildsAssistant.Infrastructure.Context;
+
+using System.Security.Cryptography;
 using System.Text;
-using Data.Context;
-using Data.Models;
+
 using Microsoft.EntityFrameworkCore;
-using Services.Interfaces;
 
-namespace Services.Contracts;
+namespace DarkSoulsBuildsAssistant.App.Services;
 
-public class TokenBlacklistService(LibrarySystemDbContext context) : ITokenBlacklistService
+public class TokenBlacklistService(BuildsAssistantDbContext context) : ITokenBlacklistService
 {
     public async Task BlacklistTokenAsync(string token, DateTime expirationDate)
     {
@@ -31,10 +33,8 @@ public class TokenBlacklistService(LibrarySystemDbContext context) : ITokenBlack
 
     private static string ComputeSha256Hash(string rawData)
     {
-        using (var sha256 = SHA256.Create())
-        {
-            var bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(rawData));
-            return Convert.ToHexString(bytes);
-        }
+        using var sha256 = SHA256.Create();
+        var bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(rawData));
+        return Convert.ToHexString(bytes);
     }
 }

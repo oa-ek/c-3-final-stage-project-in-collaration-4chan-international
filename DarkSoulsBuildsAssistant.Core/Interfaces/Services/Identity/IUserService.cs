@@ -1,13 +1,12 @@
-﻿using Shared.Dtos;
+﻿using DarkSoulsBuildsAssistant.Core.DTOs.System;
 using System.Security.Claims;
 
-namespace Services.Interfaces;
+namespace DarkSoulsBuildsAssistant.Core.Interfaces.Services.Identity;
 
 public interface IUserService
 {
-    // Отримати профіль поточного юзера
-    Task<UserDto> GetUserProfileAsync(ClaimsPrincipal userPrincipal);
+    Task<UserDTO> GetUserProfileAsync(ClaimsPrincipal userPrincipal);
 
     // Оновити профіль
-    Task<bool> UpdateUserProfileAsync(ClaimsPrincipal userPrincipal, UserDto model);
+    Task<bool> UpdateUserProfileAsync(ClaimsPrincipal userPrincipal, UserDTO model);
 }
