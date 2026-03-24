@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using DarkSoulsBuildsAssistant.Core.DTOs.Character;
 using DarkSoulsBuildsAssistant.Core.DTOs.Equipment;
+using DarkSoulsBuildsAssistant.Core.Entities.Character;
 using DarkSoulsBuildsAssistant.Core.Entities.Equipment;
 using DarkSoulsBuildsAssistant.Core.Entities.Equipment.Armor;
 using DarkSoulsBuildsAssistant.Core.Entities.Equipment.Weapon;
@@ -43,5 +45,18 @@ public class EquipmentMappingProfile : Profile
         CreateMap<Slot, SlotViewDTO>()
             .ForMember(dest => dest.SlotName, opt => opt.MapFrom(src => src.Name))
             .ForMember(dest => dest.EquippedItem, opt => opt.Ignore()); // Item додаватимемо вручну в сервісі
+        
+        CreateMap<CharacterBuild, CharacterBuildDTO>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+            .ForMember(dest => dest.Level, opt => opt.MapFrom(src => src.Level))
+            // Якщо у CharacterBuild є колекція Sets (наборів екіпірування), мапимо і її
+            .ForMember(dest => dest.Sets, opt => opt.MapFrom(src => src.Sets));
+
+        // 6. Мапінг для конкретних наборів (Sets) всередині білду
+        CreateMap<Set, SetDTO>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name));
+        // Тут можна додати мапінг слотів для набору
     }
 }

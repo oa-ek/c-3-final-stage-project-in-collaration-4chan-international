@@ -19,6 +19,42 @@
 
     <ItemGroup>
       <ProjectReference Include="..\DarkSoulsBuildsAssistant.Infrastructure\DarkSoulsBuildsAssistant.Infrastructure.csproj" />
+      <ProjectReference Include="..\DarkSoulsBuildsAssistant.Services\DarkSoulsBuildsAssistant.Services.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Controllers\Razor\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Pages\Admin\Images\All_Builds.png" />
+      <Resource Include="Pages\Admin\Images\All_Builds.png" />
+      <None Remove="Pages\Admin\Images\armor.jpg" />
+      <Resource Include="Pages\Admin\Images\armor.jpg" />
+      <None Remove="Pages\Admin\Images\bull-goat.jpg" />
+      <Resource Include="Pages\Admin\Images\bull-goat.jpg" />
+      <None Remove="Pages\Admin\Images\crucible-helm.png" />
+      <Resource Include="Pages\Admin\Images\crucible-helm.png" />
+      <None Remove="Pages\Admin\Images\DS3.jpg" />
+      <Resource Include="Pages\Admin\Images\DS3.jpg" />
+      <None Remove="Pages\Admin\Images\ER.png" />
+      <Resource Include="Pages\Admin\Images\ER.png" />
+      <None Remove="Pages\Admin\Images\Gemini_Generated_Image_aq9jjaaq9jjaaq9j.png" />
+      <Resource Include="Pages\Admin\Images\Gemini_Generated_Image_aq9jjaaq9jjaaq9j.png" />
+      <None Remove="Pages\Admin\Images\icons8-dashboard-layout-48.png" />
+      <Resource Include="Pages\Admin\Images\icons8-dashboard-layout-48.png" />
+      <None Remove="Pages\Admin\Images\img.png" />
+      <Resource Include="Pages\Admin\Images\img.png" />
+      <None Remove="Pages\Admin\Images\radahn-armor.jpg" />
+      <Resource Include="Pages\Admin\Images\radahn-armor.jpg" />
+      <None Remove="Pages\Admin\Images\talisman.jpg" />
+      <Resource Include="Pages\Admin\Images\talisman.jpg" />
+      <None Remove="Pages\Admin\Images\THE_goat.jpg" />
+      <Resource Include="Pages\Admin\Images\THE_goat.jpg" />
+      <None Remove="Pages\Admin\Images\Total_Users.png" />
+      <Resource Include="Pages\Admin\Images\Total_Users.png" />
+      <None Remove="Pages\Admin\Images\YEEEAH.jpg" />
+      <Resource Include="Pages\Admin\Images\YEEEAH.jpg" />
     </ItemGroup>
 
 </Project>

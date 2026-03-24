@@ -1,0 +1,65 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Character Planner</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { darkbg: '#121212', panelbg: '#1A1A1D', goldborder: '#C89B64', goldtext: '#D4AF37' },
+                    fontFamily: { serif: ['"EB Garamond"', 'serif'], sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        body { background-color: #121212; color: #e5e7eb; }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden font-sans">
+
+    <aside class="w-64 bg-panelbg border-r border-gray-800 flex flex-col">
+        <div class="p-6 border-b border-gray-800">
+            <h1 class="font-serif text-2xl text-goldtext tracking-wide uppercase">Admin Panel</h1>
+        </div>
+        <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+            <a asp-page="/Admin/Index" class="flex items-center gap-3 px-4 py-3 rounded text-gray-400 hover:bg-white/5 hover:text-goldtext transition">
+                <i class="fa-solid fa-chart-line w-5"></i> Дашборд
+            </a>
+            <a asp-page="/Admin/Users" class="flex items-center gap-3 px-4 py-3 rounded text-gray-400 hover:bg-white/5 hover:text-goldtext transition">
+                <i class="fa-solid fa-users w-5"></i> Користувачі
+            </a>
+            <a asp-page="/Admin/EldenRing" class="flex items-center gap-3 px-4 py-3 rounded text-gray-400 hover:bg-white/5 hover:text-goldtext transition">
+                <i class="fa-solid fa-khanda w-5"></i> Екіпірування
+            </a>
+            </nav>
+        <div class="p-4 border-t border-gray-800">
+            <a href="/" class="flex items-center gap-3 px-4 py-2 rounded text-red-400 hover:bg-red-500/10 transition">
+                <i class="fa-solid fa-right-from-bracket w-5"></i> Вихід
+            </a>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-screen overflow-hidden bg-darkbg">
+        <header class="h-16 border-b border-gray-800 flex items-center justify-between px-8 bg-panelbg/50 backdrop-blur-sm">
+            <h2 class="text-xl font-serif text-gray-200">@ViewData["Title"]</h2>
+            <div class="flex items-center gap-4">
+                <span class="text-sm text-gray-400"><i class="fa-solid fa-user-shield mr-2"></i>Адміністратор</span>
+            </div>
+        </header>
+
+        <div class="flex-1 overflow-y-auto p-8">
+            @RenderBody() 
+        </div>
+    </main>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

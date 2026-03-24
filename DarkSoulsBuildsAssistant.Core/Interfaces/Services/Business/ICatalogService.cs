@@ -1,14 +1,13 @@
-﻿using DarkSoulsBuildsAssistant.Core.Entities.Equipment.Armor;
-using DarkSoulsBuildsAssistant.Core.Entities.Equipment.Weapon;
+﻿using DarkSoulsBuildsAssistant.Core.DTOs.Equipment;
 
-namespace DarkSoulsBuildsAssistant.Core.Interfaces.Services.Business
+namespace DarkSoulsBuildsAssistant.Core.Interfaces.Services.Business;
+
+public interface ICatalogService
 {
-    public interface ICatalogService
-    {
-        IEnumerable<WeaponEquipment> GetAllWeapons();
-        IEnumerable<WeaponEquipment> FilterWeaponsByType(int typeId);
-
-        IEnumerable<ArmorEquipment> GetAllArmor();
-        IEnumerable<ArmorEquipment> GetArmorBySlot(int slotId);
-    }
+    Task<IEnumerable<EquipmentDTO>> GetAllWeaponsAsync();
+    Task<IEnumerable<EquipmentDTO>> GetAllArmorAsync();
+    Task<IEnumerable<EquipmentDTO>> GetEquipmentBySlotAsync(int slotId); // Дуже корисно для випадаючих списків при збірці білду
+    
+    Task AddEquipmentAsync(EquipmentDTO equipmentDto);
+    Task DeleteEquipmentAsync(int id);
 }

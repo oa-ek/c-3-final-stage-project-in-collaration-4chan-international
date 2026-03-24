@@ -1,8 +1,12 @@
-﻿namespace DarkSoulsBuildsAssistant.Core.Interfaces.Repositories;
+﻿using DarkSoulsBuildsAssistant.Core.Interfaces.Repositories.Equipment;
+using DarkSoulsBuildsAssistant.Core.Interfaces.Repositories.Character;
+
+namespace DarkSoulsBuildsAssistant.Core.Interfaces.Repositories;
 
 public interface IUnitOfWork : IDisposable
 {
-    // TODO: Add repositories
+    IEquipmentRepository Equipment { get; }
+    ICharacterBuildRepository CharacterBuilds { get; }
     
-    Task CompleteAsync();
+    Task<int> CompleteAsync();
 }
