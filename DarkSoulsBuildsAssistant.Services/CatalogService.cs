@@ -1,45 +1,48 @@
-﻿// using Models_Context.Models;
-// using Repositories.Interfaces;
-// using Services.Interfaces;
-// using System;
-// using System.Collections.Generic;
-// using System.Linq;
-// using System.Text;
-// using System.Threading.Tasks;
-//
-// namespace Services.Implementations
-// {
-//     public class CatalogService : ICatalogService
-//     {
-//         private readonly IWeaponRepository _weaponRepo;
-//         private readonly IArmorRepository _armorRepo;
-//
-//         public CatalogService(IWeaponRepository weaponRepo, IArmorRepository armorRepo)
-//         {
-//             _weaponRepo = weaponRepo;
-//             _armorRepo = armorRepo;
-//         }
-//
-//         public IEnumerable<Weapon> GetAllWeapons()
-//         {
-//             // Можна додати сортування за назвою за замовчуванням
-//             return _weaponRepo.GetAll().OrderBy(w => w.Name);
-//         }
-//
-//         public IEnumerable<Weapon> FilterWeaponsByType(int typeId)
-//         {
-//             return _weaponRepo.GetByWeaponTypeId(typeId);
-//         }
-//
-//         public IEnumerable<Armor> GetAllArmor()
-//         {
-//             return _armorRepo.GetAll();
-//         }
-//
-//         public IEnumerable<Armor> GetArmorBySlot(int slotId)
-//         {
-//             // Викликаємо метод, який ми раніше створили в ArmorRepository
-//             return _armorRepo.GetBySlotId(slotId);
-//         }
-//     }
-// }
+﻿using DarkSoulsBuildsAssistant.Core.DTOs.Equipment;
+using DarkSoulsBuildsAssistant.Core.Interfaces.Repositories;
+using DarkSoulsBuildsAssistant.Core.Interfaces.Services.Business;
+
+namespace DarkSoulsBuildsAssistant.Services;
+
+// Використовуємо Primary Constructor (як у вашому прикладі) для лаконічності
+public class CatalogService(IUnitOfWork unitOfWork) : ICatalogService
+{
+    public async Task<IEnumerable<EquipmentDTO>> GetAllWeaponsAsync()
+    {
+        // Звертаємося до єдиного репозиторію Equipment і викликаємо його специфічний метод
+        return await unitOfWork.Equipment.GetAllWeaponsAsync();
+    }
+
+    public async Task<IEnumerable<EquipmentDTO>> GetAllArmorAsync()
+    {
+        // Звертаємося до єдиного репозиторію Equipment
+        return await unitOfWork.Equipment.GetAllArmorAsync();
+    }
+
+    public async Task<IEnumerable<EquipmentDTO>> GetEquipmentBySlotAsync(int slotId)
+    {
+        // Отримуємо екіпірування під конкретний слот (наприклад, тільки кільця або шоломи)
+        return await unitOfWork.Equipment.GetEquipmentBySlotAsync(slotId);
+    }
+
+    public async Task AddEquipmentAsync(EquipmentDTO equipmentDto)
+    {
+        // Універсальний метод додавання. Entity Framework сам розбереться, 
+        // чи це зброя, чи броня, на основі DTO.
+        await unitOfWork.Equipment.AddAsync(equipmentDto);
+        await unitOfWork.CompleteAsync(); // Зберігаємо зміни
+    }
+
+    public async Task DeleteEquipmentAsync(int id)
+    {
+        // Знаходимо DTO екіпірування за ID
+        var equipmentDto = await unitOfWork.Equipment.GetByIdAsync(id);
+        
+        if (equipmentDto != null)
+        {
+            // Передаємо знайдений DTO для видалення
+            await unitOfWork.Equipment.RemoveAsync(equipmentDto);
+            await unitOfWork.CompleteAsync(); // Фіксуємо транзакцію
+        }
+    }
+}

@@ -1,0 +1,52 @@
+﻿@page
+@model DarkSoulsBuildsAssistant.App.Pages.Admin.EldenRingModel
+@{
+ViewData["Title"] = "Каталог Екіпірування";
+}
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+
+    @foreach (var item in Model.Equipments)
+    {
+        string iconClass = (item.SlotName != null && item.SlotName.ToLower().Contains("hand")) 
+            ? "fa-khanda" : "fa-shield";
+    <div class="bg-panelbg border border-gray-800 rounded-lg p-5 flex flex-col hover:border-gray-600 transition shadow-lg relative group">
+        <div class="flex justify-between items-start mb-4">
+            <h3 class="text-lg font-serif text-goldtext font-semibold pr-6">@item.Name</h3>
+            <i class="fa-solid @iconClass text-gray-500 text-xl"></i>
+        </div>
+
+        <div class="space-y-2 text-sm mb-4">
+            <div class="flex justify-between items-center">
+                <span class="text-gray-400">Тип</span>
+                <span class="text-gray-200 bg-white/5 px-2 py-0.5 rounded">@item.SlotName</span>
+            </div>
+            <div class="flex justify-between items-center">
+                <span class="text-gray-400">Вага</span>
+                <span class="font-mono text-gray-200">@item.Weight</span>
+            </div>
+
+            @if (item.Poise.HasValue)
+            {
+            <div class="flex justify-between items-center">
+                <span class="text-gray-400 font-semibold">Баланс (Poise)</span>
+                <span class="font-mono text-goldtext font-bold">@item.Poise</span>
+            </div>
+            }
+        </div>
+
+        <div class="mt-auto pt-3 border-t border-gray-800 flex justify-end gap-4">
+            <button class="text-blue-400 hover:text-blue-300 transition" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
+            <button class="text-red-500 hover:text-red-400 transition" title="Delete"><i class="fa-solid fa-trash"></i></button>
+        </div>
+    </div>
+    }
+
+    @if (!Model.Equipments.Any())
+    {
+    <div class="col-span-full p-8 text-center text-gray-500 bg-white/5 rounded-lg border border-dashed border-gray-700">
+        <i class="fa-solid fa-box-open text-4xl mb-3"></i>
+        <p>База даних порожня. Додайте екіпірування!</p>
+    </div>
+    }
+</div>

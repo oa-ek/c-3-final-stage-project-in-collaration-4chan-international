@@ -8,10 +8,18 @@ using Scalar.AspNetCore;
 using DarkSoulsBuildsAssistant.App.Middleware;
 using DarkSoulsBuildsAssistant.App.Services;
 using DarkSoulsBuildsAssistant.Core.Entities.System;
+using DarkSoulsBuildsAssistant.Core.Interfaces.Repositories;
+using DarkSoulsBuildsAssistant.Core.Interfaces.Repositories.Character;
+using DarkSoulsBuildsAssistant.Core.Interfaces.Repositories.Equipment;
+using DarkSoulsBuildsAssistant.Core.Interfaces.Services.Business;
 using DarkSoulsBuildsAssistant.Core.Interfaces.Services.Identity;
+using DarkSoulsBuildsAssistant.Core.Mapping;
 using DarkSoulsBuildsAssistant.Infrastructure.Context;
 using DarkSoulsBuildsAssistant.Infrastructure.Init;
-
+using DarkSoulsBuildsAssistant.Repositories;
+using DarkSoulsBuildsAssistant.Repositories.Character;
+using DarkSoulsBuildsAssistant.Repositories.Equipment;
+using DarkSoulsBuildsAssistant.Services;
 using OpenApiInfo = Microsoft.OpenApi.Models.OpenApiInfo;
 using OpenApiSecurityRequirement = Microsoft.OpenApi.Models.OpenApiSecurityRequirement;
 using OpenApiSecurityScheme = Microsoft.OpenApi.Models.OpenApiSecurityScheme;
@@ -59,10 +67,21 @@ builder.Services.AddIdentity<User, Role>(options =>
     .AddEntityFrameworkStores<BuildsAssistantDbContext>()
     .AddDefaultTokenProviders();
 
-// Реєстрація наших сервісів
+// Реєстрація наших сервісів та БД
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenBlacklistService, TokenBlacklistService>();
 builder.Services.AddScoped<IUserService, UserService>();
+
+// ДОДАЙТЕ ЦІ РЯДКИ (якщо ще не додали):
+builder.Services.AddScoped<IEquipmentRepository, EquipmentRepository>();
+builder.Services.AddScoped<ICharacterBuildRepository, CharacterBuildRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+builder.Services.AddScoped<ICatalogService, CatalogService>();
+builder.Services.AddScoped<ICharacterBuildService, CharacterBuildService>();
+builder.Services.AddScoped<IBuildCalculatorService, BuildCalculatorService>();
+
+builder.Services.AddAutoMapper(config => { config.AddProfile<EquipmentMappingProfile>(); });
 
 // --- 3. АВТЕНТИФІКАЦІЯ ---
 
@@ -87,6 +106,7 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 builder.Services.AddControllers();
+builder.Services.AddRazorPages();
 
 // Налаштування для Cloudflare (Проксі)
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
@@ -217,5 +237,5 @@ app.MapScalarApiReference(options =>
 
 app.UseHttpsRedirection();
 app.MapControllers();
-
+app.MapRazorPages();
 app.Run();

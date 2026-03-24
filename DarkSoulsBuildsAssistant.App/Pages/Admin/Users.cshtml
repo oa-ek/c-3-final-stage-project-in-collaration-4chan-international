@@ -1,0 +1,58 @@
+﻿@page
+@model DarkSoulsBuildsAssistant.App.Pages.Admin.UsersModel
+@{
+ViewData["Title"] = "Керування користувачами";
+}
+
+<div class="bg-panelbg border border-gray-800 rounded-lg overflow-hidden shadow-lg">
+    <table class="w-full text-left border-collapse text-sm">
+        <thead>
+        <tr class="bg-black/40 text-gray-400 uppercase tracking-wider text-xs border-b border-gray-800">
+            <th class="px-6 py-4 font-medium">Користувач</th>
+            <th class="px-6 py-4 font-medium">Роль</th>
+            <th class="px-6 py-4 font-medium">Статус</th>
+            <th class="px-6 py-4 font-medium text-right">Дії</th>
+        </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-800/50">
+        @foreach (var user in Model.Users)
+        {
+        <tr class="hover:bg-white/5 transition">
+            <td class="px-6 py-4 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center text-gray-300">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                <div>
+                    <div class="font-semibold text-gray-200">@user.UserName</div>
+                    <div class="text-xs text-gray-500">@user.Email</div>
+                </div>
+            </td>
+            <td class="px-6 py-4">
+                @if (user.Roles != null && user.Roles.Any())
+                {
+                    <div class="flex flex-wrap gap-1">
+                        @foreach (var role in user.Roles)
+                        {
+                            <span class="bg-gray-800 border border-gray-600 text-gray-300 px-2 py-0.5 rounded text-xs">
+                                @role
+                            </span>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <span class="text-gray-600 italic text-xs">Без ролі</span>
+                }
+            </td>
+            <td class="px-6 py-4">
+                <span class="px-2 py-1 rounded text-xs border border-green-600 text-green-500">Активний</span>
+            </td>
+            <td class="px-6 py-4 text-right">
+                <button class="text-blue-400 hover:text-blue-300 mr-3" title="Редагувати"><i class="fa-solid fa-pen-to-square"></i></button>
+                <button class="text-red-500 hover:text-red-400" title="Видалити"><i class="fa-solid fa-trash"></i></button>
+            </td>
+        </tr>
+        }
+        </tbody>
+    </table>
+</div>

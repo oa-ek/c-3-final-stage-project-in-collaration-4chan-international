@@ -1,11 +1,11 @@
-﻿using DarkSoulsBuildsAssistant.Core.Entities.Character;
+﻿using DarkSoulsBuildsAssistant.Core.DTOs.Character;
 
-namespace DarkSoulsBuildsAssistant.Core.Interfaces.Services.Business
+namespace DarkSoulsBuildsAssistant.Core.Interfaces.Services.Business;
+
+public interface ICharacterBuildService
 {
-    public interface ICharacterBuildService
-    {
-        IEnumerable<CharacterBuild> GetAllBuilds();
-        void SaveBuild(CharacterBuild build);
-        void DeleteBuild(int id);
-    }
+    Task<IEnumerable<CharacterBuildDTO>> GetAllBuildsAsync();
+    Task<CharacterBuildDTO?> GetBuildByIdAsync(int id);
+    Task SaveBuildAsync(CharacterBuildDTO buildDto);
+    Task DeleteBuildAsync(int id);
 }

@@ -161,7 +161,7 @@ public static class DataInitializer
             var typeSpearId = (await context.EquipmentTypes.FirstAsync(wt => wt.Name == "Spear")).Id;
             var typeKatanaId = (await context.EquipmentTypes.FirstAsync(wt => wt.Name == "Katana")).Id;
             var typeShieldId = (await context.EquipmentTypes.FirstAsync(wt => wt.Name == "Shield")).Id;
-            var typeGreatAxeId = (await context.EquipmentTypes.FirstAsync(wt => wt.Name == "Great_Axe")).Id;
+            var typeGreatAxeId = (await context.EquipmentTypes.FirstAsync(wt => wt.Name == "Great Axe")).Id;
             var typeDaggerId = (await context.EquipmentTypes.FirstAsync(wt => wt.Name == "Dagger")).Id;
             var typeCurvedSwordId = (await context.EquipmentTypes.FirstAsync(wt => wt.Name == "Curved Sword")).Id;
             var typeThrustingId = (await context.EquipmentTypes.FirstAsync(wt => wt.Name == "Thrusting Sword")).Id;

@@ -1,10 +1,9 @@
 ﻿using DarkSoulsBuildsAssistant.Core.DTOs.System;
 using DarkSoulsBuildsAssistant.Core.Entities.System;
 using DarkSoulsBuildsAssistant.Core.Interfaces.Services.Identity;
-
 using System.Security.Claims;
-
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace DarkSoulsBuildsAssistant.App.Services;
 
@@ -12,7 +11,6 @@ public class UserService(UserManager<User> userManager) : IUserService
 {
     public async Task<UserDTO> GetUserProfileAsync(ClaimsPrincipal userPrincipal)
     {
-        // Знаходимо юзера за ID з токена
         var user = await userManager.GetUserAsync(userPrincipal);
         if (user == null) return null;
 
@@ -34,7 +32,6 @@ public class UserService(UserManager<User> userManager) : IUserService
         var user = await userManager.GetUserAsync(userPrincipal);
         if (user == null) return false;
 
-        // Оновлюємо поля
         user.FirstName = model.FirstName;
         user.LastName = model.LastName;
         user.Email = model.Email;
@@ -44,5 +41,31 @@ public class UserService(UserManager<User> userManager) : IUserService
 
         var result = await userManager.UpdateAsync(user);
         return result.Succeeded;
+    }
+
+    // НОВИЙ МЕТОД ДЛЯ АДМІНКИ
+    public async Task<IEnumerable<UserDTO>> GetAllUsersAsync()
+    {
+        // Отримуємо всіх користувачів з БД
+        var users = await userManager.Users.ToListAsync();
+        var userDtos = new List<UserDTO>();
+
+        foreach (var user in users)
+        {
+            // Для кожного користувача дістаємо його ролі
+            var roles = await userManager.GetRolesAsync(user);
+            
+            userDtos.Add(new UserDTO
+            {
+                Id = user.Id.ToString(),
+                UserName = user.UserName,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                Roles = roles.ToList()
+            });
+        }
+
+        return userDtos;
     }
 }
