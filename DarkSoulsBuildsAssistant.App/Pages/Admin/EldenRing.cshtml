@@ -1,16 +1,77 @@
 ﻿@page
 @model DarkSoulsBuildsAssistant.App.Pages.Admin.EldenRingModel
 @{
-ViewData["Title"] = "Каталог Екіпірування";
+    ViewData["Title"] = "Каталог Екіпірування";
+
+    // Локальна функція для генерації CSS-класів активної/неактивної вкладки
+    string GetTabClass(string tabName) =>
+        Model.CurrentCategory == tabName
+            ? "flex items-center space-x-3 px-6 py-3 text-goldtext font-semibold bg-white/10 border-b-2 border-goldborder rounded-md transition"
+            : "flex items-center space-x-3 px-6 py-3 text-gray-400 hover:text-gray-200 hover:bg-white/5 rounded-md transition";
 }
+
+<div class="flex justify-between items-center mb-6">
+    <div class="flex gap-2 items-center rounded-lg px-2 py-2 shadow-lg border border-goldborder/80 bg-panelbg">
+
+        <a href="?category=armor" class="@GetTabClass("armor")">
+            <img src="/images/armor.jpg" class="w-6 h-6 rounded-lg object-cover" alt="Armor">
+            <span>Armor</span>
+        </a>
+
+        <a href="?category=weapons" class="@GetTabClass("weapons")">
+            <svg width="25" height="25" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <rect width="32" height="32" fill="url(#pattern0_16_14)"/>
+                <defs>
+                    <pattern id="pattern0_16_14" patternContentUnits="objectBoundingBox" width="1" height="1">
+                        <use xlink:href="#image0_16_14" transform="scale(0.03125)"/>
+                    </pattern>
+                    <image id="image0_16_14" width="25" height="25" preserveAspectRatio="none" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAADfElEQVR4nLVXTWgTQRQeybykP3rooYWCiuhFraCgp0r1JCgoXtuL3iyKIlZP3hX0ID0JKXj0Erv7ZtNSWioWe7FIA/5BPQhKr6IgapuZ1I68yW662Z/sJm0GFjYz877ve2/eezthSvBvCnlJIZ9QyEeV4Kd0gWXZDg/CJGzDUeUqETervoD2P1KAonkp4KmeZj0tk06zHsJwsVSQh+ZJwERowS8G4XUrEdF5BhJhvhG2EpAnAaMJm0jps2YFGM8TceEaM+eStNE8fCwtuUJ+NxUmwkmTHBKhnLRZCvhXdrKXk8grduaCFLCRAk/qGZbzFIcSMcbot7TgeGzYHRiQCL/SRRSWmzuvraNY1RbrD5LTHK2lxSHOLWPB9kgBM6lFIC/pOdZdsy+wTomw1AT5y1B56zwDKosYr78owT8GRLzQmu2ih94Da++V4F/jSo+44jNY8LFwEvEPa9ixz++lRKhIC45JAQ/qvEN4Q3urIuq83khdSRUncz4imZbXMXeACMxvm1+XAq403LMl6k+aCqobEuFEMKl83t1QyIf85euthXOBrxIWa2Voi/VLhLcBEY/X7dwhifA9iZxsoyqmORELrEMJ/txNrk9/rc69gYSMDLsSfFIXWde2yL3hZvr99cncQf8HpoHnD8mG7fSQ9Q0r5Dm1V+nAVdaOoQS/08hzkxPIh9xLze2WiXSB7ZYI41LAlEI+SHMVO3PR6w2RYUe+QolpqsOt+TJmLxnhDj9NWIRJ2EnkWSlg0RfStYqTOaccflMibMZ4Pm/mBDzy1mgv2ZAtYfjwFhtebnSRdVHXC3QwI0IKGI5IuLwusF4l+DtXzJIrZjhI7nXUxMrQVcBoETaMmEgE2irlB82ZNRtGYskLrDdtHvTGiVDIb3nn6x80R2vbJk8jgsWMHSOXAoalgNm1Ysf+KBGU2UEbN9tD5IRBWISZjtyGkVrJCZjVFusLilCCFyNET4U8t1gfYXilSdhpPN+oGbiqg8chEZ6EbBHGo8Ieh1lv7MCAsvnZsp094v6LCan1RJha9l3HautzrLvaQ8JnXosq8lK5mD2sBD9TFtmjZlEhv2caR1XhAomIOy+6+zVqJLRGe+Kia7ARXrlR3CRuCt3PwH1uiLVpkOeBhP5BEfjsO9tNUtkuAW4ETLS9bwgJGKQXUkN/qdpF7g330ktcK/Sx+w/3fbzNRgCXoAAAAABJRU5ErkJggg=="/>
+                </defs>
+            </svg>
+            <span>Weapons</span>
+        </a>
+
+        <a href="?category=talismans" class="@GetTabClass("talismans")">
+            <img src="/images/talisman.jpg" class="w-6 h-6 rounded-lg object-cover" alt="Talisman">
+            <span>Talismans</span>
+        </a>
+
+        <a href="?category=spells" class="@GetTabClass("spells")">
+            <svg xmlns="http://www.w3.org/2000/svg" height="20pt" preserveAspectRatio="xMidYMid meet" viewBox="0 0 1886 1920" width="20pt">
+                <path d="m14192 19187c-50-19-102-65-123-111-24-54-27-219-4-274 63-150 271-169 368-34 30 41 32 50 35 147 5 125-6 164-62 219-60 60-139 80-214 53zm-38-696c-40-23-58-42-78-83l-26-52v-1238c0-1097 2-1243 16-1276 72-174 316-174 388 0 14 33 16 179 16 1276v1238l-25 51c-37 73-89 107-174 111-58 3-72 0-117-27zm2566-937c-45-19-1753-1723-1781-1776-22-44-25-124-5-171 29-69 115-126 192-127 89 0 90 0 995 907 938 940 897 893 887 1003-7 69-44 121-109 154-60 30-125 34-179 10zm-4815-378c-55-20-119-93-134-152-27-105-6-135 291-431 264-263 291-283 370-283 108 1 208 101 208 210 0 76-16 98-279 363-141 142-273 267-293 278-52 27-115 32-163 15zm830-863c-41-21-84-62-102-98-24-44-21-132 4-180 26-49 715-736 760-759 37-18 118-21 160-5 15 5 43 25 62 42 66 63 88 154 55 233-19 48-699 735-756 765-46 24-140 25-183 2zm1530-1162c-150-39-283-106-437-221-139-103 55 80-1948-1844-206-198-440-424-520-501s-311-300-515-495c-203-195-435-418-515-495-80-78-487-469-905-870s-825-792-905-870c-80-77-314-302-520-500s-438-420-515-495-252-244-390-376c-917-881-5629-5408-5900-5669-137-133-326-314-420-404-93-89-205-201-248-249-270-300-440-617-503-937-25-128-23-341 4-461 87-383 358-660 724-740 99-22 298-22 411 0 241 46 498 182 713 378 51 46 291 299 535 563s554 599 689 745c202 218 1778 1924 4714 5100 432 466 813 879 1291 1395 133 143 1015 1097 1960 2120 946 1023 1805 1952 1910 2065 281 304 894 965 1191 1284 142 154 285 309 317 345 143 163 278 400 318 561 30 119 24 271-14 353-89 193-291 277-522 218zm1218-56c-71-36-106-89-111-169-5-71 15-121 65-168 64-61 0-58 1180-58 735 0 1090 4 1117 11 74 20 146 119 146 200 0 77-53 158-125 190-38 18-97 19-1131 19h-1090zm2659 4c-169-84-153-327 27-388 22-7 122-11 278-11 198 0 251 3 281 16 79 33 132 110 132 193 0 62-10 89-52 136-61 71-80 75-368 75-240 0-258-1-298-21zm-6713-303c-87-31-149-114-149-199 0-75 49-150 122-188 36-18 68-19 748-19 684 0 712 1 749 19 72 37 121 115 121 192 0 69-48 147-113 182l-42 22-700 2c-555 2-707 0-736-11zm3880-546c-89-15-159-92-167-184-8-97 3-113 217-329 108-109 214-209 236-222 110-65 237-26 291 89 28 59 30 111 9 164-18 42-400 433-450 459-40 22-92 30-136 23zm732-765c-48-15-104-63-128-110-26-48-21-134 10-186 14-24 216-234 449-465 460-458 450-450 554-442 142 12 230 170 165 294-11 23-205 224-453 470-403 402-436 432-480 443-57 13-61 13-117-4zm-1556-192c-48-25-94-73-110-117-14-36-15-130-13-738l3-696 30-44c17-23 51-54 75-68 113-62 266-2 300 118 14 51 14 1363-1 1415-13 47-60 102-110 128-47 23-132 25-174 2z" transform="matrix(.1 0 0 -.1 0 1920)" fill="#FED530" stroke="none"/>
+            </svg>
+            <span>Spells</span>
+        </a>
+    </div>
+
+    <button class="bg-goldborder hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded transition flex items-center gap-2 ml-4 flex-shrink-0">
+        <i class="fa-solid fa-plus"></i> Add Armor
+    </button>
+</div>
 
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
 
     @foreach (var item in Model.Equipments)
     {
-        string iconClass = (item.SlotName != null && item.SlotName.ToLower().Contains("hand")) 
-            ? "fa-khanda" : "fa-shield";
+        string iconClass;
+        if (item.SlotName != null &&
+            (
+                item.SlotName.ToLower().Contains("lefthand") || 
+                item.SlotName.ToLower().Contains("righthand")
+        )
+        )
+    {
+            iconClass = "fa-khanda";
+        }
+        else
+        {
+            iconClass = "fa-shield";
+        }
     <div class="bg-panelbg border border-gray-800 rounded-lg p-5 flex flex-col hover:border-gray-600 transition shadow-lg relative group">
+        <div class="w-full h-40 bg-black/40 rounded border border-gray-800 mb-4 overflow-hidden flex items-center justify-center">
+            <img src="@item.IconPath" asp-append-version="true" class="h-full object-contain opacity-100 group-hover:opacity-100 transition duration-300" alt="Radahn's Armor">
+        </div>
+        
         <div class="flex justify-between items-start mb-4">
             <h3 class="text-lg font-serif text-goldtext font-semibold pr-6">@item.Name</h3>
             <i class="fa-solid @iconClass text-gray-500 text-xl"></i>

@@ -8,45 +8,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Resource Include="images\Armors\Elite Knight Armor.jpg" />
-      <Resource Include="images\Armors\Elite Knight Gauntlets.png" />
-      <Resource Include="images\Armors\Elite Knight Helm.png" />
-      <Resource Include="images\Armors\elite_knight_leggings.jpg" />
-      <Resource Include="images\Armors\Havel's Armor.jpg" />
-      <Resource Include="images\Armors\Havel's Gauntlets.jpg" />
-      <Resource Include="images\Armors\Havel's Helm.jpg" />
-      <Resource Include="images\Armors\Havel's Leggings.jpg" />
-      <Resource Include="images\Armors\Pyromancer Garb.png" />
-      <Resource Include="images\Armors\Pyromancer Gauntlets.png" />
-      <Resource Include="images\Armors\Pyromancer Hood.png" />
-      <Resource Include="images\Armors\Pyromancer Leggings.png" />
-      <Resource Include="images\backGound2.jpg" />
-      <Resource Include="images\background.jpg" />
-      <Resource Include="images\backGroundMajulajpg.jpg" />
-      <Resource Include="images\NewBack.jpg" />
-      <Resource Include="images\Slots\armor_slot.jpg" />
-      <Resource Include="images\Slots\gauntlets_slot.jpg" />
-      <Resource Include="images\Slots\helmet_slot.jpg" />
-      <Resource Include="images\Slots\leggings_slot.jpg" />
-      <Resource Include="images\Slots\weapon_slot1.png" />
-      <Resource Include="images\Slots\weapon_slot2.png" />
-      <Resource Include="images\Weapons\Astor Straight Sword.png" />
-      <Resource Include="images\Weapons\big_axe_of_DarkKnight.png" />
-      <Resource Include="images\Weapons\Black Knight Shield.jpg" />
-      <Resource Include="images\Weapons\Black Knight's Greatsword.jpg" />
-      <Resource Include="images\Weapons\Black Knight's Halberd.jpg" />
-      <Resource Include="images\Weapons\Black Knight's Sword.jpg" />
-      <Resource Include="images\Weapons\claymor.png" />
-      <Resource Include="images\Weapons\Dark Sword.png" />
-      <Resource Include="images\Weapons\Grass Crest Shield.png" />
-      <Resource Include="images\Weapons\Greatsword of Artorias.jpg" />
-      <Resource Include="images\Weapons\Moon Light GreatSword.png" />
-      <Resource Include="images\Weapons\Uchigatana.png" />
-      <Resource Include="images\Weapons\Winged Spear.png" />
-      <Resource Include="images\Weapons\Zweihander.png" />
-    </ItemGroup>
-
-    <ItemGroup>
       <PackageReference Include="AutoMapper" Version="16.1.1" />
       <PackageReference Include="FluentValidation" Version="12.1.1" />
       <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.5" />
