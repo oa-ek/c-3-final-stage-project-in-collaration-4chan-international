@@ -1,0 +1,51 @@
+﻿<div id="equipmentModal" class="fixed inset-0 bg-black/80 hidden z-50 flex items-center justify-center backdrop-blur-sm">
+    <div class="bg-panelbg border border-goldborder rounded-lg shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto hidden-scrollbar">
+        
+        <div class="border-b border-gray-800 p-6 flex justify-between items-center bg-black/40 top-0 sticky z-10">
+            <h3 id="modalTitle" class="text-2xl font-serif text-goldtext tracking-wide">Add New Equipment</h3>
+            <button onclick="closeModal('equipmentModal')" class="text-gray-500 hover:text-white transition"><i class="fa-solid fa-xmark text-xl"></i></button>
+        </div>
+
+        <form method="post" asp-page-handler="Save" class="p-6">
+            <input type="hidden" name="EquipmentInput.Id" id="equip-id" value="0" />
+            <input type="hidden" name="category" value="@Model.CurrentCategory" />
+
+            <div class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-gray-400 text-xs uppercase tracking-wider mb-2">Name</label>
+                        <input type="text" name="EquipmentInput.Name" id="equip-name" required class="w-full bg-black/50 border border-gray-700 rounded p-3 text-white focus:border-goldborder focus:outline-none transition">
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 text-xs uppercase tracking-wider mb-2">Slot Type</label>
+                        <input type="text" name="EquipmentInput.SlotName" id="equip-slot" placeholder="Напр. Helmet" class="w-full bg-black/50 border border-gray-700 rounded p-3 text-white focus:border-goldborder focus:outline-none transition">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-gray-400 text-xs uppercase tracking-wider mb-2">Icon Path</label>
+                        <input type="text" name="EquipmentInput.IconPath" id="equip-icon" placeholder="/images/Armors/..." class="w-full bg-black/50 border border-gray-700 rounded p-3 text-white focus:border-goldborder focus:outline-none transition">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-400 text-xs uppercase tracking-wider mb-2">Weight</label>
+                            <input type="number" step="0.1" name="EquipmentInput.Weight" id="equip-weight" class="w-full bg-black/50 border border-gray-700 rounded p-3 text-white focus:border-goldborder focus:outline-none transition">
+                        </div>
+                        <div>
+                            <label class="block text-gray-400 text-xs uppercase tracking-wider mb-2">Poise</label>
+                            <input type="number" step="0.1" name="EquipmentInput.Poise" id="equip-poise" class="w-full bg-black/50 border border-gray-700 rounded p-3 text-white focus:border-goldborder focus:outline-none transition">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-4 mt-8 pt-5 border-t border-gray-800">
+                <button type="button" onclick="closeModal('equipmentModal')" class="px-5 py-2 text-gray-400 hover:text-white transition font-medium">Cancel</button>
+                <button type="submit" class="bg-goldborder hover:bg-yellow-600 text-black font-bold py-2 px-6 rounded transition flex items-center gap-2">
+                    <i class="fa-solid fa-floppy-disk"></i> Save
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

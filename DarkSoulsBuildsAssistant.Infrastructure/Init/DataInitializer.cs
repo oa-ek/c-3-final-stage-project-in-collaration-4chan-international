@@ -102,12 +102,16 @@ public static class DataInitializer
         if (!await context.InfluenceTypes.AnyAsync())
         {
             var infPhys = new InfluenceType { Name = "Physical" };
+            var infStrike = new InfluenceType { Name = "Strike" };
+            var infSlash = new InfluenceType { Name = "Slash" };
+            var infPierce = new InfluenceType { Name = "Pierce" };
             var infMagic = new InfluenceType { Name = "Magic" };
             var infFire = new InfluenceType { Name = "Fire" };
             var infLight = new InfluenceType { Name = "Lightning" };
+            var infHoly = new InfluenceType { Name = "Holy" };
             var infCritical = new InfluenceType { Name = "Critical" };
 
-            context.InfluenceTypes.AddRange(infPhys, infMagic, infFire, infLight, infCritical);
+            context.InfluenceTypes.AddRange(infPhys, infMagic, infFire, infLight, infCritical, infStrike, infSlash, infPierce, infHoly);
             await context.SaveChangesAsync();
         }
         

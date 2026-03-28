@@ -1,0 +1,49 @@
+﻿@model DarkSoulsBuildsAssistant.Core.DTOs.System.ManageUserDTO
+
+<form method="post" asp-page-handler="SaveUser" class="p-6">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+        <div>
+            <label class="block text-gray-400 text-sm mb-1">Username</label>
+            <input type="text" asp-for="UserName" placeholder="e.g. chosen_undead" class="w-full bg-black/50 border border-gray-700 rounded p-2.5 text-white focus:border-goldborder focus:outline-none transition">
+            <span asp-validation-for="UserName" class="text-red-500 text-xs"></span>
+        </div>
+
+        <div>
+            <label class="block text-gray-400 text-sm mb-1">Email Address</label>
+            <input type="email" asp-for="Email" placeholder="user@example.com" class="w-full bg-black/50 border border-gray-700 rounded p-2.5 text-white focus:border-goldborder focus:outline-none transition">
+            <span asp-validation-for="Email" class="text-red-500 text-xs"></span>
+        </div>
+
+        <div>
+            <label class="block text-gray-400 text-sm mb-1">First Name</label>
+            <input type="text" asp-for="FirstName" placeholder="John" class="w-full bg-black/50 border border-gray-700 rounded p-2.5 text-white focus:border-goldborder focus:outline-none transition">
+        </div>
+
+        <div>
+            <label class="block text-gray-400 text-sm mb-1">Last Name</label>
+            <input type="text" asp-for="LastName" placeholder="Doe" class="w-full bg-black/50 border border-gray-700 rounded p-2.5 text-white focus:border-goldborder focus:outline-none transition">
+        </div>
+
+        <div class="md:col-span-2">
+            <label class="block text-gray-400 text-sm mb-1">Password <span class="text-gray-600 text-xs">(Leave blank to keep current password when editing)</span></label>
+            <input type="password" asp-for="Password" placeholder="••••••••" class="w-full bg-black/50 border border-gray-700 rounded p-2.5 text-white focus:border-goldborder focus:outline-none transition">
+        </div>
+    </div>
+
+    <div class="mb-6 p-4 bg-black/30 border border-gray-800 rounded flex items-center gap-3">
+        <input type="checkbox" asp-for="IsAdmin" class="w-5 h-5 accent-goldborder bg-black border-gray-700 rounded cursor-pointer">
+        <div>
+            <label asp-for="IsAdmin" class="text-gray-200 font-medium cursor-pointer">Administrator Privileges</label>
+            <p class="text-xs text-gray-500">Grants full access to Game Editor and User Management.</p>
+        </div>
+    </div>
+
+    <div class="flex justify-end gap-4 border-t border-gray-800 pt-5">
+        <button type="button" onclick="closeModal('addUserModal')" class="px-5 py-2 text-gray-400 hover:text-white transition font-medium">Cancel</button>
+        <button type="submit" class="bg-goldborder hover:bg-yellow-600 text-black font-bold py-2 px-6 rounded transition flex items-center gap-2">
+            <i class="fa-solid fa-check"></i> Save User
+        </button>
+    </div>
+</form>

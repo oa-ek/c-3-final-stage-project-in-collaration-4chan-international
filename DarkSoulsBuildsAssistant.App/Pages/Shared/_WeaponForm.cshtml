@@ -1,0 +1,51 @@
+﻿@model DarkSoulsBuildsAssistant.Core.DTOs.Equipment.WeaponDTO
+
+<form method="post" asp-page-handler="SaveWeapon" asp-route-category="weapons" class="p-6">
+    <input type="hidden" asp-for="Id" class="entity-id" />
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+        <div class="md:col-span-2">
+            <label class="block text-gray-400 text-sm mb-1">Weapon Name</label>
+            <input type="text" asp-for="Name" placeholder="e.g. Greatsword" class="w-full bg-black/50 border border-gray-700 rounded p-2.5 text-white focus:border-goldborder focus:outline-none transition">
+        </div>
+
+        <div>
+            <label class="block text-gray-400 text-sm mb-1">Weapon Type</label>
+            <select asp-for="EquipmentTypeId" class="w-full bg-black/50 border border-gray-700 rounded p-2.5 text-white focus:border-goldborder focus:outline-none transition appearance-none">
+                <option value="5">Straight Sword</option>
+                <option value="6">Greatsword</option>
+            </select>
+        </div>
+
+        <div>
+            <label class="block text-gray-400 text-sm mb-1">Image Path</label>
+            <input type="text" asp-for="IconPath" placeholder="/Images/weapon.png" class="w-full bg-black/50 border border-gray-700 rounded p-2.5 text-white focus:border-goldborder focus:outline-none transition">
+        </div>
+
+        <div>
+            <label class="block text-gray-400 text-sm mb-1">Weight</label>
+            <input type="number" step="0.1" asp-for="Weight" placeholder="0.0" class="w-full bg-black/50 border border-gray-700 rounded p-2.5 text-white focus:border-goldborder focus:outline-none transition">
+        </div>
+
+        <div>
+            <label class="block text-gray-400 text-sm mb-1">Damage</label>
+            <input type="number" step="0.1" asp-for="Damage" placeholder="0.0" class="w-full bg-black/50 border border-gray-700 rounded p-2.5 text-white focus:border-goldborder focus:outline-none transition">
+        </div>
+    </div>
+
+    <div class="border-t border-gray-800 pt-5">
+        <h3 class="text-goldtext font-serif font-bold mb-4"><i class="fa-solid fa-khanda mr-2"></i>Damage (Influences)</h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div>
+                <label class="block text-gray-400 text-xs mb-1">Physical</label>
+                <input type="number" step="0.1" asp-for="Physical" placeholder="0.0" class="w-full bg-black/50 border border-gray-700 rounded p-2 text-white focus:border-goldborder focus:outline-none">
+            </div>
+        </div>
+    </div>
+
+    <div class="flex justify-end gap-4 mt-8 pt-5 border-t border-gray-800">
+        <button type="button" onclick="closeModal('addWeaponModal')" class="px-5 py-2 text-gray-400 hover:text-white transition font-medium">Cancel</button>
+        <button type="submit" class="bg-goldborder hover:bg-yellow-600 text-black font-bold py-2 px-6 rounded transition shadow-lg flex items-center gap-2">
+            <i class="fa-solid fa-floppy-disk"></i> Save Weapon
+        </button>
+    </div>
+</form>

@@ -29,9 +29,6 @@
 
     <ItemGroup>
       <None Remove="Pages\Admin\Images\All_Builds.png" />
-      <Resource Include="Pages\Admin\backGound2.jpg" />
-      <Resource Include="Pages\Admin\background.jpg" />
-      <Resource Include="Pages\Admin\backGroundMajulajpg.jpg" />
       <None Remove="Pages\Admin\Images\armor.jpg" />
       <None Remove="Pages\Admin\Images\bull-goat.jpg" />
       <None Remove="Pages\Admin\Images\crucible-helm.png" />
@@ -45,7 +42,6 @@
       <None Remove="Pages\Admin\Images\THE_goat.jpg" />
       <None Remove="Pages\Admin\Images\Total_Users.png" />
       <None Remove="Pages\Admin\Images\YEEEAH.jpg" />
-      <Resource Include="Pages\Admin\NewBack.jpg" />
       <Resource Include="wwwroot\images\All_Builds.png" />
       <Resource Include="wwwroot\images\armor.jpg" />
       <Resource Include="wwwroot\images\Armors\Elite Knight Armor.jpg" />
@@ -60,6 +56,9 @@
       <Resource Include="wwwroot\images\Armors\Pyromancer Gauntlets.png" />
       <Resource Include="wwwroot\images\Armors\Pyromancer Hood.png" />
       <Resource Include="wwwroot\images\Armors\Pyromancer Leggings.png" />
+      <Resource Include="wwwroot\images\backGound2.jpg" />
+      <Resource Include="wwwroot\images\background.jpg" />
+      <Resource Include="wwwroot\images\backGroundMajulajpg.jpg" />
       <Resource Include="wwwroot\images\bull-goat.jpg" />
       <Resource Include="wwwroot\images\crucible-helm.png" />
       <Resource Include="wwwroot\images\DS3.jpg" />
@@ -67,6 +66,7 @@
       <Resource Include="wwwroot\images\Gemini_Generated_Image_aq9jjaaq9jjaaq9j.png" />
       <Resource Include="wwwroot\images\icons8-dashboard-layout-48.png" />
       <Resource Include="wwwroot\images\img.png" />
+      <Resource Include="wwwroot\images\NewBack.jpg" />
       <Resource Include="wwwroot\images\radahn-armor.jpg" />
       <Resource Include="wwwroot\images\Slots\armor_slot.jpg" />
       <Resource Include="wwwroot\images\Slots\gauntlets_slot.jpg" />

@@ -10,4 +10,7 @@ public interface IUserService
     
     // ДОДАЄМО НОВИЙ МЕТОД:
     Task<IEnumerable<UserDTO>> GetAllUsersAsync();
+    Task DeleteUserAsync(string id);
+    Task CreateUserAsync(ManageUserDTO userDto);
+    Task UpdateUserAsync(ManageUserDTO userDto);
 }

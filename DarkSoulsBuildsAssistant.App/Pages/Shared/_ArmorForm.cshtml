@@ -1,0 +1,83 @@
+﻿@model DarkSoulsBuildsAssistant.Core.DTOs.Equipment.ArmorDTO
+
+<form method="post" asp-page-handler="SaveArmor" asp-route-category="armor" class="p-6">
+    <input type="hidden" asp-for="Id" class="entity-id" />
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+        <div class="md:col-span-2">
+            <label class="block text-gray-400 text-sm mb-1">Item Name</label>
+            <input type="text" asp-for="Name" placeholder="e.g. Radahn's Lion Armor" class="w-full bg-black/50 border border-gray-700 rounded p-2.5 text-white focus:border-goldborder focus:outline-none transition">
+            <span asp-validation-for="Name" class="text-red-500 text-xs"></span>
+        </div>
+
+        <div>
+            <label class="block text-gray-400 text-sm mb-1">Piece Type</label>
+            <select asp-for="EquipmentTypeId" class="w-full bg-black/50 border border-gray-700 rounded p-2.5 text-white focus:border-goldborder focus:outline-none transition appearance-none">
+                <option value="1">Head</option>
+                <option value="2">Chest</option>
+                <option value="3">Arms</option>
+                <option value="4">Legs</option>
+            </select>
+        </div>
+
+        <div>
+            <label class="block text-gray-400 text-sm mb-1">Image Path (IconPath)</label>
+            <input type="text" asp-for="IconPath" placeholder="/Images/armor.png" class="w-full bg-black/50 border border-gray-700 rounded p-2.5 text-white focus:border-goldborder focus:outline-none transition">
+        </div>
+
+        <div>
+            <label class="block text-gray-400 text-sm mb-1">Weight</label>
+            <input type="number" step="0.1" asp-for="Weight" placeholder="0.0" class="w-full bg-black/50 border border-gray-700 rounded p-2.5 text-white focus:border-goldborder focus:outline-none transition">
+        </div>
+
+        <div>
+            <label class="block text-gray-400 text-sm mb-1">Poise</label>
+            <input type="number" step="0.1" asp-for="Poise" placeholder="0.0" class="w-full bg-black/50 border border-gray-700 rounded p-2.5 text-white focus:border-goldborder focus:outline-none transition">
+        </div>
+    </div>
+
+    <div class="border-t border-gray-800 pt-5">
+        <h3 class="text-goldtext font-serif font-bold mb-4"><i class="fa-solid fa-shield-halved mr-2"></i>Damage Negation (Influences)</h3>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div>
+                <label class="block text-gray-400 text-xs mb-1">Physical</label>
+                <input type="number" step="0.1" asp-for="Physical" placeholder="0.0" class="w-full bg-black/50 border border-gray-700 rounded p-2 text-white focus:border-goldborder focus:outline-none">
+            </div>
+            <div>
+                <label class="block text-gray-400 text-xs mb-1">Strike</label>
+                <input type="number" step="0.1" asp-for="Strike" placeholder="0.0" class="w-full bg-black/50 border border-gray-700 rounded p-2 text-white focus:border-goldborder focus:outline-none">
+            </div>
+            <div>
+                <label class="block text-gray-400 text-xs mb-1">Slash</label>
+                <input type="number" step="0.1" asp-for="Slash" placeholder="0.0" class="w-full bg-black/50 border border-gray-700 rounded p-2 text-white focus:border-goldborder focus:outline-none">
+            </div>
+            <div>
+                <label class="block text-gray-400 text-xs mb-1">Pierce</label>
+                <input type="number" step="0.1" asp-for="Pierce" placeholder="0.0" class="w-full bg-black/50 border border-gray-700 rounded p-2 text-white focus:border-goldborder focus:outline-none">
+            </div>
+            <div>
+                <label class="block text-gray-400 text-xs mb-1 text-blue-400">Magic</label>
+                <input type="number" step="0.1" asp-for="Magic" placeholder="0.0" class="w-full bg-black/50 border border-gray-700 rounded p-2 text-white focus:border-goldborder focus:outline-none">
+            </div>
+            <div>
+                <label class="block text-gray-400 text-xs mb-1 text-red-400">Fire</label>
+                <input type="number" step="0.1" asp-for="Fire" placeholder="0.0" class="w-full bg-black/50 border border-gray-700 rounded p-2 text-white focus:border-goldborder focus:outline-none">
+            </div>
+            <div>
+                <label class="block text-gray-400 text-xs mb-1 text-yellow-400">Lightning</label>
+                <input type="number" step="0.1" asp-for="Lightning" placeholder="0.0" class="w-full bg-black/50 border border-gray-700 rounded p-2 text-white focus:border-goldborder focus:outline-none">
+            </div>
+            <div>
+                <label class="block text-gray-400 text-xs mb-1 text-yellow-200">Holy</label>
+                <input type="number" step="0.1" asp-for="Holy" placeholder="0.0" class="w-full bg-black/50 border border-gray-700 rounded p-2 text-white focus:border-goldborder focus:outline-none">
+            </div>
+        </div>
+    </div>
+
+    <div class="flex justify-end gap-4 mt-8 pt-5 border-t border-gray-800">
+        <button type="button" onclick="closeModal('addArmorModal')" class="px-5 py-2 text-gray-400 hover:text-white transition font-medium">Cancel</button>
+        <button type="submit" class="bg-goldborder hover:bg-yellow-600 text-black font-bold py-2 px-6 rounded transition shadow-lg flex items-center gap-2">
+            <i class="fa-solid fa-floppy-disk"></i> Save Armor
+        </button>
+    </div>
+</form>
