@@ -2,8 +2,6 @@
 
 namespace DarkSoulsBuildsAssistant.Core.DTOs.Equipment;
 
-// Цей DTO міститиме всі необхідні поля для відображення в інтерфейсі.
-// Якщо поле специфічне для зброї (наприклад, Damage), для броні воно буде просто null.
 public record EquipmentDTO: NamedDTO
 {
     public string? IconPath { get; init; }
@@ -24,7 +22,7 @@ public record EquipmentDTO: NamedDTO
     
     public string? Skin { get; init; }
     
-    public string? EquipmentTypeName { get; init; } // "Greatsword", "Helm" тощо
+    public string? EquipmentTypeName { get; init; }
     
-    public string? SlotName { get; init; }          // "RightHand", "Head" тощо
+    public string? SlotName { get; init; }
 }

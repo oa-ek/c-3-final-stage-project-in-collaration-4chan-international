@@ -1,58 +1,118 @@
 ﻿@page
 @model DarkSoulsBuildsAssistant.App.Pages.Admin.UsersModel
 @{
-ViewData["Title"] = "Керування користувачами";
+    ViewData["Title"] = "User Management";
+    ViewData["ActivePage"] = "Users";
 }
 
-<div class="bg-panelbg border border-gray-800 rounded-lg overflow-hidden shadow-lg">
-    <table class="w-full text-left border-collapse text-sm">
-        <thead>
-        <tr class="bg-black/40 text-gray-400 uppercase tracking-wider text-xs border-b border-gray-800">
-            <th class="px-6 py-4 font-medium">Користувач</th>
-            <th class="px-6 py-4 font-medium">Роль</th>
-            <th class="px-6 py-4 font-medium">Статус</th>
-            <th class="px-6 py-4 font-medium text-right">Дії</th>
+<div class="flex justify-between items-center mb-6">
+    <h2 class="text-xl text-gray-300 font-serif">Registered Accounts</h2>
+    <button onclick="openModal('addUserModal')" class="bg-goldborder hover:bg-yellow-600 text-black font-semibold py-2 px-5 rounded transition flex items-center gap-2">
+        <i class="fa-solid fa-user-plus"></i> Add New User
+    </button>
+    <div id="addUserModal" class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center backdrop-blur-sm transition-opacity pt-10 pb-10 overflow-y-auto">
+        <div class="bg-panelbg border border-goldborder rounded-lg w-full max-w-2xl shadow-[0_0_30px_rgba(200,155,100,0.15)] relative my-auto">
+            <div class="flex justify-between items-center p-6 border-b border-goldborder/30">
+                <h2 class="text-2xl font-serif font-bold text-gray-200">
+                    <i class="fa-solid fa-user-plus text-goldtext mr-2"></i> <span id="userModalTitle">Add New User</span>
+                </h2>
+                <button onclick="closeModal('addUserModal')" class="text-gray-400 hover:text-white transition">
+                    <i class="fa-solid fa-xmark text-2xl"></i>
+                </button>
+            </div>
+
+            <partial name="_UserForm" model="Model.UserInput" />
+        </div>
+    </div>
+</div>
+
+<div class="panel overflow-hidden">
+    <table class="w-full text-sm text-left text-gray-300">
+        <thead class="text-xs text-gray-400 uppercase border-b border-goldborder/30 bg-black/20">
+        <tr>
+            <th class="px-6 py-4">Full Name</th>
+            <th class="px-6 py-4">Email / Username</th>
+            <th class="px-6 py-4">Role</th>
+            <th class="px-6 py-4">Status</th>
+            <th class="px-6 py-4 text-right">Actions</th>
         </tr>
         </thead>
-        <tbody class="divide-y divide-gray-800/50">
-        @foreach (var user in Model.Users)
+        <tbody>
+        @foreach (var user in Model.UsersList)
         {
-        <tr class="hover:bg-white/5 transition">
-            <td class="px-6 py-4 flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center text-gray-300">
-                    <i class="fa-solid fa-user"></i>
-                </div>
-                <div>
-                    <div class="font-semibold text-gray-200">@user.UserName</div>
-                    <div class="text-xs text-gray-500">@user.Email</div>
-                </div>
-            </td>
-            <td class="px-6 py-4">
-                @if (user.Roles != null && user.Roles.Any())
-                {
-                    <div class="flex flex-wrap gap-1">
+            <tr class="border-b border-gray-800 hover:bg-white/5 transition">
+                <td class="px-6 py-4 font-semibold text-gray-200 flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-goldborder text-black flex items-center justify-center font-bold">
+                        @(user.UserName?.Length > 0 ? user.UserName[0].ToString().ToUpper() : "U")
+                    </div>
+                    @user.UserName
+                </td>
+                <td class="px-6 py-4 text-gray-400">@user.Email</td>
+                <td class="px-6 py-4">
+                    @if (user.Roles != null && user.Roles.Any())
+                    {
                         @foreach (var role in user.Roles)
                         {
-                            <span class="bg-gray-800 border border-gray-600 text-gray-300 px-2 py-0.5 rounded text-xs">
-                                @role
-                            </span>
+                            var roleClass = role.Equals("Admin", StringComparison.OrdinalIgnoreCase) 
+                                ? "bg-red-900/30 text-red-400 border-red-800" 
+                                : "bg-gray-800 text-gray-300 border-gray-700";
+                            <span class="px-2 py-1 border rounded text-xs @roleClass mr-1">@role</span>
                         }
-                    </div>
-                }
-                else
-                {
-                    <span class="text-gray-600 italic text-xs">Без ролі</span>
-                }
-            </td>
-            <td class="px-6 py-4">
-                <span class="px-2 py-1 rounded text-xs border border-green-600 text-green-500">Активний</span>
-            </td>
-            <td class="px-6 py-4 text-right">
-                <button class="text-blue-400 hover:text-blue-300 mr-3" title="Редагувати"><i class="fa-solid fa-pen-to-square"></i></button>
-                <button class="text-red-500 hover:text-red-400" title="Видалити"><i class="fa-solid fa-trash"></i></button>
-            </td>
-        </tr>
+                    }
+                </td>
+                <td class="px-6 py-4">
+                    <span class="px-2 py-1 rounded text-xs border border-green-600 text-green-500">Active</span>
+                </td>
+                <td class="px-6 py-4 text-right">
+                    <button type="button" onclick="editUser('@user.Id', '@user.UserName', '@user.Email', '@user.FirstName', '@user.LastName', '@user.IsAdmin')" class="text-blue-400 hover:text-blue-300 transition" title="Edit User">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </button>
+
+                    <form method="post" asp-page-handler="Delete" asp-route-id="@user.Id" class="inline m-0 p-0">
+                        <button type="submit" class="text-red-500 hover:text-red-400 transition" title="Delete User" onclick="return confirm('Are you sure you want to delete this user?');">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </form>
+                </td>
+            </tr>
         }
         </tbody>
     </table>
 </div>
+
+@section Scripts {
+    <script>
+        function openModal(modalId) { document.getElementById(modalId).classList.remove('hidden'); }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.add('hidden');
+
+            // Очищаємо форму при закритті
+            const form = modal.querySelector('form');
+            if (form) {
+                form.reset();
+                modal.querySelector('[name="Id"]').value = '';
+                document.getElementById('userModalTitle').innerText = 'Add New User';
+                modal.querySelector('h2 i').className = 'fa-solid fa-user-plus text-goldtext mr-2';
+            }
+        }
+
+        // Функція для заповнення форми при редагуванні
+        function editUser(id, username, email, firstName, lastName, isAdmin) {
+            const modal = document.getElementById('addUserModal');
+
+            document.getElementById('userModalTitle').innerText = 'Edit User';
+            modal.querySelector('h2 i').className = 'fa-solid fa-user-pen text-goldtext mr-2';
+
+            modal.querySelector('[name="Id"]').value = id;
+            modal.querySelector('[name="UserName"]').value = username || '';
+            modal.querySelector('[name="Email"]').value = email || '';
+            modal.querySelector('[name="FirstName"]').value = firstName || '';
+            modal.querySelector('[name="LastName"]').value = lastName || '';
+            modal.querySelector('[name="IsAdmin"]').checked = (isAdmin === 'True' || isAdmin === true);
+
+            openModal('addUserModal');
+        }
+    </script>
+}

@@ -1,4 +1,5 @@
 ﻿using DarkSoulsBuildsAssistant.Core.DTOs.Equipment;
+using DarkSoulsBuildsAssistant.Core.Entities.Equipment.Weapon;
 using DarkSoulsBuildsAssistant.Core.Interfaces.Repositories;
 using DarkSoulsBuildsAssistant.Core.Interfaces.Services.Business;
 
@@ -33,16 +34,39 @@ public class CatalogService(IUnitOfWork unitOfWork) : ICatalogService
         await unitOfWork.CompleteAsync(); // Зберігаємо зміни
     }
 
+    public async Task AddWeaponAsync(WeaponDTO weaponDto)
+    {
+        await unitOfWork.Equipment.AddWeaponAsync(weaponDto);
+        await unitOfWork.CompleteAsync(); // Не забудь зберегти!
+    }
+
+    public async Task AddArmorAsync(ArmorDTO armorDto)
+    {
+        await unitOfWork.Equipment.AddArmorAsync(armorDto);
+        await unitOfWork.CompleteAsync();
+    }
+
+    public async Task UpdateArmorAsync(ArmorDTO armorDto)
+    {
+        await unitOfWork.Equipment.UpdateArmorAsync(armorDto);
+        await unitOfWork.CompleteAsync();
+    }
+
+    public async Task UpdateWeaponAsync(WeaponDTO weaponDto)
+    {
+        await unitOfWork.Equipment.UpdateWeaponAsync(weaponDto);
+        await unitOfWork.CompleteAsync();
+    }
+
+
+    // DarkSoulsBuildsAssistant.Services/CatalogService.cs
+// Знайдіть метод DeleteEquipmentAsync і замініть його на цей:
+
     public async Task DeleteEquipmentAsync(int id)
     {
-        // Знаходимо DTO екіпірування за ID
-        var equipmentDto = await unitOfWork.Equipment.GetByIdAsync(id);
-        
-        if (equipmentDto != null)
-        {
-            // Передаємо знайдений DTO для видалення
-            await unitOfWork.Equipment.RemoveAsync(equipmentDto);
-            await unitOfWork.CompleteAsync(); // Фіксуємо транзакцію
-        }
+        // Більше не викликаємо GetByIdAsync та RemoveAsync(dto). 
+        // Видаляємо напряму!
+        await unitOfWork.Equipment.DeleteByIdAsync(id);
+        await unitOfWork.CompleteAsync();
     }
 }

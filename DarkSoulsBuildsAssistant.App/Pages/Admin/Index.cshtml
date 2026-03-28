@@ -1,11 +1,12 @@
 ﻿@page
 @model DarkSoulsBuildsAssistant.App.Pages.Admin.IndexModel
 @{
-    ViewData["Title"] = "Головна панель (Дашборд)";
+    ViewData["Title"] = "Dashboard";
+    ViewData["ActivePage"] = "Index";
 }
 
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-    <div class="bg-panelbg border border-gray-800 p-6 rounded-lg shadow-lg flex items-center justify-between">
+    <div class="panel p-6 shadow-lg flex items-center justify-between">
         <div>
             <div class="text-gray-400 text-sm mb-1 uppercase tracking-wider">Total Users</div>
             <div class="text-3xl font-serif text-gray-200">1,248</div>
@@ -14,15 +15,15 @@
             <i class="fa-solid fa-users"></i>
         </div>
     </div>
-    </div>
+</div>
 
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-    <div class="bg-panelbg border border-gray-800 p-6 rounded-lg shadow-lg">
+    <div class="panel p-6 shadow-lg">
         <h3 class="text-goldtext font-serif text-xl mb-4">Users by Starting Class</h3>
         <canvas id="rolesChart" height="200"></canvas>
     </div>
 
-    <div class="bg-panelbg border border-gray-800 p-6 rounded-lg shadow-lg">
+    <div class="panel p-6 shadow-lg">
         <h3 class="text-goldtext font-serif text-xl mb-4">Most Popular Weapons</h3>
         <canvas id="weaponsChart" height="200"></canvas>
     </div>

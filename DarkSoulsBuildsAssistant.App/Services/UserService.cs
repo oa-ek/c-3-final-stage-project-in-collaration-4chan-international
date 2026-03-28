@@ -68,4 +68,74 @@ public class UserService(UserManager<User> userManager) : IUserService
 
         return userDtos;
     }
+
+    public async Task CreateUserAsync(ManageUserDTO userDto)
+    {
+        var user = new User
+        {
+            UserName = userDto.UserName,
+            Email = userDto.Email,
+            FirstName = userDto.FirstName,
+            LastName = userDto.LastName
+        };
+        
+        // Створюємо користувача
+        var result = await userManager.CreateAsync(user, userDto.Password ?? "DefaultPassword123!");
+        
+        if (result.Succeeded)
+        {
+            // Додаємо роль після успішного створення
+            if (userDto.IsAdmin)
+                await userManager.AddToRoleAsync(user, "Admin");
+            else
+                await userManager.AddToRoleAsync(user, "User");
+        }
+    }
+
+    public async Task UpdateUserAsync(ManageUserDTO userDto)
+    {
+        if (string.IsNullOrEmpty(userDto.Id)) return;
+
+        // 1. Знаходимо користувача в базі
+        var user = await userManager.FindByIdAsync(userDto.Id);
+        
+        if (user == null) return; // Якщо не знайшли - виходимо
+
+        // 2. Оновлюємо поля (тільки ті, що нам треба)
+        user.UserName = userDto.UserName;
+        user.Email = userDto.Email;
+        user.FirstName = userDto.FirstName;
+        user.LastName = userDto.LastName;
+
+        // 3. Зберігаємо зміни
+        await userManager.UpdateAsync(user);
+
+        // 4. Оновлюємо пароль (якщо користувач щось ввів у форму)
+        if (!string.IsNullOrEmpty(userDto.Password))
+        {
+            // Скидаємо старий пароль і ставимо новий
+            var token = await userManager.GeneratePasswordResetTokenAsync(user);
+            await userManager.ResetPasswordAsync(user, token, userDto.Password);
+        }
+
+        // 5. Оновлюємо ролі
+        // Найпростіше: видалити старі ролі і додати нову
+        var currentRoles = await userManager.GetRolesAsync(user);
+        await userManager.RemoveFromRolesAsync(user, currentRoles);
+
+        if (userDto.IsAdmin)
+            await userManager.AddToRoleAsync(user, "Admin");
+        else
+            await userManager.AddToRoleAsync(user, "User");
+    }
+
+    // У DeleteUserAsync в тебе був int userId, але Identity використовує string для Id
+    public async Task DeleteUserAsync(string userId)
+    {
+        var user = await userManager.FindByIdAsync(userId);
+        if (user != null)
+        {
+            await userManager.DeleteAsync(user);
+        }
+    }
 }
