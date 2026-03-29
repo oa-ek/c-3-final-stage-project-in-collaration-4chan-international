@@ -1,12 +1,10 @@
-﻿using DarkSoulsBuildsAssistant.Core.DTOs.Auth;
+﻿using System.IdentityModel.Tokens.Jwt;
+using DarkSoulsBuildsAssistant.Core.DTOs.Auth;
 using DarkSoulsBuildsAssistant.Core.Interfaces.Services.Identity;
-
-using System.IdentityModel.Tokens.Jwt;
-
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DarkSoulsBuildsAssistant.App.Controllers;
+namespace DarkSoulsBuildsAssistant.App.Controllers.API;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -17,7 +15,9 @@ public class AuthController(IAuthService authService, ITokenBlacklistService bla
     public async Task<IActionResult> Login([FromBody] LoginRequestDTO model)
     {
         var result = await authService.LoginAsync(model);
+        
         if (!result.IsSuccess) return BadRequest(result.ErrorMessage);
+        
         return Ok(result);
     }
 
@@ -25,7 +25,9 @@ public class AuthController(IAuthService authService, ITokenBlacklistService bla
     public async Task<IActionResult> Register([FromBody] RegisterRequestDTO model)
     {
         var result = await authService.RegisterAsync(model);
+        
         if (!result.IsSuccess) return BadRequest(result.ErrorMessage);
+        
         return Ok(result);
     }
 
@@ -34,12 +36,10 @@ public class AuthController(IAuthService authService, ITokenBlacklistService bla
     public async Task<IActionResult> Logout()
     {
         var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-
-        // 1. Розбираємо токен, щоб дізнатися дату закінчення (exp)
+        
         var handler = new JwtSecurityTokenHandler();
         var jwtToken = handler.ReadJwtToken(token);
-
-        // 2. Додаємо в БД
+        
         await blacklistService.BlacklistTokenAsync(token, jwtToken.ValidTo);
 
         return Ok(new { message = "Токен успішно анульовано (записано в БД)." });
@@ -50,8 +50,7 @@ public class AuthController(IAuthService authService, ITokenBlacklistService bla
     {
         var result = await authService.RefreshTokenAsync(model);
         
-        if (!result.IsSuccess) 
-            return Unauthorized(result);
+        if (!result.IsSuccess) return Unauthorized(result);
             
         return Ok(result);
     }
