@@ -3,7 +3,7 @@ using DarkSoulsBuildsAssistant.Core.Interfaces.Services.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DarkSoulsBuildsAssistant.App.Controllers;
+namespace DarkSoulsBuildsAssistant.App.Controllers.API;
 
 [ApiController]
 [Authorize]

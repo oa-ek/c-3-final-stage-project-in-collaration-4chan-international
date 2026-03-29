@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace DarkSoulsBuildsAssistant.App.Controllers;
+namespace DarkSoulsBuildsAssistant.App.Controllers.API;
 
 [ApiController]
 [Authorize(Roles = "Admin")]

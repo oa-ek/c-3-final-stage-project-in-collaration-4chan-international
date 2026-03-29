@@ -23,7 +23,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Controllers\Razor\" />
       <Folder Include="wwwroot\" />
     </ItemGroup>
 
