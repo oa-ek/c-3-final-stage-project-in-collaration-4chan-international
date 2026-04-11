@@ -1,0 +1,85 @@
+﻿@page
+@model YourDarkSoulsAssistant.App.Pages.Admin.IndexModel
+@{
+    ViewData["Title"] = "Dashboard";
+    ViewData["ActivePage"] = "Index";
+}
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="panel p-6 shadow-lg flex items-center justify-between">
+        <div>
+            <div class="text-gray-400 text-sm mb-1 uppercase tracking-wider">Total Users</div>
+            <div class="text-3xl font-serif text-gray-200">1,248</div>
+        </div>
+        <div class="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-goldtext text-xl">
+            <i class="fa-solid fa-users"></i>
+        </div>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <div class="panel p-6 shadow-lg">
+        <h3 class="text-goldtext font-serif text-xl mb-4">Users by Starting Class</h3>
+        <canvas id="rolesChart" height="200"></canvas>
+    </div>
+
+    <div class="panel p-6 shadow-lg">
+        <h3 class="text-goldtext font-serif text-xl mb-4">Most Popular Weapons</h3>
+        <canvas id="weaponsChart" height="200"></canvas>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        // 2. Передаємо дані з C# (Бекенд) у JavaScript (Фронтенд)
+        // Використовуємо Html.Raw та JsonSerializer, щоб безпечно перетворити List у JS-масив
+        const classLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ClassLabels));
+        const classData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ClassStats));
+        
+        const weaponLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.WeaponLabels));
+        const weaponData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.WeaponStats));
+
+        // 3. Ініціалізуємо графік ролей
+        new Chart(document.getElementById('rolesChart'), {
+            type: 'bar',
+            data: {
+                labels: classLabels, // Використовуємо змінні з бекенду
+                datasets: [{
+                    label: 'Players',
+                    data: classData,   // Використовуємо змінні з бекенду
+                    backgroundColor: ['#A0522D', '#4682B4', '#DAA520', '#808080', '#D4AF37']
+                }]
+            },
+            options: { 
+                plugins: { legend: { display: false } }, 
+                scales: { 
+                    y: { grid: { color: '#333' } }, 
+                    x: { grid: { display: false } } 
+                } 
+            }
+        });
+
+        // 4. Ініціалізуємо графік зброї
+        new Chart(document.getElementById('weaponsChart'), {
+            type: 'bar',
+            data: {
+                labels: weaponLabels,
+                datasets: [{
+                    label: 'Equipped Count',
+                    data: weaponData,
+                    backgroundColor: ['#A0522D', '#4682B4', '#808080'],
+                    barThickness: 30
+                }]
+            },
+            options: { 
+                plugins: { legend: { display: false } }, 
+                scales: { 
+                    y: { grid: { color: '#333' } }, 
+                    x: { grid: { display: false } } 
+                } 
+            }
+        });
+    </script>
+}

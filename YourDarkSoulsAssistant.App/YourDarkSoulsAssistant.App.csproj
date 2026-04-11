@@ -1,0 +1,95 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0-preview.1.25120.3"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.5">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Scalar.AspNetCore" Version="2.1.11" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="7.3.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\YourDarkSoulsAssistant.Infrastructure\YourDarkSoulsAssistant.Infrastructure.csproj" />
+      <ProjectReference Include="..\YourDarkSoulsAssistant.Services\YourDarkSoulsAssistant.Services.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="wwwroot\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Pages\Admin\Images\All_Builds.png" />
+      <None Remove="Pages\Admin\Images\armor.jpg" />
+      <None Remove="Pages\Admin\Images\bull-goat.jpg" />
+      <None Remove="Pages\Admin\Images\crucible-helm.png" />
+      <None Remove="Pages\Admin\Images\DS3.jpg" />
+      <None Remove="Pages\Admin\Images\ER.png" />
+      <None Remove="Pages\Admin\Images\Gemini_Generated_Image_aq9jjaaq9jjaaq9j.png" />
+      <None Remove="Pages\Admin\Images\icons8-dashboard-layout-48.png" />
+      <None Remove="Pages\Admin\Images\img.png" />
+      <None Remove="Pages\Admin\Images\radahn-armor.jpg" />
+      <None Remove="Pages\Admin\Images\talisman.jpg" />
+      <None Remove="Pages\Admin\Images\THE_goat.jpg" />
+      <None Remove="Pages\Admin\Images\Total_Users.png" />
+      <None Remove="Pages\Admin\Images\YEEEAH.jpg" />
+      <Resource Include="wwwroot\images\All_Builds.png" />
+      <Resource Include="wwwroot\images\armor.jpg" />
+      <Resource Include="wwwroot\images\Armors\Elite Knight Armor.jpg" />
+      <Resource Include="wwwroot\images\Armors\Elite Knight Gauntlets.png" />
+      <Resource Include="wwwroot\images\Armors\Elite Knight Helm.png" />
+      <Resource Include="wwwroot\images\Armors\elite_knight_leggings.jpg" />
+      <Resource Include="wwwroot\images\Armors\Havel's Armor.jpg" />
+      <Resource Include="wwwroot\images\Armors\Havel's Gauntlets.jpg" />
+      <Resource Include="wwwroot\images\Armors\Havel's Helm.jpg" />
+      <Resource Include="wwwroot\images\Armors\Havel's Leggings.jpg" />
+      <Resource Include="wwwroot\images\Armors\Pyromancer Garb.png" />
+      <Resource Include="wwwroot\images\Armors\Pyromancer Gauntlets.png" />
+      <Resource Include="wwwroot\images\Armors\Pyromancer Hood.png" />
+      <Resource Include="wwwroot\images\Armors\Pyromancer Leggings.png" />
+      <Resource Include="wwwroot\images\backGound2.jpg" />
+      <Resource Include="wwwroot\images\background.jpg" />
+      <Resource Include="wwwroot\images\backGroundMajulajpg.jpg" />
+      <Resource Include="wwwroot\images\bull-goat.jpg" />
+      <Resource Include="wwwroot\images\crucible-helm.png" />
+      <Resource Include="wwwroot\images\DS3.jpg" />
+      <Resource Include="wwwroot\images\ER.png" />
+      <Resource Include="wwwroot\images\Gemini_Generated_Image_aq9jjaaq9jjaaq9j.png" />
+      <Resource Include="wwwroot\images\icons8-dashboard-layout-48.png" />
+      <Resource Include="wwwroot\images\img.png" />
+      <Resource Include="wwwroot\images\NewBack.jpg" />
+      <Resource Include="wwwroot\images\radahn-armor.jpg" />
+      <Resource Include="wwwroot\images\Slots\armor_slot.jpg" />
+      <Resource Include="wwwroot\images\Slots\gauntlets_slot.jpg" />
+      <Resource Include="wwwroot\images\Slots\helmet_slot.jpg" />
+      <Resource Include="wwwroot\images\Slots\leggings_slot.jpg" />
+      <Resource Include="wwwroot\images\Slots\weapon_slot1.png" />
+      <Resource Include="wwwroot\images\Slots\weapon_slot2.png" />
+      <Resource Include="wwwroot\images\talisman.jpg" />
+      <Resource Include="wwwroot\images\THE_goat.jpg" />
+      <Resource Include="wwwroot\images\Total_Users.png" />
+      <Resource Include="wwwroot\images\Weapons\Astor Straight Sword.png" />
+      <Resource Include="wwwroot\images\Weapons\big_axe_of_DarkKnight.png" />
+      <Resource Include="wwwroot\images\Weapons\Black Knight Shield.jpg" />
+      <Resource Include="wwwroot\images\Weapons\Black Knight's Greatsword.jpg" />
+      <Resource Include="wwwroot\images\Weapons\Black Knight's Halberd.jpg" />
+      <Resource Include="wwwroot\images\Weapons\Black Knight's Sword.jpg" />
+      <Resource Include="wwwroot\images\Weapons\claymor.png" />
+      <Resource Include="wwwroot\images\Weapons\Dark Sword.png" />
+      <Resource Include="wwwroot\images\Weapons\Grass Crest Shield.png" />
+      <Resource Include="wwwroot\images\Weapons\Greatsword of Artorias.jpg" />
+      <Resource Include="wwwroot\images\Weapons\Moon Light GreatSword.png" />
+      <Resource Include="wwwroot\images\Weapons\Uchigatana.png" />
+      <Resource Include="wwwroot\images\Weapons\Winged Spear.png" />
+      <Resource Include="wwwroot\images\Weapons\Zweihander.png" />
+      <Resource Include="wwwroot\images\YEEEAH.jpg" />
+    </ItemGroup>
+
+</Project>
