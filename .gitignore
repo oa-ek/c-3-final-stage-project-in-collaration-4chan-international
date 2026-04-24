@@ -27,9 +27,6 @@ bld/
 .vs
 .idea
 
-# Git
-.gitignore
-
 # Migrations
 Migrations
 
