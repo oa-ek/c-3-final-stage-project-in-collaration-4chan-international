@@ -9,9 +9,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YourDarkSoulsAssistant.AppH
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YourDarkSoulsAssistant.ServiceDefaults", "YourDarkSoulsAssistant.ServiceDefaults\YourDarkSoulsAssistant.ServiceDefaults.csproj", "{087A40B0-C9CA-445B-A6B7-754159463019}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YourDarkSoulsAssistant.UserService", "YourDarkSoulsAssistant.UserService\YourDarkSoulsAssistant.UserService.csproj", "{72945963-39A9-40AC-AE56-43D152027E5D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YourDarkSoulsAssistant.UsersService", "YourDarkSoulsAssistant.UsersService\YourDarkSoulsAssistant.UsersService.csproj", "{72945963-39A9-40AC-AE56-43D152027E5D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YourDarkSoulsAssistant.ItemsCatalog", "YourDarkSoulsAssistant.ItemsCatalog\YourDarkSoulsAssistant.ItemsCatalog.csproj", "{39030737-4B90-4FA7-8CB4-40D6CA7149E3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YourDarkSoulsAssistant.GameItemsCatalogService", "YourDarkSoulsAssistant.GameItemsCatalogService\YourDarkSoulsAssistant.GameItemsCatalogService.csproj", "{39030737-4B90-4FA7-8CB4-40D6CA7149E3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YourDarkSoulsAssistant.ContentDeliveryService", "YourDarkSoulsAssistant.ContentDeliveryService\YourDarkSoulsAssistant.ContentDeliveryService.csproj", "{551C598A-0A96-44DB-837E-B48138B3D8E7}"
 EndProject
@@ -21,7 +21,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YourDarkSoulsAssistant.Buil
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YourDarkSoulsAssistant.BillingService", "YourDarkSoulsAssistant.BillingService\YourDarkSoulsAssistant.BillingService.csproj", "{6DB31E8D-5188-4487-BF5B-2FFF1D36FE0B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YourDarkSoulsAssistant.GuidesService", "YourDarkSoulsAssistant.GuidesService\YourDarkSoulsAssistant.GuidesService.csproj", "{8479558E-6507-48AB-A474-C6F47281D67C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YourDarkSoulsAssistant.ArticlesService", "YourDarkSoulsAssistant.ArticlesService\YourDarkSoulsAssistant.ArticlesService.csproj", "{8479558E-6507-48AB-A474-C6F47281D67C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YourDarkSoulsAssistant.Core", "YourDarkSoulsAssistant.Core\YourDarkSoulsAssistant.Core.csproj", "{503335AA-9D4D-4C5F-BB41-FFBFE189B948}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -81,6 +83,10 @@ Global
 		{8479558E-6507-48AB-A474-C6F47281D67C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8479558E-6507-48AB-A474-C6F47281D67C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8479558E-6507-48AB-A474-C6F47281D67C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{503335AA-9D4D-4C5F-BB41-FFBFE189B948}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{503335AA-9D4D-4C5F-BB41-FFBFE189B948}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{503335AA-9D4D-4C5F-BB41-FFBFE189B948}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{503335AA-9D4D-4C5F-BB41-FFBFE189B948}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

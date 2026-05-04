@@ -15,6 +15,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\YourDarkSoulsAssistant.Core\YourDarkSoulsAssistant.Core.csproj" />
       <ProjectReference Include="..\YourDarkSoulsAssistant.ServiceDefaults\YourDarkSoulsAssistant.ServiceDefaults.csproj" />
     </ItemGroup>
 
