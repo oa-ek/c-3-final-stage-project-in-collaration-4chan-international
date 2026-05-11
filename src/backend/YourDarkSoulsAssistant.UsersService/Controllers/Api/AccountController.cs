@@ -21,14 +21,18 @@ public class AccountController(IUserService userService) : ControllerBase
     }
 
     [HttpPut("profile")]
-    public async Task<IActionResult> UpdateProfile([FromBody] UpdateUserDTO model)
+    public async Task<IActionResult> UpdateProfile([FromBody] UpdateUserRequestDTO model)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        var success = await userService.UpdateUserProfileAsync(User, model);
+        var result = await userService.UpdateUserProfileAsync(User, model);
 
-        if (!success) return BadRequest("Failed to update profile");
+        if (!result.IsSuccess) return BadRequest(result.ErrorMessage);
 
-        return Ok(new { message = "Profile updated successfully" });
+        return Ok(new
+        {
+            data = result.Data,
+            message = "Profile updated successfully"
+        });
     }
 }

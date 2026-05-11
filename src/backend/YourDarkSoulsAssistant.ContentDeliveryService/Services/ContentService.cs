@@ -2,70 +2,92 @@
 
 namespace YourDarkSoulsAssistant.ContentDeliveryService.Services;
 
-public class ContentService(IServiceProvider serviceProvider) : IContentService
+public class ContentService(ILogger<ContentService> logger, IConfiguration config) : IContentService
 {
-    private readonly ILogger<ContentService> _logger = serviceProvider.GetRequiredService<ILogger<ContentService>>(); 
+    private string GetAbsoluteStorageRoot()
+    {
+        var rawStorageRoot = config["App:StoragePath"] ?? "Uploads";
+        return Path.GetFullPath(rawStorageRoot);
+    }
     
     public Task<Stream?> GetImageAsync(string privateRoute)
     {
-        if (!File.Exists(privateRoute))
+        var absolutePath = Path.Combine(GetAbsoluteStorageRoot(), privateRoute);
+        
+        if (!File.Exists(absolutePath))
         {
-            _logger.LogWarning("--> [ContentService]: Файл не знайдено на диску за шляхом {PrivateRoute}", privateRoute);
+            logger.LogWarning("--> [ContentService]: Файл не знайдено на диску за шляхом {PrivateRoute}", privateRoute);
             return Task.FromResult<Stream?>(null);
         }
 
         try
         {
-            Stream stream = new FileStream(privateRoute, FileMode.Open, FileAccess.Read, FileShare.Read);
+            Stream stream = new FileStream(absolutePath, FileMode.Open, FileAccess.Read, FileShare.Read);
             return Task.FromResult<Stream?>(stream);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "--> [ContentService]: Помилка при відкритті файлу на диску за шляхом {PrivateRoute}", privateRoute);
+            logger.LogError(ex, "--> [ContentService]: Помилка при відкритті файлу на диску за шляхом {PrivateRoute}", privateRoute);
             return Task.FromResult<Stream?>(null);
         }
     }
     
-    public async Task<bool> SaveImageAsync(IFormFile file, string privateRoute)
+    public async Task<(bool IsSuccess, string PrivateRoute)> SaveImageAsync(IFormFile file, string category)
     {
-        _logger.LogInformation("--> [ContentService]: Спроба збереження файлу на диск за шляхом {PrivateRoute}", privateRoute);
-        
         try
         {
-            var directory = Path.GetDirectoryName(privateRoute);
+            // 1. Генеруємо ВІДНОСНИЙ шлях (напр: "system/2026.05/uuid.jpg")
+            var relativeRoute = GenerateRelativePath(category, file.FileName);
             
+            // 2. Будуємо ПОВНИЙ шлях для збереження на диск
+            var absolutePath = Path.Combine(GetAbsoluteStorageRoot(), relativeRoute);
+            
+            var directory = Path.GetDirectoryName(absolutePath);
             if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
                 Directory.CreateDirectory(directory);
             
             await using var stream = file.OpenReadStream();
-            await using var fileStream = new FileStream(privateRoute, FileMode.Create, FileAccess.Write);
+            await using var fileStream = new FileStream(absolutePath, FileMode.Create, FileAccess.Write);
             await stream.CopyToAsync(fileStream);
             
-            _logger.LogInformation("--> [ContentService]: Файл успішно збережено на диск за шляхом {PrivateRoute}", privateRoute);
-            return true;
+            // 3. ПОВЕРТАЄМО ВІДНОСНИЙ ШЛЯХ (щоб RouteService зберіг його в БД)
+            return (true, relativeRoute);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "--> [ContentService]: Помилка при збереженні файлу на диск за шляхом {PrivateRoute}", privateRoute);
-            return false;
+            logger.LogError(ex, "--> [ContentService]: Помилка збереження.");
+            return (false, string.Empty);
         }
     }
 
     public Task<bool> DeleteImageAsync(string privateRoute)
     {
-        _logger.LogInformation("--> [ContentService]: Спроба видалення файлу з диску за шляхом {PrivateRoute}", privateRoute);
+        var absolutePath = Path.Combine(GetAbsoluteStorageRoot(), privateRoute);
+        
+        logger.LogInformation("--> [ContentService]: Спроба видалення файлу з диску за шляхом {PrivateRoute}", privateRoute);
         try
         {
-            if (File.Exists(privateRoute))
-                File.Delete(privateRoute);
+            if (File.Exists(absolutePath)) File.Delete(absolutePath);
             
-            _logger.LogInformation("--> [ContentService]: Файл успішно видалено з диску за шляхом {PrivateRoute}", privateRoute);
+            logger.LogInformation("--> [ContentService]: Файл успішно видалено з диску за шляхом {PrivateRoute}", privateRoute);
             return Task.FromResult(true);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "--> [ContentService]: Помилка при видаленні файлу з диску за шляхом {PrivateRoute}", privateRoute);
+            logger.LogError(ex, "--> [ContentService]: Помилка при видаленні файлу з диску за шляхом {PrivateRoute}", privateRoute);
             return Task.FromResult(false);
         }
+    }
+    
+    private string GenerateRelativePath(string category, string originalFileName)
+    {
+        var safeCategory = Path.GetFileName(category); 
+        if (string.IsNullOrWhiteSpace(safeCategory)) safeCategory = "uncategorized";
+
+        var yearMonth = DateTime.UtcNow.ToString("yyyy.MM"); // До речі, крапка тут безпечніша для URL
+        var extension = Path.GetExtension(originalFileName);
+        var uniqueFileName = $"{Guid.NewGuid():N}{extension}";
+
+        return Path.Combine(safeCategory, yearMonth, uniqueFileName).Replace("\\", "/"); 
     }
 }

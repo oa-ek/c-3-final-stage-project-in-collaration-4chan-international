@@ -2,5 +2,5 @@
 
 public interface IDataInitializer
 {
-    Task InitializeAsync();
+    Task InitializeAsync(CancellationToken cancellationToken = default);
 }

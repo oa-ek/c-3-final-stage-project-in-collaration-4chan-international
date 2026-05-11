@@ -28,6 +28,8 @@ else
     app.UseCors("StrictFrontend");
 }
 
+app.UseRateLimiter();
+
 app.MapReverseProxy();
 
 app.Run();

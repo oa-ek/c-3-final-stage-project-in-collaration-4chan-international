@@ -27,18 +27,20 @@ public static class SecurityConfiguration
     public static void AddJwtAuthentication(this IServiceCollection services, IConfiguration config)
     {
         var jwtKey = config["Jwt:Key"];
-        var jwtDevToken = config["Jwt:DevToken"];
-        var jwtIssuer = config["Jwt:Issuer"] ?? "YourDarkSoulsAssistantServer";
-        var jwtAudience = config["Jwt:Audience"] ?? "YourDarkSoulsAssistantClient";
+        var jwtIssuer = config["Jwt:Issuer"];
+        var jwtAudience = config["Jwt:Audience"];
         
-        if (string.IsNullOrWhiteSpace(jwtKey) || jwtKey.Length < 32 ||
-            string.IsNullOrWhiteSpace(jwtDevToken))
+        if (string.IsNullOrWhiteSpace(jwtKey) || 
+            jwtKey.Length < 32 ||
+            string.IsNullOrWhiteSpace(jwtIssuer) ||
+            string.IsNullOrWhiteSpace(jwtAudience))
         {
             throw new InvalidOperationException(
                 "❌ Critical Error: Missing or invalid JWT variables\n" +
                 "Check:\n" +
                 " - Jwt:Key (minimum 32 symbols)\n" +
-                " - Jwt:DevToken (for dev)\n");
+                " - Jwt:Issuer\n" +
+                " - Jwt:Audience");
         }
         
         services.AddAuthentication(options =>
@@ -67,31 +69,40 @@ public static class SecurityConfiguration
         // });
     }
     
-    
-    public static IApplicationBuilder UseSecretHeaderCheck(this WebApplication app, IConfiguration config)
+    public static IApplicationBuilder UseSecretHeaderCheck(this IApplicationBuilder app, IConfiguration config)
     {
-        var expectedSecret = config["GatewaySecret"];
+        var secretValue = config["Parameters:GatewaySecret"];
 
-        return app.Use(async (context, next) =>
+        app.Use(async (context, next) =>
         {
             var path = context.Request.Path;
             
-            if (path.StartsWithSegments("/openapi") || 
-                path.StartsWithSegments("/scalar"))
+            if (path.StartsWithSegments("/health") || 
+                path.StartsWithSegments("/alive") ||
+                path.StartsWithSegments("/scalar") ||
+                path.StartsWithSegments("/openapi"))
             {
-                await next();
+                await next(context);
                 return;
             }
             
-            if (!context.Request.Headers.TryGetValue("X-Gateway-Secret", out var actualSecret) || 
-                actualSecret != expectedSecret)
+            if (!context.Request.Headers.TryGetValue("X-Gateway-Secret", out var extractedSecret))
             {
-                context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                await context.Response.WriteAsync("403 Forbidden: Direct access is not allowed.");
+                context.Response.StatusCode = 403;
+                await context.Response.WriteAsJsonAsync(new { Error = "Відсутній заголовок шлюзу." });
                 return;
             }
 
-            await next();
+            if (!string.Equals(extractedSecret, secretValue))
+            {
+                context.Response.StatusCode = 403;
+                await context.Response.WriteAsJsonAsync(new { Error = "Невірний заголовок шлюзу." });
+                return;
+            }
+
+            await next(context);
         });
+
+        return app;
     }
 }

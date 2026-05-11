@@ -10,5 +10,5 @@ public class ContentItem
     
     public required string PrivateRoute { get; set; }
     
-    public required bool IsActive { get; set; }
+    public bool IsActive { get; set; } = true;
 }

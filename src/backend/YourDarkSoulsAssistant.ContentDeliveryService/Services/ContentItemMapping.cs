@@ -8,8 +8,7 @@ public class ContentItemProfile : Profile
 {
     public ContentItemProfile()
     {
-        CreateMap<ContentItem, ContentItemDTO>()
-            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.ToString()));
+        CreateMap<ContentItem, ContentItemDTO>();
         
         CreateMap<InputContentItemDTO, ContentItem>()
             .ForMember(dest => dest.PublicRoute, opt => opt.MapFrom(src => src.Route));

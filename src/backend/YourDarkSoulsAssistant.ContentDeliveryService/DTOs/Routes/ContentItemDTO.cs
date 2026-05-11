@@ -7,8 +7,4 @@ public record ContentItemDTO
     public required string Name { get; init; }
     
     public required string PublicRoute { get; init; }
-    
-    public required string PrivateRoute { get; init; }
-    
-    public required bool IsActive { get; init; }
 }

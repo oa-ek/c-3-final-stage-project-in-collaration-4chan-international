@@ -9,28 +9,13 @@ public class UserMappingProfile : Profile
 {
     public UserMappingProfile()
     {
-        // ==========================================
-        // ROLES
-        // ==========================================
-
-        // Role -> RoleDTO
-        CreateMap<Role, RoleDTO>()
-            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.ToString()));
-
-        // CreateRoleDTO -> Role
-        CreateMap<CreateRoleDTO, Role>();
-
-        // UpdateRoleDTO -> Role (Ігноруємо null значення при оновленні)
-        CreateMap<UpdateRoleDTO, Role>()
+        CreateMap<CreateRoleRequestDTO, Role>();
+        
+        CreateMap<UpdateRoleRequestDTO, Role>()
             .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
-
-        // ==========================================
-        // USERS
-        // ==========================================
-
-        // User -> UserDTO
-        CreateMap<User, UserDTO>()
+        
+        CreateMap<User, UserResponseDTO>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.ToString()))
 
             // Заглушка, якщо BuildCounts не зберігається в БД. 
@@ -38,23 +23,21 @@ public class UserMappingProfile : Profile
             .ForMember(dest => dest.BuildCounts, opt => opt.MapFrom(src => 23235))
 
             // Безпечна обробка null для аватарки та ковенанту (якщо в БД вони null, віддамо дефолт)
-            .ForMember(dest => dest.AvatarPath, opt => opt.MapFrom(src => src.AvatarPath ?? string.Empty))
+            .ForMember(dest => dest.AvatarPath, opt => opt.MapFrom(src => src.AvatarPath))
             .ForMember(dest => dest.Covenant,
-                opt => opt.MapFrom(src => src.Covenant ?? "Way of White")) // Дефолтний ковенант :)
-
-            // Перевіряємо IsAdmin. EF Core завантажить Role завдяки ProjectTo, тому NullReferenceException тут не буде
+                opt => opt.MapFrom(src => src.Covenant ?? "Way of White"))
+            
             .ForMember(dest => dest.Roles, opt => opt.MapFrom(src => src.Roles));
         
-        CreateMap<User, SmallUserDTO>()
+        CreateMap<User, SmallUserResponseDTO>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.ToString()))
             .ForMember(dest => dest.Roles, opt => opt.MapFrom(src => src.Roles.Select(r => r.Name)));
         
-        // CreateUserDTO -> User
-        CreateMap<CreateUserDTO, User>();
+        // CreateUserRequestDTO -> User
+        CreateMap<CreateUserRequestDTO, User>();
         
-        // UpdateUserDTO -> User
-        CreateMap<UpdateUserDTO, User>()
-            // Магія часткового оновлення: якщо в UpdateUserDTO поле null, воно НЕ перезапише те, що зараз є в User
+        // UpdateUserRequestDTO -> User
+        CreateMap<UpdateUserRequestDTO, User>()
             .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
     }
 }

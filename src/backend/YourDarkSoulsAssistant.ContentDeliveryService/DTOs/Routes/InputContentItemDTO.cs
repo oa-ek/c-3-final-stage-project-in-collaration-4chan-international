@@ -5,4 +5,6 @@ public record InputContentItemDTO
     public required string Name { get; set; }
     
     public required string Route { get; set; }
+    
+    public string Category { get; set; } = "uncategorized";
 }

@@ -12,34 +12,27 @@ public class ContentItemController(IRouteService routeService, IContentService c
     public async Task<IActionResult> UploadImage(IFormFile file, [FromForm] InputContentItemDTO inputDto)
     {
         if (file == null || file.Length == 0) return BadRequest("Файл порожній.");
-
-        var extension = Path.GetExtension(file.FileName);
+        
+        var (isSaved, privateRoute) = await contentService.SaveImageAsync(file, inputDto.Category);
+        
+        if (!isSaved) return StatusCode(500, "Не вдалося зберегти файл на диск.");
+        
         
         var existingItem = await routeService.GetByPublicRouteAsync(inputDto.Route);
         
         string? oldPrivateRoute = null;
-        ContentItemDTO routeInfo;
+        ContentItemDTO? routeInfo;
 
         if (existingItem != null)
         {
             oldPrivateRoute = existingItem.PrivateRoute;
-            
-            routeInfo = await routeService.UpdateFileRouteAsync(existingItem.Id, extension);
+            routeInfo = await routeService.UpdateFileRouteAsync(existingItem.Id, privateRoute);
             
             if (routeInfo == null) return StatusCode(500, "Помилка оновлення бази даних.");
         }
         else
         {
-            routeInfo = await routeService.RegisterRouteAsync(inputDto, extension);
-        }
-        
-        var isSaved = await contentService.SaveImageAsync(file, routeInfo.PrivateRoute);
-        
-        if (!isSaved)
-        {
-            if (existingItem == null) await routeService.DeleteRouteAsync(routeInfo.Id);
-            
-            return StatusCode(500, "Не вдалося зберегти файл на диск.");
+            routeInfo = await routeService.RegisterRouteAsync(inputDto, privateRoute);
         }
         
         if (oldPrivateRoute != null) await contentService.DeleteImageAsync(oldPrivateRoute);

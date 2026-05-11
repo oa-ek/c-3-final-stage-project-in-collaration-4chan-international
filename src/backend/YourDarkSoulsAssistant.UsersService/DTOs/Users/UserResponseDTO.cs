@@ -2,9 +2,9 @@
 
 namespace YourDarkSoulsAssistant.UsersService.DTOs.Users;
 
-public record UserDTO
+public record UserResponseDTO
 {
-    public required string Id { get; init; }
+    public required Guid Id { get; init; }
     
     public required string FirstName { get; init; }
     
@@ -20,7 +20,7 @@ public record UserDTO
     
     public required DateTime JoinDate { get; init; }
     
-    public required List<RoleDTO> Roles { get; init; }
+    public required List<RoleResponseDTO> Roles { get; init; }
     
     public required int Level { get; init; }
     

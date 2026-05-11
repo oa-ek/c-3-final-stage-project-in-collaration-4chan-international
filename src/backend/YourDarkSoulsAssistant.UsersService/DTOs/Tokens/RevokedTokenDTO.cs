@@ -4,7 +4,7 @@ public record RevokedTokenDTO
 {
     public int? Id { get; init; }
     
-    public string? Token { get; init; }
+    public string? TokenHash { get; init; }
     
     public DateTime? ExpirationDate { get; init; }
 }

@@ -1,25 +1,24 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 
 namespace YourDarkSoulsAssistant.UsersService.Models;
 
 public class User : IdentityUser<Guid>
 {
-    public string FirstName { get; set; } = default!;
+    public required string FirstName { get; set; }
     
     public required string LastName { get; set; }
-    
-    public override required string UserName { get; set; }
 
-    public override required string Email { get; set; }
-
-    public string? AvatarPath { get; set; }
+    public string AvatarPath { get; set; } = string.Empty;
     
-    public required DateTime JoinDate { get; set; }
+    public DateTime JoinDate { get; set; }
     
     public int Level { get; set; }
     
-    public string? Covenant { get; set; }
+    public string Covenant { get; set; } = string.Empty;
+    
+    public bool IsBanned { get; set; }
+    
+    public bool IsActive { get; set; }
     
     public virtual ICollection<Role> Roles { get; set; } = new List<Role>();
     

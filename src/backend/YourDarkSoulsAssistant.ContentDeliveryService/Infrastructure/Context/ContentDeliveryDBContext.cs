@@ -16,8 +16,6 @@ public class ContentDeliveryDBContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
         
-        modelBuilder.Entity<ContentItem>()
-            .HasIndex(i => i.PublicRoute)
-            .IsUnique();
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(ContentDeliveryDBContext).Assembly);
     }
 }

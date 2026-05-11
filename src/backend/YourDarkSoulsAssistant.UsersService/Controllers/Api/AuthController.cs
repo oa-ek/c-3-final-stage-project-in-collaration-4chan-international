@@ -2,13 +2,17 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using YourDarkSoulsAssistant.UsersService.DTOs.Auth;
+using YourDarkSoulsAssistant.UsersService.DTOs.Users;
 using YourDarkSoulsAssistant.UsersService.Interfaces.Identity;
 
 namespace YourDarkSoulsAssistant.UsersService.Controllers.Api;
 
 [ApiController]
 [Route("[controller]")]
-public class AuthController(IAuthService authService, ITokenBlacklistService blacklistService)
+public class AuthController(
+    IAuthService authService,
+    IUserService userService,
+    ITokenBlacklistService blacklistService)
     : ControllerBase
 {
     [HttpPost("login")]
@@ -22,13 +26,17 @@ public class AuthController(IAuthService authService, ITokenBlacklistService bla
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] RegisterRequestDTO model)
+    public async Task<IActionResult> Register([FromBody] CreateUserRequestDTO model)
     {
-        var result = await authService.RegisterAsync(model);
+        var userResult = await userService.CreateUserAsync(model);
         
-        if (!result.IsSuccess) return BadRequest(result.ErrorMessage);
+        if (!userResult.IsSuccess) return BadRequest(userResult.ErrorMessage);
         
-        return Ok(result);
+        var tokenResult = await authService.IssueTokensAsync(userResult.Data!, rememberMe: false);
+    
+        if (!tokenResult.IsSuccess) return StatusCode(500, new { message = tokenResult.ErrorMessage });
+        
+        return Ok(tokenResult.Data);
     }
 
     [HttpPost("logout")]

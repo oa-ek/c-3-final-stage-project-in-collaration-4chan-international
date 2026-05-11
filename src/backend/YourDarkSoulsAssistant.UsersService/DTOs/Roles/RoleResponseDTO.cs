@@ -1,6 +1,6 @@
 ﻿namespace YourDarkSoulsAssistant.UsersService.DTOs.Roles;
 
-public record RoleDTO
+public record RoleResponseDTO
 {
     public required Guid Id { get; init; }
     

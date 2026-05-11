@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using YourDarkSoulsAssistant.Core.DTOs;
 using YourDarkSoulsAssistant.UsersService.DTOs.Auth;
 using YourDarkSoulsAssistant.UsersService.Infrastructure.Context;
 using YourDarkSoulsAssistant.UsersService.Interfaces.Identity;
@@ -15,93 +16,64 @@ namespace YourDarkSoulsAssistant.UsersService.Services;
 public class AuthService(UserManager<User> userManager, IConfiguration configuration, UserDBContext context)
     : IAuthService
 {
-    public async Task<AuthResponseDTO> LoginAsync(LoginRequestDTO model)
+public async Task<HTTPResult<AuthSuccessResponseDTO>> LoginAsync(LoginRequestDTO model)
     {
-        var user = await userManager.FindByEmailAsync(model.Email);
+        var user = model.IsEmail 
+            ? await userManager.FindByEmailAsync(model.Login)
+            : await userManager.FindByNameAsync(model.Login);
         
         if (user == null || !await userManager.CheckPasswordAsync(user, model.Password))
-            return new AuthResponseDTO { IsSuccess = false, ErrorMessage = "Невірний логін або пароль" };
-        
-        return await DispatchToken(user);
-    }
-
-    public async Task<AuthResponseDTO> RegisterAsync(RegisterRequestDTO model)
-    {
-        var existingUser = await userManager.FindByEmailAsync(model.Email);
-        
-        if (existingUser != null)
-            return new AuthResponseDTO { IsSuccess = false, ErrorMessage = "Користувач з таким Email вже існує" };
-
-        if (model.Password != model.ConfirmPassword)
-            return new AuthResponseDTO { IsSuccess = false, ErrorMessage = "Passwords do not match" };
-        
-        var user = new User
         {
-            FirstName = model.FirstName,
-            LastName = model.LastName,
-            UserName = model.UserName,
-            Email = model.Email,
-            JoinDate = DateTime.UtcNow,
-            Level = 1,
-            Covenant = "Default",
-            NormalizedUserName = model.UserName.ToUpper(),
-            NormalizedEmail = model.Email.ToUpper(),
-            EmailConfirmed = true
-        };
-
-        var result = await userManager.CreateAsync(user, model.Password);
-
-        if (!result.Succeeded)
-        {
-            var errors = string.Join(", ", result.Errors.Select(e => e.Description));
-            return new AuthResponseDTO { IsSuccess = false, ErrorMessage = errors };
+            return HTTPResult<AuthSuccessResponseDTO>.Failure("Невірний логін або пароль.");
         }
         
-        await userManager.AddToRoleAsync(user, "User");
-
-        return await DispatchToken(user);
+        return await IssueTokensAsync(user, model.RememberMe);
     }
 
-    public async Task<AuthResponseDTO> RefreshTokenAsync(RefreshTokenRequestDTO model)
+    public async Task<HTTPResult<AuthSuccessResponseDTO>> RefreshTokenAsync(RefreshTokenRequestDTO model)
     {
         var storedRefreshToken = await context.RefreshTokens
             .Include(r => r.User)
             .FirstOrDefaultAsync(r => r.Token == model.RefreshToken);
-        
+
         if (storedRefreshToken == null)
-            return new AuthResponseDTO { IsSuccess = false, ErrorMessage = "Token not found" };
+            return HTTPResult<AuthSuccessResponseDTO>.Failure("Токен не знайдено.");
 
         if (storedRefreshToken.ExpiresAt < DateTime.UtcNow)
-            return new AuthResponseDTO { IsSuccess = false, ErrorMessage = "Token expired" };
-
+            return HTTPResult<AuthSuccessResponseDTO>.Failure("Термін дії токена минув. Увійдіть знову.");
+        
         if (storedRefreshToken.IsRevoked)
-            return new AuthResponseDTO { IsSuccess = false, ErrorMessage = "Token revoked" };
+            return HTTPResult<AuthSuccessResponseDTO>.Failure("Токен був відкликаний. Можлива компрометація.");
         
         storedRefreshToken.IsRevoked = true;
         context.RefreshTokens.Update(storedRefreshToken);
         await context.SaveChangesAsync();
+
+        bool wasRememberMe = (storedRefreshToken.ExpiresAt - storedRefreshToken.CreatedAt).TotalDays > 7;
         
         var user = storedRefreshToken.User;
-        return await DispatchToken(user);
+        
+        return await IssueTokensAsync(user, wasRememberMe);
     }
-    
-    private async Task<AuthResponseDTO> DispatchToken(User user)
+
+    public async Task<HTTPResult<AuthSuccessResponseDTO>> IssueTokensAsync(User user, bool rememberMe)
     {
         var accessToken = await GenerateJwtToken(user);
-        var refreshToken = GenerateRefreshToken(user.Id);
+        var refreshToken = GenerateRefreshToken(user.Id, rememberMe);
         
         await SaveRefreshTokenAsync(refreshToken);
         
         var roles = await userManager.GetRolesAsync(user);
-        
-        return new AuthResponseDTO 
-        { 
-            IsSuccess = true, 
-            AccessToken = accessToken, 
-            RefreshToken = refreshToken.Token,
-            UserName = user.UserName,
-            Role = roles.FirstOrDefault() 
-        };
+
+        return HTTPResult<AuthSuccessResponseDTO>.Success(
+            new AuthSuccessResponseDTO
+            {
+                AccessToken = accessToken,
+                RefreshToken = refreshToken.Token,
+                UserName = user.UserName,
+                Role = roles
+            }
+        );
     }
 
     private async Task<string> GenerateJwtToken(User user)
@@ -118,35 +90,36 @@ public class AuthService(UserManager<User> userManager, IConfiguration configura
         foreach (var role in roles) claims.Add(new Claim(ClaimTypes.Role, role));
         
         var keyString = configuration["Jwt:Key"];
-        if (string.IsNullOrEmpty(keyString))
-            throw new InvalidOperationException("JWT Key is missing in configuration.");
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(keyString));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var token = new JwtSecurityToken(
-            configuration["Jwt:Issuer"] ?? "LibraryServer",
-            configuration["Jwt:Audience"] ?? "LibraryClient",
+            configuration["Jwt:Issuer"],
+            configuration["Jwt:Audience"],
             claims,
-            expires: DateTime.Now.AddMinutes(15),
+            expires: DateTime.UtcNow.AddMinutes(15),
             signingCredentials: creds
         );
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
     
-    private RefreshToken GenerateRefreshToken(Guid userId)
+    private RefreshToken GenerateRefreshToken(Guid userId, bool rememberMe)
     {
         var randomNumber = new byte[32];
         using var rng = RandomNumberGenerator.Create();
         rng.GetBytes(randomNumber);
         
+        var lifespanDays = rememberMe ? 30 : 1; 
+        
         return new RefreshToken
         {
             Token = Convert.ToBase64String(randomNumber),
-            ExpiresAt = DateTime.UtcNow.AddDays(30),
+            ExpiresAt = DateTime.UtcNow.AddDays(lifespanDays),
             CreatedAt = DateTime.UtcNow,
-            UserId = userId
+            UserId = userId,
+            IsRevoked = false
         };
     }
 

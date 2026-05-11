@@ -1,8 +1,8 @@
 ﻿namespace YourDarkSoulsAssistant.UsersService.DTOs.Users;
 
-public record SmallUserDTO
+public record SmallUserResponseDTO
 {
-    public required string Id { get; init; }
+    public required Guid Id { get; init; }
     
     public required string FirstName { get; init; }
     

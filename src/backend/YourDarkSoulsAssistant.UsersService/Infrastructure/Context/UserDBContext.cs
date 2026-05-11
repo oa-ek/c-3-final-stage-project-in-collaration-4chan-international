@@ -19,19 +19,11 @@ public class UserDBContext : IdentityDbContext<User, Role, Guid>
     {
         base.OnModelCreating(builder);
         
-        builder.Entity<RevokedToken>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.Property(e => e.Token).IsRequired();
-        });
+        builder.ApplyConfigurationsFromAssembly(typeof(UserDBContext).Assembly);
         
-        builder.Entity<User>()
-            .HasMany(u => u.Roles)
-            .WithMany(r => r.Users)
-            .UsingEntity<IdentityUserRole<Guid>>(
-                role => role.HasOne<Role>().WithMany().HasForeignKey(ur => ur.RoleId).IsRequired(),
-                user => user.HasOne<User>().WithMany().HasForeignKey(ur => ur.UserId).IsRequired(),
-                join => join.ToTable("AspNetUserRoles")
-            );
+        builder.Entity<IdentityUserClaim<Guid>>().ToTable("user_claims");
+        builder.Entity<IdentityUserLogin<Guid>>().ToTable("user_logins");
+        builder.Entity<IdentityRoleClaim<Guid>>().ToTable("role_claims");
+        builder.Entity<IdentityUserToken<Guid>>().ToTable("user_tokens");
     }
 }

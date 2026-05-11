@@ -2,6 +2,9 @@
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.Http;
+using YourDarkSoulsAssistant.Core.Middleware;
 
 namespace YourDarkSoulsAssistant.Core.Extensions;
 
@@ -10,6 +13,8 @@ public static class WebConfiguration
     public static void AddBaseWebConfiguration(this IServiceCollection services)
     {
         services.AddControllers();
+        services.AddExceptionHandler<GlobalExceptionHandler>();
+        services.AddProblemDetails();
     }
 
     public static void AddGatewayConfiguration(this IServiceCollection services, IConfiguration config)
@@ -42,6 +47,21 @@ public static class WebConfiguration
                         .AllowCredentials();
                 }
             });
+        });
+        
+        services.AddRateLimiter(options =>
+        {
+            options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
+                RateLimitPartition.GetFixedWindowLimiter(
+                    partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                    factory: _ => new FixedWindowRateLimiterOptions
+                    {
+                        AutoReplenishment = true,
+                        PermitLimit = 100,
+                        Window = TimeSpan.FromMinutes(1)
+                    }));
+                
+            options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
         });
     }
 }

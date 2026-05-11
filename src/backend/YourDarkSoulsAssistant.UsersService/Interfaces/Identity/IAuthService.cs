@@ -1,10 +1,13 @@
-﻿using YourDarkSoulsAssistant.UsersService.DTOs.Auth;
+﻿using YourDarkSoulsAssistant.Core.DTOs;
+using YourDarkSoulsAssistant.UsersService.DTOs.Auth;
+using YourDarkSoulsAssistant.UsersService.Models;
 
 namespace YourDarkSoulsAssistant.UsersService.Interfaces.Identity;
 
 public interface IAuthService
 {
-    Task<AuthResponseDTO> LoginAsync(LoginRequestDTO model);
-    Task<AuthResponseDTO> RegisterAsync(RegisterRequestDTO model);
-    Task<AuthResponseDTO> RefreshTokenAsync(RefreshTokenRequestDTO model);
+    Task<HTTPResult<AuthSuccessResponseDTO>> LoginAsync(LoginRequestDTO model);
+    Task<HTTPResult<AuthSuccessResponseDTO>> RefreshTokenAsync(RefreshTokenRequestDTO model);
+
+    Task<HTTPResult<AuthSuccessResponseDTO>> IssueTokensAsync(User user, bool rememberMe);
 }

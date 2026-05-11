@@ -31,12 +31,11 @@ public class AdminController(IUserService userService) : ControllerBase
     }
     
     [HttpPost("change-role")]
-    public async Task<IActionResult> ChangeUserRole([FromBody] ChangeRoleDTO request)
+    public async Task<IActionResult> ChangeUserRole([FromBody] ChangeUserRolesRequestDTO request)
     {
         var result = await userService.UpdateUserRoleAsync(request.Id, request.Roles);
-    
-        if (!result) return BadRequest("Failed to update user role");
-
+        
+        if (!result.IsSuccess) return BadRequest(result.ErrorMessage);
         return Ok();
     }
 }

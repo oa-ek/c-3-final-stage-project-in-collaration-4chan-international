@@ -1,6 +1,11 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using FluentValidation;
+using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Identity;
 using YourDarkSoulsAssistant.UsersService.Infrastructure.Context;
+using YourDarkSoulsAssistant.UsersService.Interfaces.Identity;
 using YourDarkSoulsAssistant.UsersService.Models;
+using YourDarkSoulsAssistant.UsersService.Services;
+using YourDarkSoulsAssistant.UsersService.Validators;
 
 namespace YourDarkSoulsAssistant.UsersService.Extensions;
 
@@ -23,5 +28,22 @@ public static class ProgramExtensions
             })
             .AddEntityFrameworkStores<UserDBContext>()
             .AddDefaultTokenProviders();
+    }
+    
+    public static void AppServicesRegistration(this IServiceCollection services)
+    {
+        services
+            .AddAutoMapper(config => { config.AddProfile<UserMappingProfile>(); })
+            .AddHostedService<GarbageCollectorService>()
+            .AddScoped<IAuthService, AuthService>()
+            .AddScoped<IUserService, UserService>()
+            .AddScoped<ITokenBlacklistService, TokenBlacklistService>();
+    }
+    
+    public static void AddValidation(this IServiceCollection services)
+    {
+        services.AddFluentValidationAutoValidation();
+        services.AddValidatorsFromAssemblyContaining<CreateUserRequestValidator>();
+        services.AddValidatorsFromAssemblyContaining<CreateRoleRequestValidator>();
     }
 }
