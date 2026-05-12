@@ -14,10 +14,10 @@ public class UserMappingProfile : Profile
         CreateMap<UpdateRoleRequestDTO, Role>()
             .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
+        CreateMap<Role, RoleResponseDTO>();
+
         
         CreateMap<User, UserResponseDTO>()
-            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.ToString()))
-
             // Заглушка, якщо BuildCounts не зберігається в БД. 
             // Якщо є в БД, то просто видали цей рядок, AutoMapper змапить автоматично
             .ForMember(dest => dest.BuildCounts, opt => opt.MapFrom(src => 23235))
@@ -30,7 +30,6 @@ public class UserMappingProfile : Profile
             .ForMember(dest => dest.Roles, opt => opt.MapFrom(src => src.Roles));
         
         CreateMap<User, SmallUserResponseDTO>()
-            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.ToString()))
             .ForMember(dest => dest.Roles, opt => opt.MapFrom(src => src.Roles.Select(r => r.Name)));
         
         // CreateUserRequestDTO -> User

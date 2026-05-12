@@ -10,6 +10,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\YourDarkSoulsAssistant.ApiGateway\YourDarkSoulsAssistant.ApiGateway.csproj" />
+      <ProjectReference Include="..\YourDarkSoulsAssistant.ArticlesService\YourDarkSoulsAssistant.ArticlesService.csproj" />
       <ProjectReference Include="..\YourDarkSoulsAssistant.ContentDeliveryService\YourDarkSoulsAssistant.ContentDeliveryService.csproj" />
       <ProjectReference Include="..\YourDarkSoulsAssistant.GameItemsCatalogService\YourDarkSoulsAssistant.GameItemsCatalogService.csproj" />
       <ProjectReference Include="..\YourDarkSoulsAssistant.UsersService\YourDarkSoulsAssistant.UsersService.csproj" />

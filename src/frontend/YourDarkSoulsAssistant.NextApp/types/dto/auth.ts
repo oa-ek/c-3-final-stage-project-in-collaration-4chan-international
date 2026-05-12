@@ -1,24 +1,20 @@
 export interface LoginRequestDTO {
-    email: string;
+    login: string;
     password?: string;
+    rememberMe?: boolean;
 }
 
-export interface RegisterRequestDTO {
-    firstName: string;
-    lastName: string;
-    userName: string;
-    email: string;
-    password?: string;
-    confirmPassword?: string;
+export interface AuthTokensDTO {
+    accessToken: string;
+    refreshToken: string;
+    userName?: string;
+    role?: string[];
 }
 
 export interface AuthResponseDTO {
     isSuccess: boolean;
-    accessToken?: string | null;
-    refreshToken?: string | null;
     errorMessage?: string | null;
-    userName?: string | null;
-    role?: string | null;
+    data?: AuthTokensDTO | null;
 }
 
 export interface RefreshTokenRequestDTO {

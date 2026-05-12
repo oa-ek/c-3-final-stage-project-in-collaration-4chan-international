@@ -7,6 +7,7 @@ public static class OpenAPIConfiguration
 {
     public static void AddOpenApiDocumentationRoot(this IServiceCollection services)
     {
+        services.AddOpenApi("articles");
         services.AddOpenApi("users"); 
         services.AddOpenApi("content");
         services.AddOpenApi("gameitems");

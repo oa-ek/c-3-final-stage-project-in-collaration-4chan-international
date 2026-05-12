@@ -15,6 +15,13 @@ var contentDeliveryService = builder
     .WithEnvironment("GatewaySecret", gatewaySecret)
     .WithHttpHealthCheck("/health");
 
+var articlesService = builder
+    .AddProject<Projects.YourDarkSoulsAssistant_ArticlesService>("ArticlesService")
+    .WithReference(contentDeliveryService)
+    .WithReference(redis)
+    .WithEnvironment("GatewaySecret", gatewaySecret)
+    .WithHttpHealthCheck("/health");
+
 var gameItemsCatalogService = builder
     .AddProject<Projects.YourDarkSoulsAssistant_GameItemsCatalogService>("GameItemsCatalogService")
     .WithReference(contentDeliveryService)
@@ -25,6 +32,7 @@ var gateway = builder
     .AddProject<Projects.YourDarkSoulsAssistant_ApiGateway>("Gateway")
     .WithReference(contentDeliveryService)
     .WithReference(gameItemsCatalogService)
+    .WithReference(articlesService)
     .WithReference(userService)
     .WithEnvironment("GatewaySecret", gatewaySecret)
     .WithHttpHealthCheck("/health");

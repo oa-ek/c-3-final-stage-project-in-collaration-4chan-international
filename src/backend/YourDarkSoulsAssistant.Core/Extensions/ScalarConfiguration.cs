@@ -12,6 +12,7 @@ public static class ScalarConfiguration
             options.WithTitle("Dark Souls Assistant - Master API")
                 .WithTheme(ScalarTheme.Mars)
                 .WithOpenApiRoutePattern("/api/{documentName}/openapi/v1.json")
+                .AddDocument("articles", "Articles Service")
                 .AddDocument("users", "User Service")
                 .AddDocument("content", "Content Delivery Service")
                 .AddDocument("gameitems", "Game Items Catalog Service")

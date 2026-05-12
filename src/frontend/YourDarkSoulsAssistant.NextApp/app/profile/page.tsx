@@ -12,12 +12,12 @@ import {
 import { AdminDashboard } from '@/components/admin/admin-dashboard'
 import { AdminUsers } from '@/components/admin/admin-users'
 import { AdminEquipment } from '@/components/admin/admin-equipment'
-import type { UpdateUserDTO } from '@/types/dto'
+import type { UpdateUserRequestDTO } from '@/types/dto/users'
 import {tokenStorage} from "@/lib/api-client";
+import {checkIsAdmin} from "@/lib/utils";
 
 type AdminTab = 'dashboard' | 'users' | 'equipment'
 
-// Тимчасовий мок для активності (поки немає API)
 const MOCK_ACTIVITIES = [
     { id: 1, icon: 'sword', title: 'Створено новий білд', detail: 'Лицар Лотріка (STR/FTH)', time: '2 години тому', color: 'text-orange-500' },
     { id: 2, icon: 'shield', title: 'Оновлено спорядження', detail: 'Додано Травʼяний щит +5', time: '5 годин тому', color: 'text-blue-500' },
@@ -25,7 +25,7 @@ const MOCK_ACTIVITIES = [
 ]
 
 export default function ProfilePage() {
-    const { user, isLoading, logout, updateProfile, isAdmin } = useAuth()
+    const { user, isAuthenticated, isLoading, logout, updateProfile } = useAuth()
     const router = useRouter()
 
     const [showAdminPanel, setShowAdminPanel] = useState(false)
@@ -38,7 +38,7 @@ export default function ProfilePage() {
     const [editError, setEditError] = useState<string | null>(null)
 
     // Стан форми редагування
-    const [editForm, setEditForm] = useState<UpdateUserDTO>({
+    const [editForm, setEditForm] = useState<UpdateUserRequestDTO>({
         id: '',
         firstName: '',
         lastName: '',
@@ -48,30 +48,42 @@ export default function ProfilePage() {
         covenant: ''
     })
 
-    // Синхронізація форми з даними юзера
+    useEffect(() => {
+        if (!isLoading && !isAuthenticated) {
+            const timer = setTimeout(() => {
+                router.push('/login')
+            }, 0);
+            return () => clearTimeout(timer);
+        }
+    }, [isLoading, isAuthenticated, router])
+
     useEffect(() => {
         if (user) {
-            setEditForm({
-                id: user.id,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                userName: user.userName,
-                email: user.email,
-                avatarPath: user.avatarPath,
-                covenant: user.covenant
-            })
+            const timer = setTimeout(() => {
+                setEditForm({
+                    id: user.id,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    userName: user.userName,
+                    email: user.email,
+                    avatarPath: user.avatarPath,
+                    covenant: user.covenant
+                })
+            }, 0);
+            return () => clearTimeout(timer);
         }
     }, [user])
 
-    if (isLoading) return (
-        <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-            <div className="text-[#C89B64] font-serif animate-pulse tracking-widest">ЗАВАНТАЖЕННЯ ДУШІ...</div>
-        </div>
-    )
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+                <div className="text-[#C89B64] font-serif animate-pulse tracking-widest">ЗАВАНТАЖЕННЯ ДУШІ...</div>
+            </div>
+        )
+    }
 
-    if (!user) {
-        router.push('/login')
-        return null
+    if (!isAuthenticated || !user) {
+        return null;
     }
 
     const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -157,7 +169,7 @@ export default function ProfilePage() {
                         {isEditing && (
                             <div className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
                                 {isUploadingAvatar ? (
-                                    <span className="text-xs text-[#C89B64] font-bold animate-pulse">ЗАВАНТ...</span>
+                                    <span className="text-xs text-[#C89B64] font-bold animate-pulse">ЗАВАНТАЖЕННЯ...</span>
                                 ) : (
                                     <UploadCloud className="w-8 h-8 text-[#C89B64]" />
                                 )}
@@ -171,7 +183,7 @@ export default function ProfilePage() {
                             <h1 className="text-3xl md:text-4xl font-serif text-white tracking-tight uppercase break-all">
                                 {user.userName}
                             </h1>
-                            {user.isAdmin && (
+                            {checkIsAdmin(user?.roles) && (
                                 <span className="px-2 py-0.5 bg-red-900/30 border border-red-500/50 text-red-400 text-[10px] uppercase tracking-tighter rounded shrink-0">
                                     ADMIN
                                 </span>
@@ -201,10 +213,10 @@ export default function ProfilePage() {
                         ) : (
                             <>
                                 <Link
-                                    href="/builds"
+                                    href="/home"
                                     className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-2 bg-[#C89B64] text-black font-bold uppercase tracking-widest text-sm hover:bg-[#E5C07B] transition-all rounded shadow-[0_0_15px_rgba(200,155,100,0.3)] hover:shadow-[0_0_25px_rgba(200,155,100,0.5)]"
                                 >
-                                    <Sword className="w-4 h-4" /> Мої Білди
+                                    <Sword className="w-4 h-4" /> На головну
                                 </Link>
                                 <button
                                     onClick={() => setIsEditing(true)}
@@ -239,7 +251,7 @@ export default function ProfilePage() {
                         </div>
                     </div>
 
-                    {isAdmin && (
+                    {checkIsAdmin(user?.roles) && (
                         <button
                             onClick={() => setShowAdminPanel(!showAdminPanel)}
                             className="w-full py-3 flex items-center justify-center gap-2 bg-red-900/10 border border-red-900/40 text-red-400 hover:bg-red-900/20 transition-all rounded font-serif uppercase text-xs tracking-widest"

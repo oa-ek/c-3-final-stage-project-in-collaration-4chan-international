@@ -20,7 +20,7 @@ public class AuthController(
     {
         var result = await authService.LoginAsync(model);
         
-        if (!result.IsSuccess) return BadRequest(result.ErrorMessage);
+        if (!result.IsSuccess) return BadRequest(result);
         
         return Ok(result);
     }
@@ -30,7 +30,7 @@ public class AuthController(
     {
         var userResult = await userService.CreateUserAsync(model);
         
-        if (!userResult.IsSuccess) return BadRequest(userResult.ErrorMessage);
+        if (!userResult.IsSuccess) return BadRequest(userResult);
         
         var tokenResult = await authService.IssueTokensAsync(userResult.Data!, rememberMe: false);
     

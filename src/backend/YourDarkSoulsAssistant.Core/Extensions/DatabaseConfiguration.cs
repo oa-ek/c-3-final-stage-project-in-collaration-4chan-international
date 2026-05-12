@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -8,7 +9,7 @@ namespace YourDarkSoulsAssistant.Core.Extensions;
 
 public static class DatabaseConfiguration
 {
-private static string GetAndValidateConnectionString(IConfiguration config, string connectionStringName)
+    private static string GetAndValidateConnectionString(IConfiguration config, string connectionStringName)
     {
         var connectionString = config.GetConnectionString(connectionStringName);
 
@@ -27,12 +28,15 @@ private static string GetAndValidateConnectionString(IConfiguration config, stri
         string connectionStringName) where TContext : DbContext
     {
         var connectionString = GetAndValidateConnectionString(config, connectionStringName);
-        
+
         services.AddDbContext<TContext>(options =>
+        {
             options.UseNpgsql(connectionString, sqlOptions =>
             {
                 sqlOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
-            }));
+            });
+            options.ConfigureWarnings(warnings => warnings.Ignore(RelationalEventId.PendingModelChangesWarning));
+        });
             
         services.AddHealthChecks()
             .AddNpgSql(connectionString, 

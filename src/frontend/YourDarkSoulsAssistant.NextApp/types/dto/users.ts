@@ -1,6 +1,6 @@
 import type { RoleDTO } from './roles';
 
-export interface UserDTO {
+export interface UserResponseDTO {
     id: string;
     firstName: string;
     lastName: string;
@@ -10,12 +10,11 @@ export interface UserDTO {
     avatarPath: string;
     joinDate: string;
     roles: RoleDTO[];
-    isAdmin: boolean;
     level: number;
     covenant: string;
 }
 
-export interface UpdateUserDTO {
+export interface UpdateUserRequestDTO {
     id: string;
     firstName?: string | null;
     lastName?: string | null;
@@ -25,7 +24,7 @@ export interface UpdateUserDTO {
     covenant?: string | null;
 }
 
-export interface CreateUserDTO {
+export interface CreateUserRequestDTO {
     firstName: string;
     lastName: string;
     userName: string;
@@ -34,12 +33,11 @@ export interface CreateUserDTO {
     confirmPassword?: string;
 }
 
-export interface SmallUserDTO {
+export interface SmallUserResponseDTO {
     id: string;
     firstName: string;
     lastName: string;
     userName: string;
     email: string;
-    isAdmin: boolean;
     roles: string[];
 }

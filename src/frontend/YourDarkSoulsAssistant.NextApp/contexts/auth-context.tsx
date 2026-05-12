@@ -1,46 +1,40 @@
 "use client"
 
-import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react"
+import {createContext, useContext, useState, useEffect, useCallback, type ReactNode, useMemo} from "react"
 import { apiClient, tokenStorage } from "@/lib/api-client"
-import type {
-  UserDTO,
-  LoginRequestDTO,
-  RegisterRequestDTO,
-  AuthResponseDTO,
-  UpdateUserDTO
-} from "@/types/dto"
+import { checkIsAdmin } from "@/lib/utils"
+import type { LoginRequestDTO, AuthResponseDTO } from "@/types/dto/auth"
+import type { UserResponseDTO, UpdateUserRequestDTO, CreateUserRequestDTO } from "@/types/dto/users"
 
-// Типи для стану токенів
 interface AuthTokens {
   accessToken: string;
   refreshToken: string;
 }
 
 interface AuthContextType {
-  user: UserDTO | null;
+  user: UserResponseDTO | null;
   tokens: AuthTokens | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   isAdmin: boolean;
   login: (credentials: LoginRequestDTO) => Promise<{ success: boolean; error?: string }>;
-  register: (data: RegisterRequestDTO) => Promise<{ success: boolean; error?: string }>;
+  register: (data: CreateUserRequestDTO) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
-  updateProfile: (data: UpdateUserDTO) => Promise<{ success: boolean; error?: string }>;
+  updateProfile: (data: UpdateUserRequestDTO) => Promise<{ success: boolean; error?: string }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<UserDTO | null>(null)
+  const [user, setUser] = useState<UserResponseDTO | null>(null)
   const [tokens, setTokens] = useState<AuthTokens | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  // Завантаження профілю через наш новий apiClient
-  const fetchProfile = useCallback(async (): Promise<UserDTO | null> => {
+  const fetchProfile = useCallback(async (): Promise<UserResponseDTO | null> => {
     try {
       const response = await apiClient("/Account/profile");
       if (response.ok) {
-        const userData: UserDTO = await response.json();
+        const userData: UserResponseDTO = await response.json();
         setUser(userData);
         if (typeof window !== "undefined") {
           localStorage.setItem("auth_user", JSON.stringify(userData));
@@ -53,76 +47,63 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return null;
   }, []);
 
-  // Ініціалізація при завантаженні сторінки
   useEffect(() => {
     const initAuth = async () => {
-      const storedUser = localStorage.getItem("auth_user");
-      const storedTokens = tokenStorage.getTokens();
+      try {
+        const storedUser = localStorage.getItem("auth_user");
+        const storedTokens = tokenStorage.getTokens();
 
-      if (storedUser && storedTokens) {
-        try {
-          setUser(JSON.parse(storedUser));
+        if (storedUser && storedTokens) {
+          const parsedUser = JSON.parse(storedUser);
+          setUser(parsedUser);
           setTokens(storedTokens);
 
-          // Асинхронно перевіряємо валідність на бекенді
           const freshUser = await fetchProfile();
           if (!freshUser) {
             setUser(null);
             setTokens(null);
             tokenStorage.clearAuth();
           }
-        } catch {
-          tokenStorage.clearAuth();
         }
+      } catch (error) {
+        console.error("Критична помилка ініціалізації сесії:", error);
+        setUser(null);
+        setTokens(null);
+        tokenStorage.clearAuth();
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
 
-    initAuth();
+    void initAuth();
   }, [fetchProfile]);
 
   const login = async (credentials: LoginRequestDTO) => {
     setIsLoading(true);
     try {
-      const response = await fetch("/api/user/Auth/login", {
+      const response = await fetch("/api/users/Auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(credentials),
       });
 
-      const data: AuthResponseDTO = await response.json();
+      const responseData = await response.json().catch(() => null);
 
-      if (data.isSuccess && data.accessToken && data.refreshToken) {
-        const newTokens = { accessToken: data.accessToken, refreshToken: data.refreshToken };
-        setTokens(newTokens);
-        tokenStorage.setTokens(newTokens);
-
-        await fetchProfile(); // Підтягуємо повний профіль
+      if (!responseData) {
         setIsLoading(false);
-        return { success: true };
-      } else {
-        setIsLoading(false);
-        return { success: false, error: data.errorMessage || "Неправильний email або пароль" };
+        return { success: false, error: "Помилка сервера. Некоректна відповідь." };
       }
-    } catch (error) {
-      setIsLoading(false);
-      return { success: false, error: "Помилка мережі. Спробуйте пізніше." };
-    }
-  };
 
-  const register = async (data: RegisterRequestDTO) => {
-    setIsLoading(true);
-    try {
-      const response = await fetch("/api/user/Auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+      if (response.status === 400 && responseData.errors) {
+        const errorMessages = Object.values(responseData.errors).flat().join(" ");
+        setIsLoading(false);
+        return { success: false, error: errorMessages };
+      }
 
-      const responseData: AuthResponseDTO = await response.json();
+      if (responseData.isSuccess && responseData.data) {
+        const { accessToken, refreshToken } = responseData.data;
+        const newTokens = { accessToken, refreshToken };
 
-      if (responseData.isSuccess && responseData.accessToken && responseData.refreshToken) {
-        const newTokens = { accessToken: responseData.accessToken, refreshToken: responseData.refreshToken };
         setTokens(newTokens);
         tokenStorage.setTokens(newTokens);
 
@@ -131,11 +112,55 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { success: true };
       } else {
         setIsLoading(false);
+
+        return { success: false, error: responseData.errorMessage || "Помилка авторизації" };
+      }
+    } catch (error) {
+      setIsLoading(false);
+      return { success: false, error: "Помилка мережі." };
+    }
+  };
+
+  const register = async (data: CreateUserRequestDTO) => {
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/users/Auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      const responseData = await response.json().catch(() => null);
+
+      if (!responseData) {
+        setIsLoading(false);
+        return { success: false, error: "Помилка сервера. Некоректна відповідь." };
+      }
+
+      if (response.status === 400 && responseData.errors) {
+        const errorMessages = Object.values(responseData.errors).flat().join(" ");
+        setIsLoading(false);
+        return { success: false, error: errorMessages };
+      }
+
+      if (responseData.isSuccess && responseData.data) {
+        const { accessToken, refreshToken } = responseData.data;
+        const newTokens = { accessToken, refreshToken };
+
+        setTokens(newTokens);
+        tokenStorage.setTokens(newTokens);
+
+        await fetchProfile();
+        setIsLoading(false);
+        return { success: true };
+      } else {
+        setIsLoading(false);
+
         return { success: false, error: responseData.errorMessage || "Помилка реєстрації" };
       }
     } catch (error) {
       setIsLoading(false);
-      return { success: false, error: "Помилка мережі. Спробуйте пізніше." };
+      return { success: false, error: "Помилка мережі." };
     }
   };
 
@@ -152,7 +177,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     tokenStorage.clearAuth();
   };
 
-  const updateProfile = async (data: UpdateUserDTO) => {
+  const updateProfile = async (data: UpdateUserRequestDTO) => {
     try {
       const response = await apiClient("/Account/profile", {
         method: "PUT",
@@ -171,20 +196,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+// Загортаємо методи, щоб вони не перестворювались
+  const memoizedLogin = useCallback(login, [fetchProfile]);
+  const memoizedRegister = useCallback(register, [fetchProfile]);
+  const memoizedLogout = useCallback(logout, []);
+  const memoizedUpdateProfile = useCallback(updateProfile, [fetchProfile]);
+
+  // Мемоїзуємо весь контекст
+  const contextValue = useMemo(() => ({
+    user,
+    tokens,
+    isAuthenticated: !!user && !!tokens,
+    isLoading,
+    isAdmin: checkIsAdmin(user?.roles),
+    login: memoizedLogin,
+    register: memoizedRegister,
+    logout: memoizedLogout,
+    updateProfile: memoizedUpdateProfile,
+  }), [user, tokens, isLoading, memoizedLogin, memoizedRegister, memoizedLogout, memoizedUpdateProfile]);
+
   return (
-      <AuthContext.Provider
-          value={{
-            user,
-            tokens,
-            isAuthenticated: !!user && !!tokens,
-            isLoading,
-            isAdmin: user?.isAdmin ?? false, // Використовуємо поле isAdmin з нашого UserDTO
-            login,
-            register,
-            logout,
-            updateProfile,
-          }}
-      >
+      <AuthContext.Provider value={contextValue}>
         {children}
       </AuthContext.Provider>
   );

@@ -7,14 +7,24 @@ const nextConfig = {
     unoptimized: true,
   },
   async rewrites() {
+    const API_URL = process.env.API_GATEWAY_URL || 'http://127.0.0.1:5281';
+
     return [
       {
-        source: '/api/user/:path*',
-        destination: 'http://api-gateway:8080/api/user/:path*'
+        source: '/api/users/:path*',
+        destination: `${API_URL}/api/users/:path*`
       },
       {
         source: '/api/content/:path*',
-        destination: 'http://api-gateway:8080/api/content/:path*'
+        destination: `${API_URL}/api/content/:path*`
+      },
+      {
+        source: '/api/gameitems/:path*',
+        destination: `${API_URL}/api/gameitems/:path*`
+      },
+      {
+        source: '/api/articles/:path*',
+        destination: `${API_URL}/api/articles/:path*`
       }
     ];
   },

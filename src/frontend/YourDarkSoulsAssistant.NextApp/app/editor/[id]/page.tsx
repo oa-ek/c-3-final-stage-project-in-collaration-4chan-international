@@ -141,8 +141,8 @@ export default function EditorPage() {
     // Save to localStorage
     localStorage.setItem(`build-${buildId}`, JSON.stringify(buildData))
     
-    // Also save to builds list
-    const buildsListStr = localStorage.getItem("builds-list") || "[]"
+    // Also save to home list
+    const buildsListStr = localStorage.getItem("home-list") || "[]"
     const buildsList = JSON.parse(buildsListStr)
     const existingIndex = buildsList.findIndex((b: { id: string }) => b.id === buildId)
     
@@ -151,7 +151,7 @@ export default function EditorPage() {
     } else {
       buildsList.push({ id: buildId, name: buildName, updatedAt: buildData.updatedAt })
     }
-    localStorage.setItem("builds-list", JSON.stringify(buildsList))
+    localStorage.setItem("home-list", JSON.stringify(buildsList))
 
     // Simulate save delay
     await new Promise(resolve => setTimeout(resolve, 500))
@@ -221,10 +221,10 @@ export default function EditorPage() {
               )}
             </button>
             <Link
-              href="/builds"
+              href="/home"
               className="px-4 py-2 text-sm text-gray-400 hover:text-[#C89B64] border border-gray-700 hover:border-[#C89B64] transition-all uppercase tracking-wider"
             >
-              Back to Builds
+              Back to Home
             </Link>
           </div>
         </div>

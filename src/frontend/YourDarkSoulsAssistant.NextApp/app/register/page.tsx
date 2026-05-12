@@ -5,23 +5,26 @@ import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { useAuth } from '@/contexts/auth-context'
 import Link from 'next/link'
-import type { RegisterRequestDTO } from '@/types/dto'
+import type { CreateUserRequestDTO } from '@/types/dto/users'
 import {getImageUrl} from "@/lib/content-utils";
 
 export default function RegisterPage() {
     const [error, setError] = useState<string | null>(null)
-    const { register, handleSubmit, watch, formState: { errors } } = useForm<RegisterRequestDTO>()
+    const { register, handleSubmit, watch, formState: { errors } } = useForm<CreateUserRequestDTO>()
 
     const router = useRouter()
     const { register: registerUser, isAuthenticated, isLoading } = useAuth()
 
     useEffect(() => {
         if (isAuthenticated && !isLoading) {
-            router.push('/builds')
+            const timer = setTimeout(() => {
+                router.push('/builds')
+            }, 0);
+            return () => clearTimeout(timer);
         }
     }, [isAuthenticated, isLoading, router])
 
-    const onSubmit = async (data: RegisterRequestDTO) => {
+    const onSubmit = async (data: CreateUserRequestDTO) => {
         setError(null)
         const result = await registerUser(data)
         if (!result.success) {
@@ -35,7 +38,7 @@ export default function RegisterPage() {
             style={{ backgroundImage: `url('${getImageUrl('auth/wallpaper')}')` }}
         >
             <div className="w-full max-w-md p-10 bg-[#121212]/60 backdrop-blur-md border border-[#C89B64]/40 shadow-[0_0_40px_rgba(200,155,100,0.1)] rounded-sm z-10 relative">
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#C89B64] to-transparent opacity-50" />
+                <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-[#C89B64] to-transparent opacity-50" />
 
                 <h1 className="text-3xl font-serif text-center mb-8 text-[#C89B64] uppercase tracking-[0.3em]">
                     Реєстрація
@@ -98,7 +101,7 @@ export default function RegisterPage() {
                     <button
                         type="submit"
                         disabled={isLoading}
-                        className="w-full py-3 mt-6 bg-gradient-to-r from-[#9A7B4F] to-[#C89B64] hover:from-[#C89B64] hover:to-[#E5C07B] text-black font-bold uppercase tracking-[0.2em] shadow-[0_0_15px_rgba(200,155,100,0.3)] hover:shadow-[0_0_25px_rgba(200,155,100,0.5)] transition-all disabled:opacity-50"
+                        className="w-full py-3 mt-6 bg-linear-to-r from-[#9A7B4F] to-[#C89B64] hover:from-[#C89B64] hover:to-[#E5C07B] text-black font-bold uppercase tracking-[0.2em] shadow-[0_0_15px_rgba(200,155,100,0.3)] hover:shadow-[0_0_25px_rgba(200,155,100,0.5)] transition-all disabled:opacity-50"
                     >
                         {isLoading ? "Loading..." : "Register"}
                     </button>

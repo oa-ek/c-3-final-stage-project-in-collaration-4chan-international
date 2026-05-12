@@ -18,7 +18,7 @@ public class CreateUserRequestValidator : AbstractValidator<CreateUserRequestDTO
         RuleFor(x => x.UserName)
             .NotEmpty().WithMessage("Юзернейм є обов'язковим.")
             .MinimumLength(3).WithMessage("Юзернейм має містити мінімум 3 символи.")
-            .Matches("^[a-zA-Z0-9\\-_\\.]+$").WithMessage("Дозволені лише латинські літери, цифри та знаки -, _, .");
+            .Matches("^[a-zA-Z0-9\\-_\\.]+$").WithMessage("Для юзернейма дозволені лише латинські літери, цифри та знаки -, _, .");
 
         RuleFor(x => x.Email)
             .NotEmpty().WithMessage("Email є обов'язковим.")

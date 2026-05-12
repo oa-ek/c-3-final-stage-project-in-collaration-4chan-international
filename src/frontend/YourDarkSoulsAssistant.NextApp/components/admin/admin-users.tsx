@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { apiClient } from "@/lib/api-client"
+import { checkIsAdmin } from "@/lib/utils"
 import {
   Users, Search, MoreVertical, Shield, User as UserIcon,
   Trash2, Loader2, RefreshCw, Plus, X
@@ -12,14 +13,15 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import type { SmallUserDTO, RoleDTO } from "@/types/dto"
+import type { RoleDTO } from "@/types/dto/roles"
+import type { SmallUserResponseDTO } from "@/types/dto/users"
 
 // Налаштування кешу
 const CACHE_KEY = "admin_users_cache"
 const CACHE_TTL_MS = 5 * 60 * 1000 // 5 хвилин
 
 export function AdminUsers() {
-  const [users, setUsers] = useState<SmallUserDTO[]>([])
+  const [users, setUsers] = useState<SmallUserResponseDTO[]>([])
   const [allRoles, setAllRoles] = useState<RoleDTO[]>([])
 
   const [isLoading, setIsLoading] = useState(true)
@@ -28,7 +30,7 @@ export function AdminUsers() {
   const [searchQuery, setSearchQuery] = useState("")
 
   // Стан для модалки ролей
-  const [managingUser, setManagingUser] = useState<SmallUserDTO | null>(null)
+  const [managingUser, setManagingUser] = useState<SmallUserResponseDTO | null>(null)
   const [selectedRoles, setSelectedRoles] = useState<string[]>([])
   const [isSavingRoles, setIsSavingRoles] = useState(false)
 
@@ -38,7 +40,6 @@ export function AdminUsers() {
       if (forceRefresh) setIsRefreshing(true)
       else setIsLoading(true)
 
-      // Перевіряємо кеш, якщо це не примусове оновлення
       if (!forceRefresh) {
         const cachedStr = sessionStorage.getItem(CACHE_KEY)
         if (cachedStr) {
@@ -53,9 +54,8 @@ export function AdminUsers() {
 
       const response = await apiClient("/Admin/all-users")
       if (response.ok) {
-        const data: SmallUserDTO[] = await response.json()
+        const data: SmallUserResponseDTO[] = await response.json()
         setUsers(data)
-        // Зберігаємо в кеш
         sessionStorage.setItem(CACHE_KEY, JSON.stringify({ data, timestamp: Date.now() }))
       } else {
         setError("Не вдалося завантажити список користувачів")
@@ -73,10 +73,9 @@ export function AdminUsers() {
   }, [fetchUsers])
 
   // --- ЛОГІКА УПРАВЛІННЯ РОЛЯМИ ---
-  const handleManageRoles = async (user: SmallUserDTO) => {
+  const handleManageRoles = async (user: SmallUserResponseDTO) => {
     setManagingUser(user)
 
-    // ФІКС 1: Видаляємо всі null, undefined або пусті строки з масиву
     const cleanRoles = user.roles.filter(role => role != null && role !== "");
     setSelectedRoles(cleanRoles);
 
@@ -108,19 +107,17 @@ export function AdminUsers() {
     setIsSavingRoles(true)
 
     try {
-      // ФІКС 2: Ще раз гарантуємо, що відправляємо чистий масив
       const cleanRoles = selectedRoles.filter(role => role != null && role !== "");
 
-      // ЗАПИТ (Обери той, який відповідає твоєму бекенду.
-      // Нижче варіант для випадку, якщо ти додав ChangeRoleDTO у C#)
       const response = await apiClient("/Admin/change-role", {
         method: "POST",
         body: JSON.stringify({ id: managingUser.id, roles: cleanRoles })
       })
 
       if (response.ok) {
+        // ВИПРАВЛЕНО: Більше не намагаємося записати isAdmin сюди
         const updatedUsers = users.map(u =>
-            u.id === managingUser.id ? { ...u, roles: cleanRoles, isAdmin: cleanRoles.includes("Admin") } : u
+            u.id === managingUser.id ? { ...u, roles: cleanRoles } : u
         )
         setUsers(updatedUsers)
         sessionStorage.setItem(CACHE_KEY, JSON.stringify({ data: updatedUsers, timestamp: Date.now() }))
@@ -137,10 +134,14 @@ export function AdminUsers() {
 
   const handleDeleteUser = async (userId: string) => {
     if (confirm("Ти впевнений, що хочеш видалити цього користувача?")) {
-      // Тут має бути: await apiClient(`/Admin/users/${userId}`, { method: "DELETE" })
-      const updatedUsers = users.filter(u => u.id !== userId)
-      setUsers(updatedUsers)
-      sessionStorage.setItem(CACHE_KEY, JSON.stringify({ data: updatedUsers, timestamp: Date.now() }))
+      const response = await apiClient(`/Admin/users/${userId}`, { method: "DELETE" })
+      if (response.ok) {
+        const updatedUsers = users.filter(u => u.id !== userId)
+        setUsers(updatedUsers)
+        sessionStorage.setItem(CACHE_KEY, JSON.stringify({ data: updatedUsers, timestamp: Date.now() }))
+      } else {
+        alert("Помилка при видаленні")
+      }
     }
   }
 
@@ -206,7 +207,8 @@ export function AdminUsers() {
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-full bg-[#1a1a1a] border border-gray-800 flex items-center justify-center shrink-0">
-                        {u.isAdmin ? <Shield className="w-4 h-4 text-[#C89B64]" /> : <UserIcon className="w-4 h-4 text-gray-500" />}
+                        {/* ВИПРАВЛЕНО: Використовуємо глобальну утиліту */}
+                        {checkIsAdmin(u.roles) ? <Shield className="w-4 h-4 text-[#C89B64]" /> : <UserIcon className="w-4 h-4 text-gray-500" />}
                       </div>
                       <div className="flex flex-col">
                         <span className="text-gray-200 text-sm font-medium">{u.firstName} {u.lastName}</span>
