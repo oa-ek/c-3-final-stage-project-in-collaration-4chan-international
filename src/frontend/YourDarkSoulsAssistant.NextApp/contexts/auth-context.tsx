@@ -1,26 +1,34 @@
 "use client"
 
-import {createContext, useContext, useState, useEffect, useCallback, type ReactNode, useMemo} from "react"
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  type ReactNode,
+} from "react"
 import { apiClient, tokenStorage } from "@/lib/api-client"
 import { checkIsAdmin } from "@/lib/utils"
-import type { LoginRequestDTO, AuthResponseDTO } from "@/types/dto/auth"
+import type { LoginRequestDTO, AuthTokensDTO } from "@/types/dto/auth"
 import type { UserResponseDTO, UpdateUserRequestDTO, CreateUserRequestDTO } from "@/types/dto/users"
 
 interface AuthTokens {
-  accessToken: string;
-  refreshToken: string;
+  accessToken: string
+  refreshToken: string
 }
 
 interface AuthContextType {
-  user: UserResponseDTO | null;
-  tokens: AuthTokens | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  isAdmin: boolean;
-  login: (credentials: LoginRequestDTO) => Promise<{ success: boolean; error?: string }>;
-  register: (data: CreateUserRequestDTO) => Promise<{ success: boolean; error?: string }>;
-  logout: () => Promise<void>;
-  updateProfile: (data: UpdateUserRequestDTO) => Promise<{ success: boolean; error?: string }>;
+  user: UserResponseDTO | null
+  tokens: AuthTokens | null
+  isAuthenticated: boolean
+  isLoading: boolean
+  isAdmin: boolean
+  login: (credentials: LoginRequestDTO) => Promise<{ success: boolean; error?: string }>
+  register: (data: CreateUserRequestDTO) => Promise<{ success: boolean; error?: string }>
+  logout: () => Promise<void>
+  updateProfile: (data: UpdateUserRequestDTO) => Promise<{ success: boolean; error?: string }>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -32,200 +40,200 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchProfile = useCallback(async (): Promise<UserResponseDTO | null> => {
     try {
-      const response = await apiClient("/Account/profile");
+      const response = await apiClient("/Account/profile")
       if (response.ok) {
-        const userData: UserResponseDTO = await response.json();
-        setUser(userData);
+        const userData: UserResponseDTO = await response.json()
+        setUser(userData)
         if (typeof window !== "undefined") {
-          localStorage.setItem("auth_user", JSON.stringify(userData));
+          localStorage.setItem("auth_user", JSON.stringify(userData))
         }
-        return userData;
+        return userData
       }
     } catch (error) {
-      console.error("Failed to fetch profile:", error);
+      console.error("Failed to fetch profile:", error)
     }
-    return null;
-  }, []);
+    return null
+  }, [])
 
   useEffect(() => {
     const initAuth = async () => {
       try {
-        const storedUser = localStorage.getItem("auth_user");
-        const storedTokens = tokenStorage.getTokens();
+        const storedUser = typeof window !== "undefined" ? localStorage.getItem("auth_user") : null
+        const storedTokens = tokenStorage.getTokens()
 
         if (storedUser && storedTokens) {
-          const parsedUser = JSON.parse(storedUser);
-          setUser(parsedUser);
-          setTokens(storedTokens);
+          setUser(JSON.parse(storedUser))
+          setTokens(storedTokens)
 
-          const freshUser = await fetchProfile();
+          const freshUser = await fetchProfile()
           if (!freshUser) {
-            setUser(null);
-            setTokens(null);
-            tokenStorage.clearAuth();
+            setUser(null)
+            setTokens(null)
+            tokenStorage.clearAuth()
           }
         }
       } catch (error) {
-        console.error("Критична помилка ініціалізації сесії:", error);
-        setUser(null);
-        setTokens(null);
-        tokenStorage.clearAuth();
+        console.error("Session initialization error:", error)
+        setUser(null)
+        setTokens(null)
+        tokenStorage.clearAuth()
       } finally {
-        setIsLoading(false);
+        setIsLoading(false)
       }
-    };
-
-    void initAuth();
-  }, [fetchProfile]);
-
-  const login = async (credentials: LoginRequestDTO) => {
-    setIsLoading(true);
-    try {
-      const response = await fetch("/api/users/Auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(credentials),
-      });
-
-      const responseData = await response.json().catch(() => null);
-
-      if (!responseData) {
-        setIsLoading(false);
-        return { success: false, error: "Помилка сервера. Некоректна відповідь." };
-      }
-
-      if (response.status === 400 && responseData.errors) {
-        const errorMessages = Object.values(responseData.errors).flat().join(" ");
-        setIsLoading(false);
-        return { success: false, error: errorMessages };
-      }
-
-      if (responseData.isSuccess && responseData.data) {
-        const { accessToken, refreshToken } = responseData.data;
-        const newTokens = { accessToken, refreshToken };
-
-        setTokens(newTokens);
-        tokenStorage.setTokens(newTokens);
-
-        await fetchProfile();
-        setIsLoading(false);
-        return { success: true };
-      } else {
-        setIsLoading(false);
-
-        return { success: false, error: responseData.errorMessage || "Помилка авторизації" };
-      }
-    } catch (error) {
-      setIsLoading(false);
-      return { success: false, error: "Помилка мережі." };
     }
-  };
 
-  const register = async (data: CreateUserRequestDTO) => {
-    setIsLoading(true);
-    try {
-      const response = await fetch("/api/users/Auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+    void initAuth()
+  }, [fetchProfile])
 
-      const responseData = await response.json().catch(() => null);
-
-      if (!responseData) {
-        setIsLoading(false);
-        return { success: false, error: "Помилка сервера. Некоректна відповідь." };
-      }
-
-      if (response.status === 400 && responseData.errors) {
-        const errorMessages = Object.values(responseData.errors).flat().join(" ");
-        setIsLoading(false);
-        return { success: false, error: errorMessages };
-      }
-
-      if (responseData.isSuccess && responseData.data) {
-        const { accessToken, refreshToken } = responseData.data;
-        const newTokens = { accessToken, refreshToken };
-
-        setTokens(newTokens);
-        tokenStorage.setTokens(newTokens);
-
-        await fetchProfile();
-        setIsLoading(false);
-        return { success: true };
-      } else {
-        setIsLoading(false);
-
-        return { success: false, error: responseData.errorMessage || "Помилка реєстрації" };
-      }
-    } catch (error) {
-      setIsLoading(false);
-      return { success: false, error: "Помилка мережі." };
-    }
-  };
-
-  const logout = async () => {
-    if (tokens?.accessToken) {
+  const login = useCallback(
+    async (credentials: LoginRequestDTO) => {
+      setIsLoading(true)
       try {
-        await apiClient("/Auth/logout", { method: "POST" });
-      } catch (error) {
-        console.error("Logout API call failed:", error);
+        const response = await fetch("/api/users/Auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(credentials),
+        })
+
+        const responseData = await response.json().catch(() => null)
+
+        if (!responseData) {
+          return { success: false, error: "Server error. Invalid response." }
+        }
+
+        if (response.status === 400 && responseData.errors) {
+          const errorMessages = Object.values(responseData.errors).flat().join(" ")
+          return { success: false, error: errorMessages }
+        }
+
+        if (responseData.isSuccess && responseData.data) {
+          const { accessToken, refreshToken } = responseData.data as AuthTokensDTO
+          const newTokens = { accessToken, refreshToken }
+          setTokens(newTokens)
+          tokenStorage.setTokens(newTokens)
+          await fetchProfile()
+          return { success: true }
+        }
+
+        return { success: false, error: responseData.errorMessage || "Authorization failed" }
+      } catch {
+        return { success: false, error: "Network error." }
+      } finally {
+        setIsLoading(false)
       }
-    }
+    },
+    [fetchProfile],
+  )
+
+  const register = useCallback(
+    async (data: CreateUserRequestDTO) => {
+      setIsLoading(true)
+      try {
+        const response = await fetch("/api/users/Auth/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        })
+
+        const responseData = await response.json().catch(() => null)
+
+        if (!responseData) {
+          return { success: false, error: "Server error. Invalid response." }
+        }
+
+        if (response.status === 400 && responseData.errors) {
+          const errorMessages = Object.values(responseData.errors).flat().join(" ")
+          return { success: false, error: errorMessages }
+        }
+
+        if (responseData.isSuccess && responseData.data) {
+          const { accessToken, refreshToken } = responseData.data as AuthTokensDTO
+          const newTokens = { accessToken, refreshToken }
+          setTokens(newTokens)
+          tokenStorage.setTokens(newTokens)
+          await fetchProfile()
+          return { success: true }
+        }
+
+        return { success: false, error: responseData.errorMessage || "Registration failed" }
+      } catch {
+        return { success: false, error: "Network error." }
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    [fetchProfile],
+  )
+
+  const logout = useCallback(async () => {
+    // 1. Запам'ятовуємо токен до того, як очистити стан
+    const tokenToRevoke = tokens?.accessToken;
+
+    // 2. ОДРАЗУ очищаємо стан (синхронно). Це миттєво зробить isAuthenticated = false.
     setUser(null);
     setTokens(null);
     tokenStorage.clearAuth();
-  };
 
-  const updateProfile = async (data: UpdateUserRequestDTO) => {
-    try {
-      const response = await apiClient("/Account/profile", {
-        method: "PUT",
-        body: JSON.stringify(data),
-      });
-
-      if (response.ok) {
-        await fetchProfile();
-        return { success: true };
-      } else {
-        const errorData = await response.json().catch(() => ({}));
-        return { success: false, error: errorData.errorMessage || "Не вдалося оновити профіль" };
+    // 3. Відправляємо запит на сервер для інвалідації токена у фоні
+    if (tokenToRevoke) {
+      try {
+        // Використовуємо звичайний fetch, щоб вручну додати щойно видалений зі сховища токен
+        await fetch("/api/users/Auth/logout", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${tokenToRevoke}`
+          }
+        });
+      } catch (error) {
+        console.error("Logout API call failed:", error)
       }
-    } catch (error) {
-      return { success: false, error: "Помилка мережі." };
     }
-  };
+  }, [tokens])
 
-// Загортаємо методи, щоб вони не перестворювались
-  const memoizedLogin = useCallback(login, [fetchProfile]);
-  const memoizedRegister = useCallback(register, [fetchProfile]);
-  const memoizedLogout = useCallback(logout, []);
-  const memoizedUpdateProfile = useCallback(updateProfile, [fetchProfile]);
+  const updateProfile = useCallback(
+    async (data: UpdateUserRequestDTO) => {
+      try {
+        const response = await apiClient("/Account/profile", {
+          method: "PUT",
+          body: JSON.stringify(data),
+        })
 
-  // Мемоїзуємо весь контекст
-  const contextValue = useMemo(() => ({
-    user,
-    tokens,
-    isAuthenticated: !!user && !!tokens,
-    isLoading,
-    isAdmin: checkIsAdmin(user?.roles),
-    login: memoizedLogin,
-    register: memoizedRegister,
-    logout: memoizedLogout,
-    updateProfile: memoizedUpdateProfile,
-  }), [user, tokens, isLoading, memoizedLogin, memoizedRegister, memoizedLogout, memoizedUpdateProfile]);
+        if (response.ok) {
+          await fetchProfile()
+          return { success: true }
+        }
 
-  return (
-      <AuthContext.Provider value={contextValue}>
-        {children}
-      </AuthContext.Provider>
-  );
+        const errorData = await response.json().catch(() => ({}))
+        return { success: false, error: errorData.errorMessage || errorData.message || "Failed to update profile" }
+      } catch {
+        return { success: false, error: "Network error." }
+      }
+    },
+    [fetchProfile],
+  )
+
+  const contextValue = useMemo<AuthContextType>(
+    () => ({
+      user,
+      tokens,
+      isAuthenticated: !!user && !!tokens,
+      isLoading,
+      isAdmin: checkIsAdmin(user?.roles),
+      login,
+      register,
+      logout,
+      updateProfile,
+    }),
+    [user, tokens, isLoading, login, register, logout, updateProfile],
+  )
+
+  return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
 }
 
 export function useAuth() {
-  const context = useContext(AuthContext);
+  const context = useContext(AuthContext)
   if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
+    throw new Error("useAuth must be used within an AuthProvider")
   }
-  return context;
+  return context
 }

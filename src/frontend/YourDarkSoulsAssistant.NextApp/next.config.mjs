@@ -12,20 +12,20 @@ const nextConfig = {
     return [
       {
         source: '/api/users/:path*',
-        destination: `${API_URL}/api/users/:path*`
+        destination: `${API_URL}/api/users/:path*`,
       },
       {
         source: '/api/content/:path*',
-        destination: `${API_URL}/api/content/:path*`
+        destination: `${API_URL}/api/content/:path*`,
       },
       {
         source: '/api/gameitems/:path*',
-        destination: `${API_URL}/api/gameitems/:path*`
+        destination: `${API_URL}/api/gameitems/:path*`,
       },
       {
         source: '/api/articles/:path*',
-        destination: `${API_URL}/api/articles/:path*`
-      }
+        destination: `${API_URL}/api/articles/:path*`,
+      },
     ];
   },
 }

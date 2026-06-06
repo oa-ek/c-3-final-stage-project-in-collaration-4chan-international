@@ -36,7 +36,7 @@ public class AuthController(
     
         if (!tokenResult.IsSuccess) return StatusCode(500, new { message = tokenResult.ErrorMessage });
         
-        return Ok(tokenResult.Data);
+        return Ok(tokenResult);
     }
 
     [HttpPost("logout")]

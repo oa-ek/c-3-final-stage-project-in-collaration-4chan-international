@@ -1,5 +1,7 @@
+"use client"
+
 import { useState } from 'react'
-import { Search, X, Plus, Download, Shield, Sword, Skull } from 'lucide-react'
+import { Search, X, Plus, Download } from 'lucide-react'
 
 // Пропси для модалки
 interface AddWikiItemModalProps {

@@ -4,9 +4,13 @@ import Link from 'next/link'
 import { Shield } from 'lucide-react'
 import { getImageUrl } from '@/lib/content-utils'
 import type { UserResponseDTO } from '@/types/dto/users'
-import { checkIsAdmin } from '@/lib/utils'
 
-export function DashboardUserCard({ user }: { user: UserResponseDTO }) {
+interface DashboardUserCardProps {
+    user: UserResponseDTO
+    isAdmin: boolean
+}
+
+export function DashboardUserCard({ user, isAdmin }: DashboardUserCardProps) {
     return (
         <div className="p-6">
             <Link
@@ -19,21 +23,21 @@ export function DashboardUserCard({ user }: { user: UserResponseDTO }) {
                             src={getImageUrl(user.avatarPath)}
                             alt={user.userName}
                             className="w-full h-full object-cover"
-                            onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder-user.jpg" }}
+                            onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder-user.jpg' }}
                         />
                     ) : (
                         <span className="text-2xl text-gray-500 uppercase">
-                            {user.userName?.[0] || ''}
+                            {user.firstName?.[0] || ''}{user.lastName?.[0] || ''}
                         </span>
                     )}
                 </div>
                 <div className="flex-1 overflow-hidden">
                     <p className="font-serif text-[#D4AF37] text-lg leading-tight group-hover:drop-shadow-[0_0_5px_rgba(212,175,55,0.8)] transition-all truncate">
-                        {user.userName}
+                        {user.firstName} {user.lastName}
                     </p>
                     <p className="text-xs text-gray-500 uppercase tracking-widest flex items-center gap-1 mt-1">
-                        {checkIsAdmin(user.roles) && <Shield className="w-3 h-3 text-[#c4a456]" />}
-                        {checkIsAdmin(user.roles) ? 'Administrator' : 'Tarnished'}
+                        {isAdmin && <Shield className="w-3 h-3 text-[#c4a456]" />}
+                        {isAdmin ? 'Administrator' : 'Tarnished'}
                     </p>
                 </div>
             </Link>

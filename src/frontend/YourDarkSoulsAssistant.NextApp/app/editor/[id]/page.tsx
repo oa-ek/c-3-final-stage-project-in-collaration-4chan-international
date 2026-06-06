@@ -16,7 +16,6 @@ import type {
   DEFAULT_STATS,
   DEFAULT_EQUIPMENT 
 } from "@/types/equipment"
-import {getImageUrl} from "@/lib/content-utils";
 
 // Re-export ItemData for backward compatibility
 export type { ItemData } from "@/types/equipment"
@@ -172,9 +171,9 @@ export default function EditorPage() {
   }
 
   return (
-      <div className="min-h-screen flex-1 flex flex-col relative overflow-hidden bg-cover bg-center bg-no-repeat"
-           style={{ backgroundImage: `url('${getImageUrl('editor/wallpaper')}')` }}>
-        <div className="absolute inset-0 bg-black/60 z-0"></div>
+    <div className="min-h-screen h-screen w-full bg-[#1a1815] overflow-auto flex flex-col">
+      <div className="fixed inset-0 bg-gradient-to-br from-[#2a2520]/80 via-[#1a1815] to-[#0f0e0c] pointer-events-none" />
+
       <header className="sticky top-0 z-20 px-6 py-3 border-b border-[#3a352c]/50 bg-[#1a1815]/95 backdrop-blur-sm">
         <div className="flex items-center gap-4">
           <button
@@ -221,10 +220,10 @@ export default function EditorPage() {
               )}
             </button>
             <Link
-              href="/home"
+              href="/builds"
               className="px-4 py-2 text-sm text-gray-400 hover:text-[#C89B64] border border-gray-700 hover:border-[#C89B64] transition-all uppercase tracking-wider"
             >
-              Back to Home
+              Back to Builds
             </Link>
           </div>
         </div>

@@ -26,7 +26,7 @@ import {
 import AddWikiItemModal from "@/components/wiki/AddWikiItemModal";
 
 // Category types for filtering
-type CategoryType = 'all' | 'weapons' | 'armor' | 'talismans' | 'bosses' | 'guides' | 'locations' | 'magic'
+type CategoryType = 'all' | 'weapons' | 'armors' | 'talismans' | 'bosses' | 'guides' | 'locations' | 'magic'
 
 interface WikiItem {
     id: string
@@ -61,6 +61,7 @@ export default function WikiPage() {
 
     const [items, setItems] = useState<WikiItem[]>([])
     const [isLoading, setIsLoading] = useState(false)
+    const [error, setError] = useState<string | null>(null)
     const [showFilters, setShowFilters] = useState(false)
 
     const [currentPage, setCurrentPage] = useState(1)
@@ -75,6 +76,7 @@ export default function WikiPage() {
     useEffect(() => {
         const fetchItems = async () => {
             setIsLoading(true)
+            setError(null)
             try {
                 // Збираємо параметри запиту
                 const params = new URLSearchParams({
@@ -94,7 +96,7 @@ export default function WikiPage() {
                 // Припускаю, що ендпоінт лежить за адресою /api/articles/wiki
                 const response = await fetch(`/api/articles/wiki?${params.toString()}`)
 
-                if (!response.ok) throw new Error('Помилка завантаження')
+                if (!response.ok) throw new Error('Failed to load wiki items')
 
                 const data = await response.json()
 
@@ -117,6 +119,7 @@ export default function WikiPage() {
             } catch (error) {
                 console.error('Failed to fetch items:', error)
                 setItems([])
+                setError(error instanceof Error ? error.message : 'Failed to load wiki items')
             } finally {
                 setIsLoading(false)
             }
@@ -277,6 +280,18 @@ export default function WikiPage() {
                 {isLoading ? (
                     <div className="flex items-center justify-center h-64">
                         <div className="w-8 h-8 border-2 border-[#D4AF37] border-t-transparent rounded-full animate-spin" />
+                    </div>
+                ) : error ? (
+                    <div className="flex flex-col items-center justify-center h-64 text-center">
+                        <X className="w-12 h-12 text-red-500 mb-4" />
+                        <h3 className="text-xl font-serif text-red-400">Failed to load items</h3>
+                        <p className="text-gray-500 mt-2">{error}</p>
+                        <button
+                            onClick={() => window.location.reload()}
+                            className="mt-4 px-4 py-2 bg-[#D4AF37]/20 text-[#D4AF37] rounded hover:bg-[#D4AF37]/30 transition-colors"
+                        >
+                            Try Again
+                        </button>
                     </div>
                 ) : items.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-64 text-center">

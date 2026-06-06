@@ -19,8 +19,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YourDarkSoulsAssistant.Stat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YourDarkSoulsAssistant.BuildsService", "YourDarkSoulsAssistant.BuildsService\YourDarkSoulsAssistant.BuildsService.csproj", "{5492ABE6-C133-49B3-B2C0-DA1865672451}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YourDarkSoulsAssistant.BillingService", "YourDarkSoulsAssistant.BillingService\YourDarkSoulsAssistant.BillingService.csproj", "{6DB31E8D-5188-4487-BF5B-2FFF1D36FE0B}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YourDarkSoulsAssistant.ArticlesService", "YourDarkSoulsAssistant.ArticlesService\YourDarkSoulsAssistant.ArticlesService.csproj", "{8479558E-6507-48AB-A474-C6F47281D67C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YourDarkSoulsAssistant.Core", "YourDarkSoulsAssistant.Core\YourDarkSoulsAssistant.Core.csproj", "{503335AA-9D4D-4C5F-BB41-FFBFE189B948}"
@@ -75,10 +73,6 @@ Global
 		{5492ABE6-C133-49B3-B2C0-DA1865672451}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5492ABE6-C133-49B3-B2C0-DA1865672451}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5492ABE6-C133-49B3-B2C0-DA1865672451}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6DB31E8D-5188-4487-BF5B-2FFF1D36FE0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6DB31E8D-5188-4487-BF5B-2FFF1D36FE0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6DB31E8D-5188-4487-BF5B-2FFF1D36FE0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6DB31E8D-5188-4487-BF5B-2FFF1D36FE0B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8479558E-6507-48AB-A474-C6F47281D67C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8479558E-6507-48AB-A474-C6F47281D67C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8479558E-6507-48AB-A474-C6F47281D67C}.Release|Any CPU.ActiveCfg = Release|Any CPU

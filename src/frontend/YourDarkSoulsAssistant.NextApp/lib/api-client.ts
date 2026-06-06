@@ -3,12 +3,12 @@ import type { AuthResponseDTO, AuthTokensDTO } from '@/types/dto/auth';
 const API_BASE_URL = "/api/users";
 
 export const tokenStorage = {
-    getTokens: () => {
+    getTokens: (): { accessToken: string; refreshToken: string } | null => {
         if (typeof window === "undefined") return null;
         try {
             const tokens = localStorage.getItem("auth_tokens");
             return tokens ? JSON.parse(tokens) : null;
-        } catch (error) {
+        } catch {
             localStorage.removeItem("auth_tokens");
             return null;
         }
@@ -23,7 +23,7 @@ export const tokenStorage = {
             localStorage.removeItem("auth_tokens");
             localStorage.removeItem("auth_user");
         }
-    }
+    },
 };
 
 let isRefreshing = false;
@@ -37,6 +37,7 @@ const onRefreshed = (token: string | null) => {
     refreshSubscribers.forEach((cb) => cb(token));
     refreshSubscribers = [];
 };
+
 export async function refreshTokensApi(): Promise<string | null> {
     const tokens = tokenStorage.getTokens();
     if (!tokens?.accessToken || !tokens?.refreshToken) return null;
@@ -53,8 +54,8 @@ export async function refreshTokensApi(): Promise<string | null> {
 
         if (response.ok) {
             const result: AuthResponseDTO = await response.json();
-            const data: AuthTokensDTO = result.data as AuthTokensDTO;
-            if (result.isSuccess && data.accessToken && data.refreshToken) {
+            const data = result.data as AuthTokensDTO;
+            if (result.isSuccess && data?.accessToken && data?.refreshToken) {
                 tokenStorage.setTokens({
                     accessToken: data.accessToken,
                     refreshToken: data.refreshToken,
@@ -82,12 +83,9 @@ export async function apiClient(endpoint: string, options: RequestInit = {}): Pr
         headers.set("Content-Type", "application/json");
     }
 
-    const config: RequestInit = {
-        ...options,
-        headers,
-    };
+    const config: RequestInit = { ...options, headers };
 
-    let response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
 
     if (response.status === 401 && tokens?.refreshToken) {
         if (!isRefreshing) {
@@ -95,37 +93,31 @@ export async function apiClient(endpoint: string, options: RequestInit = {}): Pr
             let newToken: string | null = null;
 
             try {
-                // Спроба оновити токен
                 newToken = await refreshTokensApi();
             } catch (error) {
                 console.error("Critical error during token refresh:", error);
             } finally {
-                // ГАРАНТОВАНО знімаємо блокування, навіть якщо бекенд впав чи віддав 404
                 isRefreshing = false;
                 onRefreshed(newToken);
             }
 
             if (newToken) {
                 headers.set("Authorization", `Bearer ${newToken}`);
-                const url = endpoint.startsWith("/api/") ? endpoint : `${API_BASE_URL}${endpoint}`;
-                return fetch(url, { ...config, headers });
-            } else {
-                return response;
+                return fetch(`${API_BASE_URL}${endpoint}`, { ...config, headers });
             }
-        } else {
-            // ... (блок else залишається без змін)
-            return new Promise((resolve) => {
-                subscribeTokenRefresh((newToken) => {
-                    if (newToken) {
-                        headers.set("Authorization", `Bearer ${newToken}`);
-                        const url = endpoint.startsWith("/api/") ? endpoint : `${API_BASE_URL}${endpoint}`;
-                        resolve(fetch(url, { ...config, headers }));
-                    } else {
-                        resolve(response);
-                    }
-                });
-            });
+            return response;
         }
+
+        return new Promise((resolve) => {
+            subscribeTokenRefresh((newToken) => {
+                if (newToken) {
+                    headers.set("Authorization", `Bearer ${newToken}`);
+                    resolve(fetch(`${API_BASE_URL}${endpoint}`, { ...config, headers }));
+                } else {
+                    resolve(response);
+                }
+            });
+        });
     }
 
     return response;

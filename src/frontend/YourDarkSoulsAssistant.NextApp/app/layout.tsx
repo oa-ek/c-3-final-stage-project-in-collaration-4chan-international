@@ -4,20 +4,13 @@ import { Analytics } from '@vercel/analytics/next'
 import { AuthProvider } from '@/contexts/auth-context'
 import './globals.css'
 
-const ebGaramond = EB_Garamond({
-    subsets: ["latin"],
-    weight: ["400", "500", "600", "700", "800"],
-    variable: '--font-eb-garamond'
-});
-
-const geistMono = Geist_Mono({
-    subsets: ["latin"],
-    variable: '--font-geist-mono'
-});
+const _ebGaramond = EB_Garamond({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800"] });
+const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: 'Equipment - Elden Ring UI',
   description: 'Elden Ring inspired equipment and inventory system',
+  generator: 'v0.app',
   icons: {
     icon: [
       {
@@ -44,7 +37,7 @@ export default function RootLayout({
 }>) {
   return (
       <html lang="en">
-      <body className={`${ebGaramond.variable} ${geistMono.variable} font-sans antialiased`}>
+      <body className="font-sans antialiased">
       <AuthProvider>
         {children}
       </AuthProvider>

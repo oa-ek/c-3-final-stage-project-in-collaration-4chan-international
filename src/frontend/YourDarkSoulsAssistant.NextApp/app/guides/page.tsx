@@ -84,6 +84,7 @@ export default function GuidesPage() {
     useEffect(() => {
         const fetchVideos = async () => {
             setIsLoading(true)
+            setError(null)
             try {
                 // Будуємо URL з параметрами
                 const url = new URL('/api/guides/YouTubeGuides/youtube-guides')
@@ -96,17 +97,18 @@ export default function GuidesPage() {
                 }
 
                 const response = await fetch(url.toString())
-                if (!response.ok) throw new Error('Помилка завантаження')
+                if (!response.ok) throw new Error('Failed to load video guides')
 
                 const data = await response.json()
 
                 // data - це наш PagedResult<VideoGuideEntity>
-                setVideos(data.items)
-                setTotalPages(data.totalPages) // Беремо кількість сторінок з бекенду
+                setVideos(data.items ?? [])
+                setTotalPages(data.totalPages ?? 1) // Беремо кількість сторінок з бекенду
 
             } catch (error) {
                 console.error('Failed to fetch videos:', error)
                 setVideos([])
+                setError(error instanceof Error ? error.message : 'Failed to load video guides')
             }
             setIsLoading(false)
         }

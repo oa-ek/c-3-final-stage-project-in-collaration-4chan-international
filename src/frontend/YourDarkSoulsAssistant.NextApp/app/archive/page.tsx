@@ -59,118 +59,14 @@ const gameFilters = [
     { id: 'sekiro', label: 'Sekiro' },
 ]
 
-// Mock data
-const mockImages: GalleryImage[] = [
-    {
-        id: '1',
-        title: 'Firelink Shrine at Dusk',
-        description: 'The eternal bonfire of Firelink Shrine as the sun sets over Lordran.',
-        imageUrl: '/gallery/firelink_shrine.jpg',
-        category: 'screenshot',
-        game: 'dark-souls',
-        tags: ['firelink', 'bonfire', 'lordran'],
-        author: 'Chosen Undead',
-        likes: 1247,
-        views: 5832,
-        uploadedAt: '2024-01-15'
-    },
-    {
-        id: '2',
-        title: 'Malenia, Blade of Miquella',
-        description: 'Fan artwork depicting the Goddess of Rot in her full glory.',
-        imageUrl: '/gallery/malenia_art.jpg',
-        category: 'artwork',
-        game: 'elden-ring',
-        tags: ['malenia', 'boss', 'artwork'],
-        author: 'TarnishedArtist',
-        likes: 3421,
-        views: 12453,
-        uploadedAt: '2024-02-20'
-    },
-    {
-        id: '3',
-        title: 'Anor Londo Cathedral',
-        description: 'The majestic cathedral of Anor Londo bathed in eternal sunlight.',
-        imageUrl: '/gallery/anor_londo.jpg',
-        category: 'wallpaper',
-        game: 'dark-souls',
-        tags: ['anor londo', 'cathedral', '4k'],
-        likes: 2156,
-        views: 8721,
-        uploadedAt: '2024-01-28'
-    },
-    {
-        id: '4',
-        title: 'Erdtree Concept Sketch',
-        description: 'Early concept art for the Erdtree from FromSoftware archives.',
-        imageUrl: '/gallery/erdtree_concept.jpg',
-        category: 'concept',
-        game: 'elden-ring',
-        tags: ['erdtree', 'concept', 'official'],
-        author: 'FromSoftware',
-        likes: 4532,
-        views: 15234,
-        uploadedAt: '2024-03-05'
-    },
-    {
-        id: '5',
-        title: 'Gwyn, Lord of Cinder',
-        description: 'The final boss of Dark Souls, Lord Gwyn awaiting at the Kiln.',
-        imageUrl: '/gallery/gwyn.jpg',
-        category: 'screenshot',
-        game: 'dark-souls',
-        tags: ['gwyn', 'boss', 'kiln'],
-        likes: 1876,
-        views: 6543,
-        uploadedAt: '2024-02-10'
-    },
-    {
-        id: '6',
-        title: 'Lothric Castle Sunrise',
-        description: 'Community screenshot of Lothric Castle at dawn.',
-        imageUrl: '/gallery/lothric_castle.jpg',
-        category: 'community',
-        game: 'dark-souls-3',
-        tags: ['lothric', 'castle', 'sunrise'],
-        author: 'AshenOne2024',
-        likes: 892,
-        views: 3421,
-        uploadedAt: '2024-03-12'
-    },
-    {
-        id: '7',
-        title: 'Ranni the Witch',
-        description: 'Beautiful artwork of the Lunar Princess Ranni.',
-        imageUrl: '/gallery/ranni.jpg',
-        category: 'artwork',
-        game: 'elden-ring',
-        tags: ['ranni', 'npc', 'moon'],
-        author: 'MoonlightArtist',
-        likes: 5234,
-        views: 18765,
-        uploadedAt: '2024-02-28'
-    },
-    {
-        id: '8',
-        title: 'Yharnam Streets',
-        description: 'The gothic horror streets of Yharnam on the night of the hunt.',
-        imageUrl: '/gallery/yharnam.jpg',
-        category: 'screenshot',
-        game: 'bloodborne',
-        tags: ['yharnam', 'streets', 'gothic'],
-        likes: 2341,
-        views: 9876,
-        uploadedAt: '2024-01-20'
-    },
-]
-
 export default function ArchivePage() {
     const { user } = useAuth()
     const [searchQuery, setSearchQuery] = useState('')
     const [activeCategory, setActiveCategory] = useState('all')
     const [activeGame, setActiveGame] = useState('all')
-    const [images, setImages] = useState<GalleryImage[]>(mockImages)
-    const [isLoading, setIsLoading] = useState(false)
+    const [images, setImages] = useState<GalleryImage[]>([])
+    const [isLoading, setIsLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
     const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null)
     const [viewMode, setViewMode] = useState<'grid' | 'masonry'>('grid')
     const [currentPage, setCurrentPage] = useState(1)
@@ -196,21 +92,47 @@ export default function ArchivePage() {
         setCurrentPage(1)
     }, [searchQuery, activeCategory, activeGame])
 
-    // TODO: Fetch from API
-    // useEffect(() => {
-    //   const fetchImages = async () => {
-    //     setIsLoading(true)
-    //     try {
-    //       const response = await fetch('/api/archive/images')
-    //       const data = await response.json()
-    //       setImages(data)
-    //     } catch (error) {
-    //       console.error('Failed to fetch images:', error)
-    //     }
-    //     setIsLoading(false)
-    //   }
-    //   fetchImages()
-    // }, [])
+    // Fetch gallery images from the Content Delivery API.
+    // If the API returns nothing (or is unavailable), the gallery simply
+    // renders its empty state instead of any mock content.
+    useEffect(() => {
+        const fetchImages = async () => {
+            setIsLoading(true)
+            setError(null)
+            try {
+                const response = await fetch('/api/content/ContentItem/gallery')
+                if (!response.ok) throw new Error('Failed to load gallery')
+
+                const data = await response.json()
+                const list: any[] = Array.isArray(data) ? data : (data.items ?? [])
+
+                const mapped: GalleryImage[] = list.map((img: any) => ({
+                    id: String(img.id),
+                    title: img.title ?? img.name ?? 'Untitled',
+                    description: img.description ?? undefined,
+                    imageUrl: img.imageUrl ?? (img.publicRoute ? `/api/content/ContentItem/${img.publicRoute}` : ''),
+                    thumbnailUrl: img.thumbnailUrl ?? undefined,
+                    category: (img.category ?? 'community') as GalleryImage['category'],
+                    game: (img.game ?? 'elden-ring') as GalleryImage['game'],
+                    tags: Array.isArray(img.tags) ? img.tags : [],
+                    author: img.author ?? undefined,
+                    likes: img.likes ?? 0,
+                    views: img.views ?? 0,
+                    uploadedAt: img.uploadedAt ?? img.createdAt ?? '',
+                }))
+
+                setImages(mapped)
+            } catch (error) {
+                console.error('Failed to fetch images:', error)
+                setImages([])
+                setError(error instanceof Error ? error.message : 'Failed to load gallery')
+            } finally {
+                setIsLoading(false)
+            }
+        }
+
+        fetchImages()
+    }, [])
 
     const getGameColor = (game: string) => {
         const colors: Record<string, string> = {
@@ -381,6 +303,18 @@ export default function ArchivePage() {
                 {isLoading ? (
                     <div className="flex items-center justify-center h-64">
                         <div className="w-8 h-8 border-2 border-[#D4AF37] border-t-transparent rounded-full animate-spin" />
+                    </div>
+                ) : error ? (
+                    <div className="flex flex-col items-center justify-center h-64 text-center">
+                        <X className="w-12 h-12 text-red-500 mb-4" />
+                        <h3 className="text-xl font-serif text-red-400">Failed to load gallery</h3>
+                        <p className="text-gray-500 mt-2">{error}</p>
+                        <button
+                            onClick={() => window.location.reload()}
+                            className="mt-4 px-4 py-2 bg-[#D4AF37]/20 text-[#D4AF37] rounded hover:bg-[#D4AF37]/30 transition-colors"
+                        >
+                            Try Again
+                        </button>
                     </div>
                 ) : paginatedImages.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-64 text-center">

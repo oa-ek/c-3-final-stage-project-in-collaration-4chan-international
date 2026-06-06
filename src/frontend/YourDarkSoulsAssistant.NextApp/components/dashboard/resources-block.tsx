@@ -2,11 +2,12 @@
 
 import Link from 'next/link'
 import { BookOpen, LogOut } from 'lucide-react'
-import { useAuth } from '@/contexts/auth-context'
 
-export function DashboardResources() {
-    const { logout } = useAuth()
+interface DashboardResourcesProps {
+    onLogout: () => void
+}
 
+export function DashboardResources({ onLogout }: DashboardResourcesProps) {
     return (
         <div className="px-6 py-4 space-y-2">
             <Link
@@ -31,7 +32,7 @@ export function DashboardResources() {
                 Video Guides
             </Link>
             <button
-                onClick={logout}
+                onClick={onLogout}
                 className="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs text-gray-400 border border-gray-700 hover:border-red-600/50 hover:text-red-400 rounded transition-colors uppercase tracking-wider"
             >
                 <LogOut className="w-3 h-3" />

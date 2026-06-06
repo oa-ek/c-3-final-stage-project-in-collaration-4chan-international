@@ -1,24 +1,22 @@
 "use client"
 
-const SUPPORTED_GAMES = [
-    { id: 'all', name: 'All Games', icon: 'ALL' },
-    { id: 'ds1', name: 'Dark Souls 1', icon: 'DS1' },
-    { id: 'ds2', name: 'Dark Souls 2', icon: 'DS2' },
-    { id: 'ds3', name: 'Dark Souls 3', icon: 'DS3' },
-    { id: 'er', name: 'Elden Ring', icon: 'ER' },
-]
+interface GameItem {
+    id: string
+    name: string
+}
 
-interface GamesSectionProps {
+interface DashboardGamesProps {
+    games: GameItem[]
     activeGame: string
     setActiveGame: (id: string) => void
 }
 
-export function DashboardGames({ activeGame, setActiveGame }: GamesSectionProps) {
+export function DashboardGames({ games, activeGame, setActiveGame }: DashboardGamesProps) {
     return (
         <div className="p-6 flex-1 overflow-y-auto">
             <h3 className="text-xs text-gray-500 uppercase tracking-[0.2em] mb-4">Select Realm</h3>
             <div className="flex flex-col gap-2">
-                {SUPPORTED_GAMES.map(game => (
+                {games.map((game) => (
                     <button
                         key={game.id}
                         onClick={() => setActiveGame(game.id)}
@@ -29,7 +27,7 @@ export function DashboardGames({ activeGame, setActiveGame }: GamesSectionProps)
                         }`}
                     >
                         <div className="w-8 h-8 rounded-sm bg-gray-800 border border-gray-700 flex items-center justify-center overflow-hidden shrink-0">
-                            <span className="text-[10px] font-bold text-gray-500">{game.icon}</span>
+                            <span className="text-xs text-gray-500">{game.id.toUpperCase()}</span>
                         </div>
                         <span className="font-medium tracking-wide">{game.name}</span>
                     </button>

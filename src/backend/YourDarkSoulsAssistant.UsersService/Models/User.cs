@@ -2,7 +2,7 @@
 
 namespace YourDarkSoulsAssistant.UsersService.Models;
 
-public class User : IdentityUser<Guid>
+public sealed class User : IdentityUser<Guid>
 {
     public required string FirstName { get; set; }
     
@@ -20,7 +20,7 @@ public class User : IdentityUser<Guid>
     
     public bool IsActive { get; set; }
     
-    public virtual ICollection<Role> Roles { get; set; } = new List<Role>();
+    public ICollection<Role> Roles { get; set; } = new List<Role>();
     
-    public virtual ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
+    public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
 }
