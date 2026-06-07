@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import type { ItemData } from "@/types/equipment"
 import { cn } from "@/lib/utils"
+import { getImageUrl } from "@/lib/content-utils"
 import { Sword, Shield, CircleDot, Shirt, Gem, FlaskConical } from "lucide-react"
 
 // Slot types for different equipment categories
@@ -54,8 +55,9 @@ export function EquipSlot({
   
   // Determine what image to show
   const hasRealItem = item !== null && item !== undefined
-  const itemImage = item?.image || imageSrc
-  const shouldShowImage = itemImage && !imageError
+  const itemImage = item?.image || item?.icon || imageSrc
+  const itemImageUrl = itemImage ? getImageUrl(itemImage) : undefined
+  const shouldShowImage = hasRealItem && itemImageUrl && !imageError
 
   return (
     <div
@@ -76,7 +78,7 @@ export function EquipSlot({
       onClick={onClick}
       onMouseEnter={() => {
         if (item) {
-          onHover({ ...item, image: item.image || imageSrc })
+          onHover({ ...item, image: itemImageUrl })
         }
       }}
       onMouseLeave={() => onHover(null)}
@@ -101,7 +103,7 @@ export function EquipSlot({
         {shouldShowImage ? (
           // Show item image
           <img
-            src={itemImage}
+            src={itemImageUrl}
             alt={item?.name || "Equipment"}
             className={cn(
               "w-full h-full object-contain",
@@ -113,9 +115,17 @@ export function EquipSlot({
           />
         ) : (
           // Show placeholder icon for empty slot
-          <div className="text-[#5a554a]/50">
-            {icon || SLOT_ICONS[slotType]}
-          </div>
+          defaultIcon ? (
+            <img
+              src={defaultIcon}
+              alt="Empty slot"
+              className="w-full h-full object-contain opacity-50"
+            />
+          ) : (
+            <div className="text-[#5a554a]/50">
+              {icon || SLOT_ICONS[slotType]}
+            </div>
+          )
         )}
       </div>
 

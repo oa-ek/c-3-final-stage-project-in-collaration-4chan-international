@@ -1,9 +1,13 @@
 "use client"
 
-import Link from 'next/link'
 import type { DashboardBuildsProps } from '@/types/dashboard'
 
-export function DashboardBuilds({ builds, onSelectBuild }: DashboardBuildsProps) {
+export function DashboardBuilds({
+    builds,
+    onSelectBuild,
+    onCreateBuild,
+    isCreatingBuild,
+}: DashboardBuildsProps) {
     return (
         <>
             <header className="p-8 pb-4 flex justify-between items-end border-b-2 border-[#C89B64]/60 relative z-10">
@@ -13,12 +17,14 @@ export function DashboardBuilds({ builds, onSelectBuild }: DashboardBuildsProps)
                     </h1>
                     <p className="text-gray-500 mt-2 text-sm">Showing {builds.length} builds</p>
                 </div>
-                <Link
-                    href="/editor/new"
+                <button
+                    type="button"
+                    onClick={onCreateBuild}
+                    disabled={isCreatingBuild}
                     className="px-6 py-3 bg-gradient-to-r from-[#9A7B4F] to-[#C89B64] hover:from-[#C89B64] hover:to-[#E5C07B] text-black font-bold uppercase tracking-[0.1em] shadow-[0_0_15px_rgba(200,155,100,0.3)] hover:shadow-[0_0_25px_rgba(200,155,100,0.5)] transition-all rounded-sm flex items-center gap-2"
                 >
-                    <span className="text-xl leading-none">+</span> New Build
-                </Link>
+                    <span className="text-xl leading-none">+</span> {isCreatingBuild ? 'Creating...' : 'New Build'}
+                </button>
             </header>
 
             <div className="flex-1 overflow-y-auto p-8 relative z-10">

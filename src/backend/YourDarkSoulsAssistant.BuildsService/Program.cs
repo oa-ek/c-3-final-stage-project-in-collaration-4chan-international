@@ -1,41 +1,40 @@
+using YourDarkSoulsAssistant.Core.Extensions;
+using YourDarkSoulsAssistant.Core.Interfaces.Infrastructure.Init;
+using YourDarkSoulsAssistant.BuildsService.Extensions;
+using YourDarkSoulsAssistant.BuildsService.Infrastructure.Context;
+using YourDarkSoulsAssistant.BuildsService.Infrastructure.Init;
+using YourDarkSoulsAssistant.ServiceDefaults;
+
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.AddServiceDefaults();
+
+builder.Services.AddDatabase<BuildsDbContext>(
+    config: builder.Configuration,
+    connectionStringName: "BuildsDBConnection"
+);
+builder.Services.AddScoped<IDataInitializer, BuildsDataInitializer>();
+builder.Services.AppServicesRegistration();
+builder.Services.AddBaseWebConfiguration();
+builder.Services.AddOpenApiDocumentationService(
+    title: "Your Dark Souls Assistant - User's Builds API",
+    description: "API for managing user builds",
+    url: "api/builds",
+    urlDescription: "Base URL for the Builds API");
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.UseExceptionHandler(opt => { });
+
+app.UseSecretHeaderCheck(builder.Configuration);
+
+app.MapDefaultEndpoints();
+app.MapOpenApi();
+
 if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
+    app.UseDarkSoulsScalar(title: "Your Dark Souls Assistant - User's Builds API");
 
-app.UseHttpsRedirection();
-
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-    {
-        var forecast = Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                (
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-            .ToArray();
-        return forecast;
-    })
-    .WithName("GetWeatherForecast");
+app.MapControllers();
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}

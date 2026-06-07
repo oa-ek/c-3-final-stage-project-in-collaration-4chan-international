@@ -11,6 +11,7 @@
     <ItemGroup>
       <ProjectReference Include="..\YourDarkSoulsAssistant.ApiGateway\YourDarkSoulsAssistant.ApiGateway.csproj" />
       <ProjectReference Include="..\YourDarkSoulsAssistant.ArticlesService\YourDarkSoulsAssistant.ArticlesService.csproj" />
+      <ProjectReference Include="..\YourDarkSoulsAssistant.BuildsService\YourDarkSoulsAssistant.BuildsService.csproj" />
       <ProjectReference Include="..\YourDarkSoulsAssistant.ContentDeliveryService\YourDarkSoulsAssistant.ContentDeliveryService.csproj" />
       <ProjectReference Include="..\YourDarkSoulsAssistant.CatalogService\YourDarkSoulsAssistant.CatalogService.csproj" />
       <ProjectReference Include="..\YourDarkSoulsAssistant.UsersService\YourDarkSoulsAssistant.UsersService.csproj" />

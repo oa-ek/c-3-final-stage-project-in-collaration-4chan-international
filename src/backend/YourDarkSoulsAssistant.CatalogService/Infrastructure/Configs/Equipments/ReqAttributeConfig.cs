@@ -15,9 +15,8 @@ public class ReqAttributeConfig : IEntityTypeConfiguration<ReqAttribute>
             .HasForeignKey(x => x.EquipmentId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne(x => x.Attribute)
-            .WithMany()
-            .HasForeignKey(x => x.AttributeId)
-            .OnDelete(DeleteBehavior.Restrict);
+        builder.Property(x => x.AttributeKey)
+            .HasMaxLength(100)
+            .IsRequired();
     }
 }

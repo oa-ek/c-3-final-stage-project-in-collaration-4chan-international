@@ -4,6 +4,7 @@ import * as React from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { cn } from "@/lib/utils"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { getImageUrl } from "@/lib/content-utils"
 import type { ItemData } from "@/types/equipment"
 import Image from "next/image"
 import {
@@ -14,6 +15,7 @@ import {
     Shirt,
     Hand,
     Footprints,
+    Loader2,
     X
 } from "lucide-react"
 
@@ -26,270 +28,8 @@ interface InventoryModalProps {
     category: InventoryCategory
     armorSlot?: ArmorSlot
     onSelectItem: (item: ItemData) => void
+    onRemoveItem?: () => void
     selectedItem?: ItemData | null
-}
-
-// Extended mock inventory data for different categories
-const inventoryData: Record<InventoryCategory, ItemData[]> = {
-    weapons: [
-        {
-            name: "Black Knife+7",
-            type: "Dagger",
-            attackType: "Slash/Pierce",
-            fpCost: "25 ( - )",
-            weight: "2.0",
-            image: "/black_knife.png",
-            attack: { physical: "132 +", magic: "0", fire: "0", lightning: "0", holy: "130 +", critical: "110" },
-            guard: { physical: "26.0", magic: "15.0", fire: "15.0", lightning: "15.0", holy: "42.0", boost: "16" },
-            scaling: { str: "E", dex: "C", int: "-", fai: "D", arc: "-" },
-            required: { str: "8", dex: "12", int: "0", fai: "18", arc: "0" },
-            passiveEffects: ["-", "-", "-"],
-        },
-        {
-            name: "Uchigatana+25",
-            type: "Katana",
-            attackType: "Slash/Pierce",
-            weight: "5.5",
-            attack: { physical: "245 +", magic: "0", fire: "0", lightning: "0", holy: "0", critical: "100" },
-            guard: { physical: "45.0", magic: "30.0", fire: "30.0", lightning: "30.0", holy: "30.0", boost: "30" },
-            scaling: { str: "D", dex: "B", int: "-", fai: "-", arc: "-" },
-            required: { str: "11", dex: "15", int: "0", fai: "0", arc: "0" },
-        },
-        {
-            name: "Moonveil+10",
-            type: "Katana",
-            attackType: "Slash/Pierce",
-            weight: "6.5",
-            attack: { physical: "198 +", magic: "162 +", fire: "0", lightning: "0", holy: "0", critical: "100" },
-            guard: { physical: "46.0", magic: "52.0", fire: "31.0", lightning: "31.0", holy: "31.0", boost: "31" },
-            scaling: { str: "E", dex: "D", int: "B", fai: "-", arc: "-" },
-            required: { str: "12", dex: "18", int: "23", fai: "0", arc: "0" },
-        },
-        {
-            name: "Rivers of Blood+10",
-            type: "Katana",
-            attackType: "Slash/Pierce",
-            weight: "6.5",
-            attack: { physical: "200 +", magic: "0", fire: "130 +", lightning: "0", holy: "0", critical: "100" },
-            guard: { physical: "46.0", magic: "31.0", fire: "52.0", lightning: "31.0", holy: "31.0", boost: "31" },
-            scaling: { str: "E", dex: "D", int: "-", fai: "-", arc: "D" },
-            required: { str: "12", dex: "18", int: "0", fai: "0", arc: "20" },
-            passiveEffects: ["Causes blood loss buildup (73)"],
-        },
-        {
-            name: "Bloodhound's Fang+10",
-            type: "Curved Greatsword",
-            attackType: "Slash/Pierce",
-            weight: "11.5",
-            attack: { physical: "292 +", magic: "0", fire: "0", lightning: "0", holy: "0", critical: "100" },
-            guard: { physical: "55.0", magic: "35.0", fire: "35.0", lightning: "35.0", holy: "35.0", boost: "42" },
-            scaling: { str: "C", dex: "B", int: "-", fai: "-", arc: "-" },
-            required: { str: "18", dex: "17", int: "0", fai: "0", arc: "0" },
-            passiveEffects: ["Causes blood loss buildup (55)"],
-        },
-        {
-            name: "Blasphemous Blade+10",
-            type: "Greatsword",
-            attackType: "Standard/Pierce",
-            weight: "13.5",
-            attack: { physical: "224 +", magic: "0", fire: "146 +", lightning: "0", holy: "0", critical: "100" },
-            guard: { physical: "62.0", magic: "37.0", fire: "57.0", lightning: "37.0", holy: "37.0", boost: "47" },
-            scaling: { str: "D", dex: "D", int: "-", fai: "D", arc: "-" },
-            required: { str: "22", dex: "15", int: "0", fai: "21", arc: "0" },
-        },
-    ],
-    shields: [
-        {
-            name: "Brass Shield+15",
-            type: "Medium Shield",
-            attackType: "Strike",
-            weight: "7.0",
-            attack: { physical: "112 +", magic: "0", fire: "0", lightning: "0", holy: "0", critical: "100" },
-            guard: { physical: "100.0", magic: "56.0", fire: "44.0", lightning: "38.0", holy: "44.0", boost: "56" },
-            scaling: { str: "D", dex: "-", int: "-", fai: "-", arc: "-" },
-            required: { str: "16", dex: "0", int: "0", fai: "0", arc: "0" },
-        },
-        {
-            name: "Erdtree Greatshield+10",
-            type: "Greatshield",
-            attackType: "Strike",
-            weight: "18.0",
-            attack: { physical: "125 +", magic: "0", fire: "0", lightning: "0", holy: "0", critical: "100" },
-            guard: { physical: "100.0", magic: "71.0", fire: "63.0", lightning: "56.0", holy: "92.0", boost: "72" },
-            scaling: { str: "D", dex: "-", int: "-", fai: "D", arc: "-" },
-            required: { str: "30", dex: "0", int: "0", fai: "12", arc: "0" },
-        },
-        {
-            name: "Carian Knight's Shield",
-            type: "Medium Shield",
-            attackType: "Strike",
-            weight: "5.0",
-            attack: { physical: "85 +", magic: "0", fire: "0", lightning: "0", holy: "0", critical: "100" },
-            guard: { physical: "100.0", magic: "73.0", fire: "35.0", lightning: "35.0", holy: "35.0", boost: "50" },
-            scaling: { str: "D", dex: "-", int: "D", fai: "-", arc: "-" },
-            required: { str: "10", dex: "0", int: "15", fai: "0", arc: "0" },
-        },
-    ],
-    arrows: [
-        {
-            name: "Arrow",
-            type: "Arrow",
-            weight: "0.0",
-            attack: { physical: "45", magic: "0", fire: "0", lightning: "0", holy: "0", critical: "100" },
-            guard: { physical: "0", magic: "0", fire: "0", lightning: "0", holy: "0", boost: "0" },
-            scaling: { str: "-", dex: "-", int: "-", fai: "-", arc: "-" },
-            required: { str: "0", dex: "0", int: "0", fai: "0", arc: "0" },
-        },
-        {
-            name: "Fire Arrow",
-            type: "Arrow",
-            weight: "0.0",
-            attack: { physical: "15", magic: "0", fire: "75", lightning: "0", holy: "0", critical: "100" },
-            guard: { physical: "0", magic: "0", fire: "0", lightning: "0", holy: "0", boost: "0" },
-            scaling: { str: "-", dex: "-", int: "-", fai: "-", arc: "-" },
-            required: { str: "0", dex: "0", int: "0", fai: "0", arc: "0" },
-        },
-        {
-            name: "Lightning Arrow",
-            type: "Arrow",
-            weight: "0.0",
-            attack: { physical: "15", magic: "0", fire: "0", lightning: "75", holy: "0", critical: "100" },
-            guard: { physical: "0", magic: "0", fire: "0", lightning: "0", holy: "0", boost: "0" },
-            scaling: { str: "-", dex: "-", int: "-", fai: "-", arc: "-" },
-            required: { str: "0", dex: "0", int: "0", fai: "0", arc: "0" },
-        },
-        {
-            name: "Bolt",
-            type: "Bolt",
-            weight: "0.0",
-            attack: { physical: "50", magic: "0", fire: "0", lightning: "0", holy: "0", critical: "100" },
-            guard: { physical: "0", magic: "0", fire: "0", lightning: "0", holy: "0", boost: "0" },
-            scaling: { str: "-", dex: "-", int: "-", fai: "-", arc: "-" },
-            required: { str: "0", dex: "0", int: "0", fai: "0", arc: "0" },
-        },
-    ],
-    armor: [
-        // Head
-        {
-            name: "Black Knife Hood",
-            type: "Helm",
-            weight: "2.0",
-            attack: { physical: "0", magic: "0", fire: "0", lightning: "0", holy: "0", critical: "0" },
-            guard: { physical: "2.5", magic: "5.0", fire: "4.6", lightning: "4.4", holy: "5.3", boost: "0" },
-            scaling: { str: "-", dex: "-", int: "-", fai: "-", arc: "-" },
-            required: { str: "0", dex: "0", int: "0", fai: "0", arc: "0" },
-        },
-        {
-            name: "Bull-Goat Helm",
-            type: "Helm",
-            weight: "11.6",
-            attack: { physical: "0", magic: "0", fire: "0", lightning: "0", holy: "0", critical: "0" },
-            guard: { physical: "7.3", magic: "5.1", fire: "5.8", lightning: "4.7", holy: "5.3", boost: "0" },
-            scaling: { str: "-", dex: "-", int: "-", fai: "-", arc: "-" },
-            required: { str: "0", dex: "0", int: "0", fai: "0", arc: "0" },
-        },
-        // Chest
-        {
-            name: "Black Knife Armor",
-            type: "Chest Armor",
-            weight: "6.6",
-            attack: { physical: "0", magic: "0", fire: "0", lightning: "0", holy: "0", critical: "0" },
-            guard: { physical: "10.6", magic: "11.4", fire: "10.8", lightning: "10.1", holy: "12.2", boost: "0" },
-            scaling: { str: "-", dex: "-", int: "-", fai: "-", arc: "-" },
-            required: { str: "0", dex: "0", int: "0", fai: "0", arc: "0" },
-        },
-        {
-            name: "Veteran's Armor",
-            type: "Chest Armor",
-            weight: "16.4",
-            attack: { physical: "0", magic: "0", fire: "0", lightning: "0", holy: "0", critical: "0" },
-            guard: { physical: "14.4", magic: "9.9", fire: "11.7", lightning: "9.0", holy: "10.3", boost: "0" },
-            scaling: { str: "-", dex: "-", int: "-", fai: "-", arc: "-" },
-            required: { str: "0", dex: "0", int: "0", fai: "0", arc: "0" },
-        },
-        // Hands
-        {
-            name: "Black Knife Gauntlets",
-            type: "Gauntlets",
-            weight: "2.0",
-            attack: { physical: "0", magic: "0", fire: "0", lightning: "0", holy: "0", critical: "0" },
-            guard: { physical: "2.3", magic: "2.8", fire: "2.5", lightning: "2.3", holy: "3.0", boost: "0" },
-            scaling: { str: "-", dex: "-", int: "-", fai: "-", arc: "-" },
-            required: { str: "0", dex: "0", int: "0", fai: "0", arc: "0" },
-        },
-        {
-            name: "Radahn's Gauntlets",
-            type: "Gauntlets",
-            weight: "5.5",
-            attack: { physical: "0", magic: "0", fire: "0", lightning: "0", holy: "0", critical: "0" },
-            guard: { physical: "3.8", magic: "2.8", fire: "3.0", lightning: "2.5", holy: "2.8", boost: "0" },
-            scaling: { str: "-", dex: "-", int: "-", fai: "-", arc: "-" },
-            required: { str: "0", dex: "0", int: "0", fai: "0", arc: "0" },
-        },
-        // Legs
-        {
-            name: "Black Knife Greaves",
-            type: "Leg Armor",
-            weight: "3.9",
-            attack: { physical: "0", magic: "0", fire: "0", lightning: "0", holy: "0", critical: "0" },
-            guard: { physical: "5.7", magic: "6.6", fire: "6.0", lightning: "5.5", holy: "7.0", boost: "0" },
-            scaling: { str: "-", dex: "-", int: "-", fai: "-", arc: "-" },
-            required: { str: "0", dex: "0", int: "0", fai: "0", arc: "0" },
-        },
-        {
-            name: "Bull-Goat Greaves",
-            type: "Leg Armor",
-            weight: "14.8",
-            attack: { physical: "0", magic: "0", fire: "0", lightning: "0", holy: "0", critical: "0" },
-            guard: { physical: "10.3", magic: "7.2", fire: "8.1", lightning: "6.7", holy: "7.5", boost: "0" },
-            scaling: { str: "-", dex: "-", int: "-", fai: "-", arc: "-" },
-            required: { str: "0", dex: "0", int: "0", fai: "0", arc: "0" },
-        },
-    ],
-    talismans: [
-        {
-            name: "Erdtree's Favor +2",
-            type: "Talisman",
-            weight: "1.5",
-            attack: { physical: "0", magic: "0", fire: "0", lightning: "0", holy: "0", critical: "0" },
-            guard: { physical: "0", magic: "0", fire: "0", lightning: "0", holy: "0", boost: "0" },
-            scaling: { str: "-", dex: "-", int: "-", fai: "-", arc: "-" },
-            required: { str: "0", dex: "0", int: "0", fai: "0", arc: "0" },
-            passiveEffects: ["Raises max HP by 4%", "Raises max stamina by 9.5%", "Raises equip load by 8%"],
-        },
-        {
-            name: "Dragoncrest Greatshield Talisman",
-            type: "Talisman",
-            weight: "1.0",
-            attack: { physical: "0", magic: "0", fire: "0", lightning: "0", holy: "0", critical: "0" },
-            guard: { physical: "0", magic: "0", fire: "0", lightning: "0", holy: "0", boost: "0" },
-            scaling: { str: "-", dex: "-", int: "-", fai: "-", arc: "-" },
-            required: { str: "0", dex: "0", int: "0", fai: "0", arc: "0" },
-            passiveEffects: ["Reduces physical damage taken by 20%"],
-        },
-    ],
-    consumables: [
-        {
-            name: "Flask of Crimson Tears",
-            type: "Consumable",
-            weight: "0.0",
-            attack: { physical: "0", magic: "0", fire: "0", lightning: "0", holy: "0", critical: "0" },
-            guard: { physical: "0", magic: "0", fire: "0", lightning: "0", holy: "0", boost: "0" },
-            scaling: { str: "-", dex: "-", int: "-", fai: "-", arc: "-" },
-            required: { str: "0", dex: "0", int: "0", fai: "0", arc: "0" },
-            passiveEffects: ["Restores HP"],
-        },
-        {
-            name: "Flask of Cerulean Tears",
-            type: "Consumable",
-            weight: "0.0",
-            attack: { physical: "0", magic: "0", fire: "0", lightning: "0", holy: "0", critical: "0" },
-            guard: { physical: "0", magic: "0", fire: "0", lightning: "0", holy: "0", boost: "0" },
-            scaling: { str: "-", dex: "-", int: "-", fai: "-", arc: "-" },
-            required: { str: "0", dex: "0", int: "0", fai: "0", arc: "0" },
-            passiveEffects: ["Restores FP"],
-        },
-    ],
 }
 
 const categoryTitles: Record<InventoryCategory, string> = {
@@ -313,6 +53,45 @@ const armorTypeMap: Record<ArmorSlot, string> = {
     chest: "Chest Armor",
     hands: "Gauntlets",
     legs: "Leg Armor",
+}
+
+const mapCategoryToCatalog = (category: InventoryCategory): ItemData["category"][] => {
+    switch (category) {
+        case "weapons":
+            return ["weapon"]
+        case "shields":
+            return ["shield"]
+        case "arrows":
+            return ["arrow"]
+        case "armor":
+            return ["armor"]
+        case "talismans":
+            return ["talisman"]
+        case "consumables":
+            return ["consumable"]
+        default:
+            return []
+    }
+}
+
+const normalizeArmorType = (type: string) => type.trim().toLowerCase()
+
+const armorSlotAliases: Record<ArmorSlot, string[]> = {
+    head: ["helm", "helmet", "hood", "crown", "mask", "head"],
+    chest: ["chest", "armor", "robe", "coat", "garb"],
+    hands: ["gauntlet", "glove", "bracer", "hand"],
+    legs: ["leg", "greave", "boot", "trouser"],
+}
+
+const matchesArmorSlot = (itemType: string, slot: ArmorSlot) => {
+    const normalized = normalizeArmorType(itemType)
+    const exactType = normalizeArmorType(armorTypeMap[slot])
+
+    if (normalized === exactType) {
+        return true
+    }
+
+    return armorSlotAliases[slot].some(alias => normalized.includes(alias))
 }
 
 function getCategoryIcon(category: InventoryCategory, armorSlot?: ArmorSlot) {
@@ -344,6 +123,9 @@ function InventoryItem({
     onClick: () => void
     onHover: (item: ItemData | null) => void
 }) {
+    const itemVisual = item.image || item.icon
+    const itemVisualUrl = itemVisual ? getImageUrl(itemVisual) : null
+
     return (
         <div
             onClick={onClick}
@@ -359,9 +141,9 @@ function InventoryItem({
         >
             {/* Item Icon */}
             <div className="w-14 h-14 relative flex-shrink-0 bg-[#1a1815] border border-[#3a352c] rounded flex items-center justify-center overflow-hidden">
-                {item.image ? (
+                {itemVisualUrl ? (
                     <Image
-                        src={item.image}
+                        src={itemVisualUrl}
                         alt={item.name}
                         fill
                         className="object-contain p-1"
@@ -404,21 +186,63 @@ export function InventoryModal({
                                    category,
                                    armorSlot,
                                    onSelectItem,
+                                   onRemoveItem,
                                    selectedItem
                                }: InventoryModalProps) {
     const [hoveredItem, setHoveredItem] = React.useState<ItemData | null>(null)
+    const [allItems, setAllItems] = React.useState<ItemData[]>([])
+    const [isLoading, setIsLoading] = React.useState(false)
+    const [loadError, setLoadError] = React.useState<string | null>(null)
+
+    React.useEffect(() => {
+        if (!open) {
+            return
+        }
+
+        const controller = new AbortController()
+
+        const fetchItems = async () => {
+            setIsLoading(true)
+            setLoadError(null)
+
+            try {
+                const response = await fetch("/api/catalog/GameItems/equipments", { signal: controller.signal })
+
+                if (!response.ok) {
+                    throw new Error("Failed to load equipment")
+                }
+
+                const data: ItemData[] = await response.json()
+                setAllItems(Array.isArray(data) ? data : [])
+            } catch (error) {
+                if (error instanceof DOMException && error.name === "AbortError") {
+                    return
+                }
+
+                setLoadError("Failed to load equipment")
+            } finally {
+                setIsLoading(false)
+            }
+        }
+
+        fetchItems()
+
+        return () => {
+            controller.abort()
+        }
+    }, [open])
 
     // Filter items by category and armor slot if applicable
     const items = React.useMemo(() => {
-        let categoryItems = inventoryData[category] || []
+        const validCategories = mapCategoryToCatalog(category)
+        let categoryItems = allItems.filter(item => !!item.category && validCategories.includes(item.category))
 
         if (category === "armor" && armorSlot) {
-            const targetType = armorTypeMap[armorSlot]
-            categoryItems = categoryItems.filter(item => item.type === targetType)
+            categoryItems = categoryItems.filter(item => matchesArmorSlot(item.type, armorSlot))
         }
 
         return categoryItems
-    }, [category, armorSlot])
+    }, [allItems, category, armorSlot])
 
     const title = category === "armor" && armorSlot
         ? armorSlotTitles[armorSlot]
@@ -453,6 +277,7 @@ export function InventoryModal({
                                 {/* Unequip option */}
                                 <div
                                     onClick={() => {
+                                        onRemoveItem?.()
                                         onClose()
                                     }}
                                     className={cn(
@@ -478,7 +303,20 @@ export function InventoryModal({
                                     />
                                 ))}
 
-                                {items.length === 0 && (
+                                {isLoading && (
+                                    <div className="text-center py-12 flex flex-col items-center gap-2">
+                                        <Loader2 className="w-5 h-5 text-[#8a8070] animate-spin" />
+                                        <p className="text-[#8a8070] text-sm">Loading equipment...</p>
+                                    </div>
+                                )}
+
+                                {!isLoading && loadError && (
+                                    <div className="text-center py-12">
+                                        <p className="text-[#b06f6f] text-sm">{loadError}</p>
+                                    </div>
+                                )}
+
+                                {!isLoading && !loadError && items.length === 0 && (
                                     <div className="text-center py-12">
                                         <p className="text-[#6a6050] text-sm">No items available</p>
                                     </div>
@@ -493,9 +331,9 @@ export function InventoryModal({
                             <div className="space-y-4">
                                 {/* Item Image */}
                                 <div className="w-full aspect-square bg-[#1a1815] border border-[#3a352c] rounded flex items-center justify-center relative overflow-hidden">
-                                    {displayItem.image ? (
+                                    {(displayItem.image || displayItem.icon) ? (
                                         <Image
-                                            src={displayItem.image}
+                                            src={getImageUrl(displayItem.image || displayItem.icon)}
                                             alt={displayItem.name}
                                             fill
                                             className="object-contain p-4"
@@ -558,3 +396,4 @@ export function InventoryModal({
         </Dialog>
     )
 }
+

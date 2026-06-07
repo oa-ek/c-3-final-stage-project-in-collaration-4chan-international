@@ -26,6 +26,10 @@ const nextConfig = {
         source: '/api/articles/:path*',
         destination: `${API_URL}/api/articles/:path*`,
       },
+      {
+        source: '/api/builds/:path*',
+        destination: `${API_URL}/api/builds/:path*`,
+      }
     ];
   },
 }

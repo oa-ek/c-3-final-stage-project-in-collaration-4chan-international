@@ -5,8 +5,10 @@ export interface ItemData {
     category?: "weapon" | "armor" | "talisman" | "consumable" | "arrow" | "shield"
     attackType?: string
     fpCost?: string
+    passiveEffects?: string[]
     weight: string
     image?: string
+    icon?: string
     attack: {
         physical: string
         magic: string

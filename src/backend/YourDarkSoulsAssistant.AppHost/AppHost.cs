@@ -28,12 +28,21 @@ var catalogService = builder
     .WithEnvironment("GatewaySecret", gatewaySecret)
     .WithHttpHealthCheck("/health");
 
+var buildsService = builder
+    .AddProject<Projects.YourDarkSoulsAssistant_BuildsService>("BuildsService")
+    .WithReference(contentDeliveryService)
+    .WithReference(catalogService)
+    .WithReference(userService)
+    .WithEnvironment("GatewaySecret", gatewaySecret)
+    .WithHttpHealthCheck("/health");
+
 var gateway = builder
     .AddProject<Projects.YourDarkSoulsAssistant_ApiGateway>("Gateway")
     .WithReference(contentDeliveryService)
     .WithReference(catalogService)
     .WithReference(articlesService)
     .WithReference(userService)
+    .WithReference(buildsService)
     .WithEnvironment("GatewaySecret", gatewaySecret)
     .WithHttpHealthCheck("/health");
 

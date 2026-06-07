@@ -16,7 +16,8 @@ public static class ScalarConfiguration
                 .AddDocument("users", "User Service")
                 .AddDocument("content", "Content Delivery Service")
                 .AddDocument("catalog", "Catalog Service")
-                .AddDocument("guides", "Guides Management Service");
+                .AddDocument("guides", "Guides Management Service")
+                .AddDocument("builds", "Builds Management Service");
         });
     }
     

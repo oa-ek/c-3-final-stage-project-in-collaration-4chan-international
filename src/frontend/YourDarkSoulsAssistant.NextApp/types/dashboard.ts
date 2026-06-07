@@ -19,4 +19,6 @@ export interface DashboardGamesProps {
 export interface DashboardBuildsProps {
   builds: Build[]
   onSelectBuild: (build: Build) => void
+  onCreateBuild: () => void
+  isCreatingBuild: boolean
 }

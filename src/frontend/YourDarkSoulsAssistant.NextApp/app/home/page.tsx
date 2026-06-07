@@ -17,9 +17,11 @@ export default function BuildsPage() {
         activeGame,
         selectedBuild,
         filteredBuilds,
+        isCreatingBuild,
         setActiveGame,
         setSelectedBuild,
         handleLogout,
+        handleCreateBuild,
     } = useHomePage()
 
     if (isLoading || !user) {
@@ -50,7 +52,12 @@ export default function BuildsPage() {
                 style={{ backgroundImage: `url('${getImageUrl('home/wallpaper')}')` }}
             >
                 <div className="absolute inset-0 bg-[#0a0a0a]/45 z-0" />
-                <DashboardBuilds builds={filteredBuilds} onSelectBuild={setSelectedBuild} />
+                <DashboardBuilds
+                    builds={filteredBuilds}
+                    onSelectBuild={setSelectedBuild}
+                    onCreateBuild={handleCreateBuild}
+                    isCreatingBuild={isCreatingBuild}
+                />
             </main>
 
             {/* Modal for Set Selection */}

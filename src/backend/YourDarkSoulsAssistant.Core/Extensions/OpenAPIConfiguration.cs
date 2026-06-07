@@ -12,6 +12,7 @@ public static class OpenAPIConfiguration
         services.AddOpenApi("content");
         services.AddOpenApi("catalog");
         services.AddOpenApi("guides");
+        services.AddOpenApi("builds");
     }
     
     public static void AddOpenApiDocumentationService(

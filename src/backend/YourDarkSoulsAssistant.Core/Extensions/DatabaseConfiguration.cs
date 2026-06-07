@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Npgsql;
 using YourDarkSoulsAssistant.Core.Infrastructure.Init;
 
 namespace YourDarkSoulsAssistant.Core.Extensions;
@@ -11,7 +12,7 @@ public static class DatabaseConfiguration
 {
     private static string GetAndValidateConnectionString(IConfiguration config, string connectionStringName)
     {
-        var connectionString = config.GetConnectionString(connectionStringName);
+        var connectionString = config.GetConnectionString(connectionStringName)?.Trim();
 
         if (string.IsNullOrWhiteSpace(connectionString))
         {

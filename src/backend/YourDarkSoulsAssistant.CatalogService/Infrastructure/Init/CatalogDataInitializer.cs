@@ -83,27 +83,27 @@ public class CatalogDataInitializer(
         {
             ["DS1"] =
             [
-                new SeedEquipment("Longsword", 3.0f, 200, "assets/weapons/ds1-longsword.png", "Right Hand 1", "Straight Sword"),
-                new SeedEquipment("Claymore", 6.0f, 200, "assets/weapons/ds1-claymore.png", "Right Hand 1", "Greatsword"),
-                new SeedEquipment("Heater Shield", 2.0f, 100, "assets/shields/ds1-heater-shield.png", "Left Hand 1", "Shield")
+                new SeedEquipment("Longsword", 3.0f, 200, "assets/weapons/ds1-longsword", "Right Hand 1", "Straight Sword"),
+                new SeedEquipment("Claymore", 6.0f, 200, "assets/weapons/ds1-claymore", "Right Hand 1", "Greatsword"),
+                new SeedEquipment("Heater Shield", 2.0f, 100, "assets/shields/ds1-heater-shield", "Left Hand 1", "Shield")
             ],
             ["DS2"] =
             [
-                new SeedEquipment("Broadsword", 3.0f, 70, "assets/weapons/ds2-broadsword.png", "Right Hand 1", "Straight Sword"),
-                new SeedEquipment("Drangleic Sword", 6.0f, 70, "assets/weapons/ds2-drangleic-sword.png", "Right Hand 1", "Greatsword"),
-                new SeedEquipment("Drangleic Shield", 4.5f, 70, "assets/shields/ds2-drangleic-shield.png", "Left Hand 1", "Shield")
+                new SeedEquipment("Broadsword", 3.0f, 70, "assets/weapons/ds2-broadsword", "Right Hand 1", "Straight Sword"),
+                new SeedEquipment("Drangleic Sword", 6.0f, 70, "assets/weapons/ds2-drangleic-sword", "Right Hand 1", "Greatsword"),
+                new SeedEquipment("Drangleic Shield", 4.5f, 70, "assets/shields/ds2-drangleic-shield", "Left Hand 1", "Shield")
             ],
             ["DS3"] =
             [
-                new SeedEquipment("Lothric Knight Sword", 4.0f, 100, "assets/weapons/ds3-lothric-knight-sword.png", "Right Hand 1", "Straight Sword"),
-                new SeedEquipment("Claymore", 9.0f, 100, "assets/weapons/ds3-claymore.png", "Right Hand 1", "Greatsword"),
-                new SeedEquipment("Silver Eagle Kite Shield", 5.5f, 100, "assets/shields/ds3-silver-eagle-kite-shield.png", "Left Hand 1", "Shield")
+                new SeedEquipment("Lothric Knight Sword", 4.0f, 100, "assets/weapons/ds3-lothric-knight-sword", "Right Hand 1", "Straight Sword"),
+                new SeedEquipment("Claymore", 9.0f, 100, "assets/weapons/ds3-claymore", "Right Hand 1", "Greatsword"),
+                new SeedEquipment("Silver Eagle Kite Shield", 5.5f, 100, "assets/shields/ds3-silver-eagle-kite-shield", "Left Hand 1", "Shield")
             ],
             ["ER"] =
             [
-                new SeedEquipment("Lordsworn's Straight Sword", 3.5f, 100, "assets/weapons/er-lordsworn-straight-sword.png", "Right Hand 1", "Straight Sword"),
-                new SeedEquipment("Lordsworn's Greatsword", 9.0f, 100, "assets/weapons/er-lordsworn-greatsword.png", "Right Hand 1", "Greatsword"),
-                new SeedEquipment("Brass Shield", 7.0f, 100, "assets/shields/er-brass-shield.png", "Left Hand 1", "Shield")
+                new SeedEquipment("Lordsworn's Straight Sword", 3.5f, 100, "assets/weapons/er-lordsworn-straight-sword", "Right Hand 1", "Straight Sword"),
+                new SeedEquipment("Lordsworn's Greatsword", 9.0f, 100, "assets/weapons/er-lordsworn-greatsword", "Right Hand 1", "Greatsword"),
+                new SeedEquipment("Brass Shield", 7.0f, 100, "assets/shields/er-brass-shield", "Left Hand 1", "Shield")
             ]
         };
 

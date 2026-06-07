@@ -34,7 +34,7 @@ public class EquipmentProfile : Profile
 
         foreach (var attribute in attributes)
         {
-            var key = NormalizeKey(attribute.Attribute?.Name) ?? NormalizeKey(attribute.Attribute?.IconPath);
+            var key = NormalizeKey(attribute.AttributeKey);
             var value = FormatNumber(attribute.Value);
             SetRequiredStat(stats, key, value);
         }

@@ -3,6 +3,7 @@
 import type { ItemData } from "@/types/equipment"
 import { Sword, Shield } from "lucide-react"
 import Image from "next/image"
+import { getImageUrl } from "@/lib/content-utils"
 
 interface ItemDetailsPanelProps {
   item: ItemData | null
@@ -47,49 +48,18 @@ function ScalingRow({
   )
 }
 
-// Default item to show (Black Knife+7 from screenshot)
-const defaultItem: ItemData = {
-  name: "Black Knife+7",
-  type: "Dagger",
-  attackType: "Slash/Pierce",
-  fpCost: "25 ( - )",
-  weight: "2.0",
-  image: "/black_knife.png",
-  attack: {
-    physical: "132 +",
-    magic: "0",
-    fire: "0",
-    lightning: "0",
-    holy: "130 +",
-    critical: "110",
-  },
-  guard: {
-    physical: "26.0",
-    magic: "15.0",
-    fire: "15.0",
-    lightning: "15.0",
-    holy: "42.0",
-    boost: "16",
-  },
-  scaling: {
-    str: "E",
-    dex: "C",
-    int: "-",
-    fai: "D",
-    arc: "-",
-  },
-  required: {
-    str: "8",
-    dex: "12",
-    int: "0",
-    fai: "18",
-    arc: "0",
-  },
-  passiveEffects: ["-", "-", "-"],
-}
-
 export function ItemDetailsPanel({ item }: ItemDetailsPanelProps) {
-  const displayItem = item || defaultItem
+  if (!item) {
+    return (
+        <div className="flex-1 flex items-center justify-center">
+          <p className="text-[#6a6050] text-sm">Select equipment to see details</p>
+        </div>
+    )
+  }
+
+  const displayItem = item
+  const itemVisual = displayItem.image || displayItem.icon
+  const itemVisualUrl = itemVisual ? getImageUrl(itemVisual) : null
 
   return (
       <div className="flex-1 flex flex-col">
@@ -108,10 +78,9 @@ export function ItemDetailsPanel({ item }: ItemDetailsPanelProps) {
 
         {/* Special Properties */}
         <div className="mb-4 py-2 border-t border-b border-[#3a352c]/50">
-          <p className="text-[#8a8070] text-[13px]">Blade of Death</p>
           <div className="flex justify-between mt-1">
             <span className="text-[#8a8070] text-[13px]">FP Cost</span>
-            <span className="text-[#d4cfc5] text-[13px]">{displayItem.fpCost || "25 ( - )"}</span>
+            <span className="text-[#d4cfc5] text-[13px]">{displayItem.fpCost || "-"}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-[#8a8070] text-[13px]">Weight</span>
@@ -139,9 +108,9 @@ export function ItemDetailsPanel({ item }: ItemDetailsPanelProps) {
 
           {/* Right Column - Item Image */}
           <div className="w-[140px] h-[140px] bg-[#1a1815] border border-[#3a352c] flex items-center justify-center relative overflow-hidden">
-            {displayItem.image ? (
+            {itemVisualUrl ? (
                 <Image
-                    src={displayItem.image}
+                    src={itemVisualUrl}
                     alt={displayItem.name}
                     fill
                     className="object-contain p-2"

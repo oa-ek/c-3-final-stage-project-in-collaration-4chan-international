@@ -11,12 +11,10 @@ import { Sword, ArrowLeft, Save, Check } from "lucide-react"
 import type { 
   ItemData, 
   CharacterStats, 
-  EquipmentSlots, 
-  BuildData,
-  DEFAULT_STATS,
-  DEFAULT_EQUIPMENT 
+  EquipmentSlots
 } from "@/types/equipment"
 import {getImageUrl} from "@/lib/content-utils";
+import { useAuth } from "@/contexts/auth-context"
 
 // Re-export ItemData for backward compatibility
 export type { ItemData } from "@/types/equipment"
@@ -48,10 +46,67 @@ const INITIAL_EQUIPMENT: EquipmentSlots = {
   consumables: [null, null, null, null, null, null, null, null, null, null],
 }
 
+interface ApiBuildEquipmentIds {
+  weapons: (string | null)[]
+  shields: (string | null)[]
+  arrows: (string | null)[]
+  armor: {
+    head: string | null
+    chest: string | null
+    hands: string | null
+    legs: string | null
+  }
+  talismans: (string | null)[]
+  consumables: (string | null)[]
+}
+
+interface ApiBuild {
+  id: string
+  name: string
+  stats: CharacterStats
+  equipment: ApiBuildEquipmentIds
+}
+
+const mapItemIds = (
+  ids: (string | null)[] | undefined,
+  size: number,
+  itemsById: Map<string, ItemData>
+): (ItemData | null)[] => {
+  const mapped = Array.from({ length: size }, (_, index) => {
+    const id = ids?.[index]
+    return id ? itemsById.get(id) ?? null : null
+  })
+
+  return mapped
+}
+
+const mapEquipmentFromApi = (sourceEquipment: ApiBuildEquipmentIds | undefined, allItems: ItemData[]): EquipmentSlots => {
+  if (!sourceEquipment) {
+    return INITIAL_EQUIPMENT
+  }
+
+  const itemsById = new Map(allItems.filter((item) => !!item.id).map((item) => [item.id as string, item]))
+
+  return {
+    weapons: mapItemIds(sourceEquipment.weapons, INITIAL_EQUIPMENT.weapons.length, itemsById),
+    shields: mapItemIds(sourceEquipment.shields, INITIAL_EQUIPMENT.shields.length, itemsById),
+    arrows: mapItemIds(sourceEquipment.arrows, INITIAL_EQUIPMENT.arrows.length, itemsById),
+    armor: {
+      head: sourceEquipment.armor.head ? itemsById.get(sourceEquipment.armor.head) ?? null : null,
+      chest: sourceEquipment.armor.chest ? itemsById.get(sourceEquipment.armor.chest) ?? null : null,
+      hands: sourceEquipment.armor.hands ? itemsById.get(sourceEquipment.armor.hands) ?? null : null,
+      legs: sourceEquipment.armor.legs ? itemsById.get(sourceEquipment.armor.legs) ?? null : null,
+    },
+    talismans: mapItemIds(sourceEquipment.talismans, INITIAL_EQUIPMENT.talismans.length, itemsById),
+    consumables: mapItemIds(sourceEquipment.consumables, INITIAL_EQUIPMENT.consumables.length, itemsById),
+  }
+}
+
 export default function EditorPage() {
   const router = useRouter()
   const params = useParams()
   const buildId = params.id as string
+  const { user } = useAuth()
 
   // State for the build
   const [buildName, setBuildName] = useState("New Build")
@@ -72,19 +127,55 @@ export default function EditorPage() {
     armorSlot?: ArmorSlot
   } | undefined>(undefined)
 
-  // Load build from localStorage on mount
+  const getItemId = (item: ItemData | null) => item?.id ?? null
+
+  const toEquipmentPayload = (sourceEquipment: EquipmentSlots) => ({
+    weapons: sourceEquipment.weapons.map(getItemId),
+    shields: sourceEquipment.shields.map(getItemId),
+    arrows: sourceEquipment.arrows.map(getItemId),
+    armor: {
+      head: getItemId(sourceEquipment.armor.head),
+      chest: getItemId(sourceEquipment.armor.chest),
+      hands: getItemId(sourceEquipment.armor.hands),
+      legs: getItemId(sourceEquipment.armor.legs),
+    },
+    talismans: sourceEquipment.talismans.map(getItemId),
+    consumables: sourceEquipment.consumables.map(getItemId),
+  })
+
+  // Load build by id
   useEffect(() => {
-    const savedBuild = localStorage.getItem(`build-${buildId}`)
-    if (savedBuild) {
+    if (buildId === "new") {
+      return
+    }
+
+    const fetchBuild = async () => {
       try {
-        const parsed: BuildData = JSON.parse(savedBuild)
-        setBuildName(parsed.name)
-        setStats(parsed.stats)
-        setEquipment(parsed.equipment)
+        const [buildsResponse, itemsResponse] = await Promise.all([
+          fetch("/api/builds/Builds"),
+          fetch("/api/catalog/GameItems/equipments"),
+        ])
+
+        if (!buildsResponse.ok || !itemsResponse.ok) {
+          return
+        }
+
+        const builds = await buildsResponse.json() as ApiBuild[]
+        const allItems = await itemsResponse.json() as ItemData[]
+        const currentBuild = builds.find((build) => build.id === buildId)
+        if (!currentBuild) {
+          return
+        }
+        
+        setBuildName(currentBuild.name)
+        setStats(currentBuild.stats)
+        setEquipment(mapEquipmentFromApi(currentBuild.equipment, Array.isArray(allItems) ? allItems : []))
       } catch (e) {
         console.error("Failed to load build:", e)
       }
     }
+
+    void fetchBuild()
   }, [buildId])
 
   // Handle slot click to open inventory
@@ -125,50 +216,62 @@ export default function EditorPage() {
     setInventoryOpen(false)
   }
 
-  // Save build to localStorage
-  const handleSave = async () => {
-    setIsSaving(true)
-    
-    const buildData: BuildData = {
-      id: buildId,
-      name: buildName,
-      stats,
-      equipment,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+  const handleRemoveItem = () => {
+    const newEquipment = { ...equipment }
+
+    if (inventoryCategory === "weapons" && selectedSlotIndex !== undefined) {
+      newEquipment.weapons = [...equipment.weapons]
+      newEquipment.weapons[selectedSlotIndex] = null
+    } else if (inventoryCategory === "shields" && selectedSlotIndex !== undefined) {
+      newEquipment.shields = [...equipment.shields]
+      newEquipment.shields[selectedSlotIndex] = null
+    } else if (inventoryCategory === "arrows" && selectedSlotIndex !== undefined) {
+      newEquipment.arrows = [...equipment.arrows]
+      newEquipment.arrows[selectedSlotIndex] = null
+    } else if (inventoryCategory === "armor" && armorSlot) {
+      newEquipment.armor = { ...equipment.armor }
+      newEquipment.armor[armorSlot] = null
+    } else if (inventoryCategory === "talismans" && selectedSlotIndex !== undefined) {
+      newEquipment.talismans = [...equipment.talismans]
+      newEquipment.talismans[selectedSlotIndex] = null
+    } else if (inventoryCategory === "consumables" && selectedSlotIndex !== undefined) {
+      newEquipment.consumables = [...equipment.consumables]
+      newEquipment.consumables[selectedSlotIndex] = null
     }
 
-    // Save to localStorage
-    localStorage.setItem(`build-${buildId}`, JSON.stringify(buildData))
-    
-    // Also save to home list
-    const buildsListStr = localStorage.getItem("home-list") || "[]"
-    const buildsList = JSON.parse(buildsListStr)
-    const existingIndex = buildsList.findIndex((b: { id: string }) => b.id === buildId)
-    
-    if (existingIndex >= 0) {
-      buildsList[existingIndex] = { id: buildId, name: buildName, updatedAt: buildData.updatedAt }
-    } else {
-      buildsList.push({ id: buildId, name: buildName, updatedAt: buildData.updatedAt })
-    }
-    localStorage.setItem("home-list", JSON.stringify(buildsList))
-
-    // Simulate save delay
-    await new Promise(resolve => setTimeout(resolve, 500))
-    
-    setIsSaving(false)
-    setSaveSuccess(true)
-    setTimeout(() => setSaveSuccess(false), 2000)
+    setEquipment(newEquipment)
+    setHoveredItem(null)
   }
 
-  // Default icon paths - customize these with your actual paths
-  const defaultIcons = {
-    weapon: "/icons/weapon-placeholder.png",
-    shield: "/icons/shield-placeholder.png",
-    arrow: "/icons/arrow-placeholder.png",
-    armor: "/icons/armor-placeholder.png",
-    talisman: "/icons/talisman-placeholder.png",
-    consumable: "/icons/consumable-placeholder.png",
+  const handleSave = async () => {
+    setIsSaving(true)
+
+    try {
+      const payload = {
+        name: buildName,
+        userId: user?.id ?? null,
+        stats,
+        equipment: toEquipmentPayload(equipment),
+      }
+
+      const response = await fetch(`/api/builds/Builds/${buildId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      })
+
+      if (!response.ok) {
+        setIsSaving(false)
+        return
+      }
+
+      setSaveSuccess(true)
+      setTimeout(() => setSaveSuccess(false), 2000)
+    } catch (e) {
+      console.error("Failed to save build:", e)
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   return (
@@ -239,7 +342,6 @@ export default function EditorPage() {
             onItemHover={setHoveredItem}
             onSlotClick={handleSlotClick}
             selectedSlot={selectedSlot}
-            defaultIcons={defaultIcons}
           />
         </div>
 
@@ -265,6 +367,7 @@ export default function EditorPage() {
         category={inventoryCategory}
         armorSlot={armorSlot}
         onSelectItem={handleSelectItem}
+        onRemoveItem={handleRemoveItem}
         selectedItem={hoveredItem}
       />
     </div>
