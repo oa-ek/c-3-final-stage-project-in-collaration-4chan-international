@@ -1,16 +1,12 @@
 "use client"
 
-import {useState, useEffect, useRef} from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { useAuth } from '@/contexts/auth-context'
 import {Shield, X, LayoutDashboard, Users, Sword, LogOut, Edit2, Save, UploadCloud} from 'lucide-react'
 import { AdminDashboard } from '@/components/admin/admin-dashboard'
 import { AdminUsers } from '@/components/admin/admin-users'
 import { AdminEquipment } from '@/components/admin/admin-equipment'
-import { tokenStorage } from "@/lib/api-client";
-import { UpdateUserRequestDTO } from "@/types/dto/users";
 import {getImageUrl} from "@/lib/content-utils";
+import { useProfilePage } from '@/hooks/use-profile-page'
 
 type AdminTab = 'dashboard' | 'users' | 'equipment'
 
@@ -24,46 +20,29 @@ type Activity = {
 }
 
 export default function ProfilePage() {
-    const router = useRouter()
-    const { user, isLoading, isAdmin, logout, updateProfile } = useAuth()
-    const [showAdminPanel, setShowAdminPanel] = useState(false)
-    const [adminTab, setAdminTab] = useState<AdminTab>('dashboard')
-    const [isUploadingAvatar, setIsUploadingAvatar] = useState(false)
-    const [avatarCacheBuster, setAvatarCacheBuster] = useState(Date.now())
-    const fileInputRef = useRef<HTMLInputElement>(null)
-    const [isEditing, setIsEditing] = useState(false)
-    const [isSaving, setIsSaving] = useState(false)
-    const [editError, setEditError] = useState<string | null>(null)
-    const [editForm, setEditForm] = useState<UpdateUserRequestDTO>({
-        id: '',
-        firstName: '',
-        lastName: '',
-        userName: '',
-        email: '',
-        avatarPath: '',
-        covenant: ''
-    })
-
-    useEffect(() => {
-        if (!isLoading && !user) {
-            router.push('/')
-        }
-    }, [user, isLoading, router])
-
-    // Initialize edit form when user data is available
-    useEffect(() => {
-        if (user) {
-            setEditForm({
-                id: user.id,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                userName: user.userName,
-                email: user.email,
-                avatarPath: user.avatarPath,
-                covenant: user.covenant
-            })
-        }
-    }, [user])
+    const {
+        adminTab,
+        avatarCacheBuster,
+        closeAdminPanel,
+        editError,
+        editForm,
+        fileInputRef,
+        handleAvatarUpload,
+        handleCancelEdit,
+        handleEditProfile,
+        handleLogout,
+        handleSaveProfile,
+        isAdmin,
+        isEditing,
+        isLoading,
+        isSaving,
+        isUploadingAvatar,
+        setAdminTab,
+        showAdminPanel,
+        toggleAdminPanel,
+        updateEditFormField,
+        user,
+    } = useProfilePage()
 
     if (isLoading || !user) {
         return (
@@ -71,91 +50,6 @@ export default function ProfilePage() {
                 <div className="text-[#c4a456]">Loading...</div>
             </div>
         )
-    }
-
-    const handleLogout = () => {
-        logout()
-        router.push('/')
-    }
-
-    const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (!file || !user) return;
-
-        setIsUploadingAvatar(true);
-        setEditError(null);
-
-        // Створюємо FormData для нашого Content Service API
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("Name", `${user.userName} Avatar`);
-        formData.append("Route", `users/${user.id}`);
-
-        try {
-            const tokens = tokenStorage.getTokens();
-            const response = await fetch("/api/content/ContentItem/upload", {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${tokens?.accessToken}`
-                },
-                body: formData,
-            });
-
-            if (response.ok) {
-                setAvatarCacheBuster(Date.now());
-                await updateProfile({ ...editForm, avatarPath: `users/${user.id}` });
-            } else {
-                setEditError("Не вдалося завантажити зображення");
-            }
-        } catch (error) {
-            setEditError("Помилка мережі при завантаженні зображення");
-        } finally {
-            setIsUploadingAvatar(false);
-        }
-    };
-
-    const handleEditProfile = () => {
-        setIsEditing(true)
-        setEditError(null)
-    }
-
-    const handleCancelEdit = () => {
-        setIsEditing(false)
-        setEditError(null)
-        if (user) {
-            setEditForm({
-                id: user.id,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                userName: user.userName,
-                email: user.email,
-                avatarPath: user.avatarPath,
-                covenant: user.covenant
-            })
-        }
-    }
-
-    const handleSaveProfile = async () => {
-        setIsSaving(true)
-        setEditError(null)
-
-        const result = await updateProfile({
-            id: user?.id,
-            firstName: editForm.firstName,
-            lastName: editForm.lastName,
-            userName: editForm.userName,
-            email: editForm.email,
-            covenant: editForm.covenant,
-            avatarPath: user?.avatarPath ?? "",
-        })
-
-        setIsSaving(false)
-
-        if (result.success) {
-            setIsEditing(false)
-        } else {
-            setEditError(result.error || 'Failed to update profile')
-        }
     }
 
     const stats = {
@@ -190,7 +84,9 @@ export default function ProfilePage() {
     ]
 
     return (
-        <div className="min-h-screen bg-[#0a0a0a] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#1A1A1D] via-[#0a0a0a] to-black p-4 md:p-8 text-gray-200">
+        <div className="min-h-screen bg-fixed bg-cover bg-center bg-no-repeat from-[#1A1A1D] via-[#0a0a0a] text-gray-200 font-sans p-12"
+             style={{ backgroundImage: `url('${getImageUrl('profile/wallpaper')}')` }}
+        >
             <input
                 type="file"
                 accept="image/*"
@@ -201,7 +97,7 @@ export default function ProfilePage() {
             <div className="max-w-7xl mx-auto">
 
                 {/* Header */}
-                <div className="flex justify-between items-end mb-8 border-b border-[#C89B64]/20 pb-4">
+                <div className="bg-[#121212]/40 backdrop-blur-md flex justify-between items-end rounded-lg mb-8 p-6 border border-[#C89B64]/20 pb-4">
                     <div>
                         <h1 className="text-4xl md:text-5xl text-[#D4AF37] font-serif uppercase tracking-[0.15em] drop-shadow-[0_0_15px_rgba(212,175,55,0.3)]">
                             Player Sanctum
@@ -211,7 +107,7 @@ export default function ProfilePage() {
                     <div className="flex items-center gap-3">
                         {isAdmin && (
                             <button
-                                onClick={() => setShowAdminPanel(!showAdminPanel)}
+                                onClick={toggleAdminPanel}
                                 className={`hidden md:flex items-center gap-2 px-6 py-2 border transition-all rounded-sm uppercase tracking-widest text-sm font-bold ${
                                     showAdminPanel 
                                         ? 'bg-[#C89B64] text-black border-[#C89B64]' 
@@ -239,7 +135,7 @@ export default function ProfilePage() {
 
                 {/* Admin Panel (shown when admin clicks button) */}
                 {showAdminPanel && isAdmin && (
-                    <div className="mb-8 bg-[#121212]/90 backdrop-blur-md border border-[#C89B64]/50 shadow-[0_0_30px_rgba(200,155,100,0.2)] rounded-lg overflow-hidden">
+                    <div className="mb-8 bg-[#121212]/40 backdrop-blur-md border border-[#C89B64]/50 shadow-[0_0_30px_rgba(200,155,100,0.2)] rounded-lg overflow-hidden">
                         {/* Admin Panel Header */}
                         <div className="flex items-center justify-between px-6 py-4 border-b border-[#C89B64]/30 bg-[#1A1A1D]">
                             <div className="flex items-center gap-3">
@@ -247,7 +143,7 @@ export default function ProfilePage() {
                                 <h2 className="text-xl font-serif text-[#D4AF37]">Admin Panel</h2>
                             </div>
                             <button
-                                onClick={() => setShowAdminPanel(false)}
+                                onClick={closeAdminPanel}
                                 className="p-2 hover:bg-[#C89B64]/20 rounded-lg transition-colors"
                             >
                                 <X className="w-5 h-5 text-gray-400 hover:text-white" />
@@ -287,7 +183,7 @@ export default function ProfilePage() {
                 {/* Mobile Admin Button */}
                 {isAdmin && (
                     <button
-                        onClick={() => setShowAdminPanel(!showAdminPanel)}
+                        onClick={toggleAdminPanel}
                         className={`md:hidden w-full mb-6 flex items-center justify-center gap-2 px-6 py-3 border transition-all rounded-sm uppercase tracking-widest text-sm font-bold ${
                             showAdminPanel 
                                 ? 'bg-[#C89B64] text-black border-[#C89B64]' 
@@ -304,7 +200,7 @@ export default function ProfilePage() {
 
                     {/* Column 1: Profile (3/12) */}
                     <div className="lg:col-span-3 flex flex-col gap-6">
-                        <div className="bg-[#121212]/80 backdrop-blur-md border border-[#C89B64]/30 shadow-[0_0_30px_rgba(0,0,0,0.8)] p-6 relative overflow-hidden group">
+                        <div className="bg-[#121212]/40 backdrop-blur-md rounded-lg border border-[#C89B64]/30 shadow-[0_0_30px_rgba(0,0,0,0.8)] p-6 relative overflow-hidden group">
                             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-32 bg-[#C89B64]/5 blur-3xl pointer-events-none"></div>
 
                             <div className="flex flex-col items-center text-center relative z-10">
@@ -344,14 +240,14 @@ export default function ProfilePage() {
                                             <input
                                                 type="text"
                                                 value={editForm.firstName || ""}
-                                                onChange={(e) => setEditForm({ ...editForm, firstName: e.target.value })}
+                                                onChange={(e) => updateEditFormField('firstName', e.target.value)}
                                                 placeholder="First Name"
                                                 className="p-2 bg-black/40 border border-gray-700 text-gray-200 text-sm focus:border-[#C89B64] outline-none"
                                             />
                                             <input
                                                 type="text"
                                                 value={editForm.lastName || ""}
-                                                onChange={(e) => setEditForm({ ...editForm, lastName: e.target.value })}
+                                                onChange={(e) => updateEditFormField('lastName', e.target.value)}
                                                 placeholder="Last Name"
                                                 className="p-2 bg-black/40 border border-gray-700 text-gray-200 text-sm focus:border-[#C89B64] outline-none"
                                             />
@@ -359,21 +255,21 @@ export default function ProfilePage() {
                                         <input
                                             type="text"
                                             value={editForm.userName || ""}
-                                            onChange={(e) => setEditForm({ ...editForm, userName: e.target.value })}
+                                            onChange={(e) => updateEditFormField('userName', e.target.value)}
                                             placeholder="Username"
                                             className="w-full p-2 bg-black/40 border border-gray-700 text-gray-200 text-sm focus:border-[#C89B64] outline-none"
                                         />
                                         <input
                                             type="email"
                                             value={editForm.email || ""}
-                                            onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                                            onChange={(e) => updateEditFormField('email', e.target.value)}
                                             placeholder="Email"
                                             className="w-full p-2 bg-black/40 border border-gray-700 text-gray-200 text-sm focus:border-[#C89B64] outline-none"
                                         />
                                         <input
                                             type="text"
                                             value={editForm.covenant || ""}
-                                            onChange={(e) => setEditForm({ ...editForm, covenant: e.target.value })}
+                                            onChange={(e) => updateEditFormField('covenant', e.target.value)}
                                             placeholder="Covenant"
                                             className="w-full p-2 bg-black/40 border border-gray-700 text-gray-200 text-sm focus:border-[#C89B64] outline-none"
                                         />
@@ -402,7 +298,7 @@ export default function ProfilePage() {
                                         <p className="text-gray-400 text-sm">@{user.userName}</p>
                                         <p className="text-gray-500 text-xs mb-4">{user.email}</p>
 
-                                        <div className="w-full bg-black/50 rounded-md p-3 border border-gray-800 mb-6">
+                                        <div className="w-full bg-black/40 rounded-md p-3 border border-gray-800 mb-6">
                                             <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Covenant</p>
                                             <p className="text-yellow-500 font-serif text-lg">{user.covenant || 'None'}</p>
                                         </div>
@@ -427,11 +323,11 @@ export default function ProfilePage() {
 
                         {/* Mini Stats */}
                         <div className="grid grid-cols-2 gap-4">
-                            <div className="bg-[#121212]/80 border border-gray-800 p-4 text-center">
+                            <div className="rounded-lg bg-[#121212]/40 border border-gray-800 p-4 text-center">
                                 <p className="text-3xl font-serif text-gray-200">{user.buildCounts || 0}</p>
                                 <p className="text-xs text-gray-500 uppercase tracking-widest mt-1">Total Builds</p>
                             </div>
-                            <div className="bg-[#121212]/80 border border-gray-800 p-4 text-center">
+                            <div className="rounded-lg bg-[#121212]/40 border border-gray-800 p-4 text-center">
                                 <p className="text-3xl font-serif text-gray-200">{stats.winRate}</p>
                                 <p className="text-xs text-gray-500 uppercase tracking-widest mt-1">PVP Win Rate</p>
                             </div>
@@ -439,22 +335,22 @@ export default function ProfilePage() {
                     </div>
 
                     {/* Column 2: Analytics (5/12) */}
-                    <div className="lg:col-span-5 bg-[#121212]/80 backdrop-blur-md border border-gray-800 shadow-[0_0_30px_rgba(0,0,0,0.8)] p-6 flex flex-col">
+                    <div className="lg:col-span-5 rounded-lg bg-[#121212]/40 backdrop-blur-md border border-gray-800 shadow-[0_0_30px_rgba(0,0,0,0.8)] p-6 flex flex-col">
                         <h2 className="font-serif text-2xl text-gray-300 border-b border-gray-800 pb-2 mb-6 flex items-center justify-between">
                             Combat Analytics
                             <span className="text-xs text-[#C89B64] uppercase tracking-widest border border-[#C89B64]/30 px-2 py-1 rounded">Live Data</span>
                         </h2>
 
                         {/* Main Weapon Card */}
-                        <div className="bg-gradient-to-br from-[#1A1A1D] to-black border border-[#C89B64]/20 p-5 rounded-sm relative overflow-hidden mb-6 group hover:border-[#C89B64]/50 transition-colors">
+                        <div className="bg-linear-to-br from-[#1A1A1D] to-black border border-[#C89B64]/20 p-5 rounded-sm relative overflow-hidden mb-6 group hover:border-[#C89B64]/50 transition-colors">
                             <div className="absolute -right-4 -bottom-4 text-8xl opacity-5 grayscale group-hover:opacity-10 transition-opacity">
                                 {'\u2694'}
                             </div>
                             <p className="text-xs text-[#C89B64] uppercase tracking-widest mb-1">Most Used Weapon</p>
                             <p className="font-serif text-2xl text-gray-100 mb-2">{stats.mostUsedWeapon}</p>
                             <div className="flex gap-4 text-sm text-gray-400">
-                                <span className="bg-black/50 px-2 py-1 rounded border border-gray-800">Equipped in 8 builds</span>
-                                <span className="bg-black/50 px-2 py-1 rounded border border-gray-800">Scaling: S / D / - / -</span>
+                                <span className="bg-black/40 px-2 py-1 rounded border border-gray-800">Equipped in 8 builds</span>
+                                <span className="bg-black/40 px-2 py-1 rounded border border-gray-800">Scaling: S / D / - / -</span>
                             </div>
                         </div>
 
@@ -474,7 +370,7 @@ export default function ProfilePage() {
                     </div>
 
                     {/* Column 3: History (4/12) */}
-                    <div className="lg:col-span-4 bg-[#121212]/80 backdrop-blur-md border border-gray-800 shadow-[0_0_30px_rgba(0,0,0,0.8)] p-6">
+                    <div className="lg:col-span-4 rounded-lg bg-[#121212]/40 backdrop-blur-md border border-gray-800 shadow-[0_0_30px_rgba(0,0,0,0.8)] p-6">
                         <h2 className="font-serif text-2xl text-gray-300 border-b border-gray-800 pb-2 mb-6">
                             Recent Chronicle
                         </h2>
@@ -482,21 +378,21 @@ export default function ProfilePage() {
                         <div className="flex flex-col divide-y divide-gray-800/50">
                             {activities.map((activity) => (
                                 <div key={activity.id} className="py-4 flex items-start gap-4 hover:bg-white/[0.02] transition-colors -mx-2 px-2 rounded-md">
-                                    <div className="mt-1 text-xl bg-black/50 p-2 rounded-full border border-gray-800 shadow-inner">
+                                    <div className="mt-1 w-10 h-10 text-center bg-black/50 p-2 rounded-full border border-gray-800 shadow-inner">
                                         {getActivityIcon(activity.icon)}
                                     </div>
                                     <div className="flex-1">
                                         <div className="flex justify-between items-baseline mb-1">
                                             <p className={`font-medium ${activity.color}`}>{activity.title}</p>
-                                            <p className="text-xs text-gray-500">{activity.time}</p>
+                                            <p className="text-sm text-gray-300">{activity.time}</p>
                                         </div>
-                                        <p className="text-sm text-gray-400 font-serif italic">{activity.detail}</p>
+                                        <p className="text-sm text-gray-300 font-serif italic">{activity.detail}</p>
                                     </div>
                                 </div>
                             ))}
                         </div>
 
-                        <button className="w-full mt-6 py-2 text-xs text-gray-500 hover:text-gray-300 uppercase tracking-widest border-t border-gray-800 pt-4 transition-colors">
+                        <button className="w-full mt-6 py-2 text-xs text-gray-300 hover:text-gray-100 uppercase tracking-widest border-t border-gray-800 pt-4 transition-colors">
                             View Full History
                         </button>
                     </div>

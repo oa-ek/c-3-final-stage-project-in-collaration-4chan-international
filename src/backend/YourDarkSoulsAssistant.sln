@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YourDarkSoulsAssistant.Serv
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YourDarkSoulsAssistant.UsersService", "YourDarkSoulsAssistant.UsersService\YourDarkSoulsAssistant.UsersService.csproj", "{72945963-39A9-40AC-AE56-43D152027E5D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YourDarkSoulsAssistant.GameItemsCatalogService", "YourDarkSoulsAssistant.GameItemsCatalogService\YourDarkSoulsAssistant.GameItemsCatalogService.csproj", "{39030737-4B90-4FA7-8CB4-40D6CA7149E3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YourDarkSoulsAssistant.CatalogService", "YourDarkSoulsAssistant.CatalogService\YourDarkSoulsAssistant.CatalogService.csproj", "{39030737-4B90-4FA7-8CB4-40D6CA7149E3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YourDarkSoulsAssistant.ContentDeliveryService", "YourDarkSoulsAssistant.ContentDeliveryService\YourDarkSoulsAssistant.ContentDeliveryService.csproj", "{551C598A-0A96-44DB-837E-B48138B3D8E7}"
 EndProject

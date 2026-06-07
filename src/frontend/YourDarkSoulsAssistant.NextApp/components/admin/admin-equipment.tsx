@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { apiClient } from "@/lib/api-client"
 import {
   Sword, Shield, Gem, Shirt, Search, Plus, Edit, Trash2, MoreVertical, Loader2
 } from "lucide-react"
@@ -47,7 +46,6 @@ const emptyItem: Omit<ItemData, "id"> = {
   guard: { physical: "0", magic: "0", fire: "0", lightning: "0", holy: "0", boost: "0" },
   scaling: { str: "-", dex: "-", int: "-", fai: "-", arc: "-" },
   required: { str: "0", dex: "0", int: "0", fai: "0", arc: "0" },
-  passiveEffects: [],
 }
 
 export function AdminEquipment() {
@@ -67,7 +65,7 @@ export function AdminEquipment() {
   const fetchItems = useCallback(async () => {
     setIsLoading(true)
     try {
-      const response = await apiClient("/api/gameitems/Items")
+      const response = await fetch("/api/catalog/GameItems/equipments")
       if (response.ok) {
         const data: ItemData[] = await response.json()
         setItems(data)
@@ -113,11 +111,14 @@ export function AdminEquipment() {
     setIsSaving(true)
 
     try {
-      const url = isCreating ? "/api/gameitems/Items" : `/api/gameitems/Items/${editingItem.id}`
+      const url = isCreating ? "/api/catalog/GameItems/equipments" : `/api/catalog/GameItems/equipments/${editingItem.id}`
       const method = isCreating ? "POST" : "PUT"
 
-      const response = await apiClient(url, {
+      const response = await fetch(url, {
         method,
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(editingItem),
       })
 
@@ -140,7 +141,7 @@ export function AdminEquipment() {
     if (!confirm("Are you sure you want to delete this item?")) return
 
     try {
-      const response = await apiClient(`/api/gameitems/Items/${itemId}`, { method: "DELETE" })
+      const response = await fetch(`/api/catalog/GameItems/equipments/${itemId}`, { method: "DELETE" })
       if (response.ok) {
         toast({ title: "Success", description: "Item deleted" })
         setItems(prev => prev.filter(item => item.id !== itemId))

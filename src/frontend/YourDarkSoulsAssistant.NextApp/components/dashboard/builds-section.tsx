@@ -1,12 +1,7 @@
 "use client"
 
 import Link from 'next/link'
-import type { Build } from '@/hooks/use-home-page'
-
-interface DashboardBuildsProps {
-    builds: Build[]
-    onSelectBuild: (build: Build) => void
-}
+import type { DashboardBuildsProps } from '@/types/dashboard'
 
 export function DashboardBuilds({ builds, onSelectBuild }: DashboardBuildsProps) {
     return (

@@ -3,12 +3,7 @@
 import Link from 'next/link'
 import { Shield } from 'lucide-react'
 import { getImageUrl } from '@/lib/content-utils'
-import type { UserResponseDTO } from '@/types/dto/users'
-
-interface DashboardUserCardProps {
-    user: UserResponseDTO
-    isAdmin: boolean
-}
+import type { DashboardUserCardProps } from '@/types/dashboard'
 
 export function DashboardUserCard({ user, isAdmin }: DashboardUserCardProps) {
     return (

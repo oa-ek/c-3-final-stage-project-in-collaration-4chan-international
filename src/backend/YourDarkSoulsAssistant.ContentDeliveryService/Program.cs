@@ -9,11 +9,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
-builder.Services.AddScoped<IDataInitializer, ContentDataInitializer>();
 builder.Services.AddDatabase<ContentDeliveryDBContext>(
     config: builder.Configuration,
     connectionStringName: "ContentDeliveryDBConnection"
-    );
+);
+builder.Services.AddScoped<IDataInitializer, ContentDataInitializer>();
 builder.Services.CheckStoragePathVariable(builder.Configuration);
 builder.Services.AppServicesRegistration();
 builder.Services.AddBaseWebConfiguration();
@@ -34,9 +34,8 @@ app.MapDefaultEndpoints();
 app.MapOpenApi();
 
 if (app.Environment.IsDevelopment())
-{
-    app.UseDarkSoulsScalar("ContentDelivery");
-}
+    app.UseDarkSoulsScalar(title: "Your Dark Souls Assistant - Content Delivery API");
+
 
 app.MapControllers();
 

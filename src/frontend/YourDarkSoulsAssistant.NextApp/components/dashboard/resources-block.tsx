@@ -2,10 +2,7 @@
 
 import Link from 'next/link'
 import { BookOpen, LogOut } from 'lucide-react'
-
-interface DashboardResourcesProps {
-    onLogout: () => void
-}
+import type { DashboardResourcesProps } from '@/types/dashboard'
 
 export function DashboardResources({ onLogout }: DashboardResourcesProps) {
     return (

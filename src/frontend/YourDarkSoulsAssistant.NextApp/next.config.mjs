@@ -19,8 +19,8 @@ const nextConfig = {
         destination: `${API_URL}/api/content/:path*`,
       },
       {
-        source: '/api/gameitems/:path*',
-        destination: `${API_URL}/api/gameitems/:path*`,
+        source: '/api/catalog/:path*',
+        destination: `${API_URL}/api/catalog/:path*`,
       },
       {
         source: '/api/articles/:path*',

@@ -1,17 +1,19 @@
 "use client"
 
 import Link from 'next/link'
-import { games, useHomePage } from '@/hooks/use-home-page'
+import { useHomePage } from '@/hooks/use-home-page'
 import { DashboardUserCard } from '@/components/dashboard/user-card'
 import { DashboardResources } from '@/components/dashboard/resources-block'
 import { DashboardGames } from '@/components/dashboard/games-section'
 import { DashboardBuilds } from '@/components/dashboard/builds-section'
+import { getImageUrl } from "@/lib/content-utils";
 
 export default function BuildsPage() {
     const {
         user,
         isLoading,
         isAdmin,
+        games,
         activeGame,
         selectedBuild,
         filteredBuilds,
@@ -45,9 +47,9 @@ export default function BuildsPage() {
 
             <main
                 className="flex-1 h-screen flex flex-col relative bg-cover bg-center bg-no-repeat"
-                style={{ backgroundImage: `url('/background.jpg')` }}
+                style={{ backgroundImage: `url('${getImageUrl('home/wallpaper')}')` }}
             >
-                <div className="absolute inset-0 bg-[#0a0a0a]/85 backdrop-blur-[2px] z-0" />
+                <div className="absolute inset-0 bg-[#0a0a0a]/45 z-0" />
                 <DashboardBuilds builds={filteredBuilds} onSelectBuild={setSelectedBuild} />
             </main>
 

@@ -3,10 +3,10 @@
 import { useState, useEffect } from "react"
 import { useRouter, useParams } from "next/navigation"
 import Link from "next/link"
-import { EquipmentPanel } from "@/components/equipment-panel"
-import { ItemDetailsPanel } from "@/components/item-details-panel"
-import { CharacterStatusPanel } from "@/components/character-status-panel"
-import { InventoryModal, type InventoryCategory, type ArmorSlot } from "@/components/inventory-modal"
+import { EquipmentPanel } from "@/components/editor/equipment-panel"
+import { ItemDetailsPanel } from "@/components/editor/item-details-panel"
+import { CharacterStatusPanel } from "@/components/editor/character-status-panel"
+import { InventoryModal, type InventoryCategory, type ArmorSlot } from "@/components/editor/inventory-modal"
 import { Sword, ArrowLeft, Save, Check } from "lucide-react"
 import type { 
   ItemData, 
@@ -16,6 +16,7 @@ import type {
   DEFAULT_STATS,
   DEFAULT_EQUIPMENT 
 } from "@/types/equipment"
+import {getImageUrl} from "@/lib/content-utils";
 
 // Re-export ItemData for backward compatibility
 export type { ItemData } from "@/types/equipment"
@@ -171,8 +172,10 @@ export default function EditorPage() {
   }
 
   return (
-    <div className="min-h-screen h-screen w-full bg-[#1a1815] overflow-auto flex flex-col">
-      <div className="fixed inset-0 bg-gradient-to-br from-[#2a2520]/80 via-[#1a1815] to-[#0f0e0c] pointer-events-none" />
+    <div className="min-h-screen flex-1 flex flex-col relative overflow-hidden bg-cover bg-center bg-no-repeat"
+         style={{ backgroundImage: `url('${getImageUrl('editor/wallpaper')}')` }}
+    >
+      <div className="absolute inset-0 bg-black/60 z-0" />
 
       <header className="sticky top-0 z-20 px-6 py-3 border-b border-[#3a352c]/50 bg-[#1a1815]/95 backdrop-blur-sm">
         <div className="flex items-center gap-4">
@@ -220,17 +223,17 @@ export default function EditorPage() {
               )}
             </button>
             <Link
-              href="/builds"
+              href="/home"
               className="px-4 py-2 text-sm text-gray-400 hover:text-[#C89B64] border border-gray-700 hover:border-[#C89B64] transition-all uppercase tracking-wider"
             >
-              Back to Builds
+              Back to Home
             </Link>
           </div>
         </div>
       </header>
 
       <main className="relative z-10 flex flex-1 gap-8 p-8 min-h-0">
-        <div className="flex-1 min-w-[340px] max-w-[400px]">
+        <div className="flex-1 min-w-85 max-w-100">
           <EquipmentPanel
             equipment={equipment}
             onItemHover={setHoveredItem}
@@ -240,11 +243,11 @@ export default function EditorPage() {
           />
         </div>
 
-        <div className="flex-[2] min-w-[380px]">
+        <div className="flex-2 min-w-95">
           <ItemDetailsPanel item={hoveredItem} />
         </div>
 
-        <div className="flex-1 min-w-[200px] max-w-[280px]">
+        <div className="flex-1 min-w-50 max-w-70">
           <CharacterStatusPanel 
             stats={stats}
             onStatsChange={setStats}

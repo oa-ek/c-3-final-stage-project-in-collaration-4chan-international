@@ -10,7 +10,7 @@ public static class OpenAPIConfiguration
         services.AddOpenApi("articles");
         services.AddOpenApi("users"); 
         services.AddOpenApi("content");
-        services.AddOpenApi("gameitems");
+        services.AddOpenApi("catalog");
         services.AddOpenApi("guides");
     }
     

@@ -1,15 +1,7 @@
 "use client"
 
-interface GameItem {
-    id: string
-    name: string
-}
-
-interface DashboardGamesProps {
-    games: GameItem[]
-    activeGame: string
-    setActiveGame: (id: string) => void
-}
+import {getImageUrl} from "@/lib/content-utils";
+import type { DashboardGamesProps } from '@/types/dashboard'
 
 export function DashboardGames({ games, activeGame, setActiveGame }: DashboardGamesProps) {
     return (
@@ -27,7 +19,11 @@ export function DashboardGames({ games, activeGame, setActiveGame }: DashboardGa
                         }`}
                     >
                         <div className="w-8 h-8 rounded-sm bg-gray-800 border border-gray-700 flex items-center justify-center overflow-hidden shrink-0">
-                            <span className="text-xs text-gray-500">{game.id.toUpperCase()}</span>
+                            <img
+                                src={getImageUrl(game.icon)}
+                                alt={game.name}
+                                className="w-full h-full object-cover"
+                            />
                         </div>
                         <span className="font-medium tracking-wide">{game.name}</span>
                     </button>
